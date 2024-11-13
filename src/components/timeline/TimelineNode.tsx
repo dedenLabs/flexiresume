@@ -4,9 +4,11 @@ import styled from 'styled-components';
 import SkillItem from '../skill/SkillItem';
 import ReactMarkdown from 'react-markdown';
 import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
-import Timeline from './Timeline'; 
+import TimelineContainer from './TimelineContainer';
 import flexiResumeStore from '../../store/Store';
 import CollapseIcon from './CollapseIcon';
+import { getLogger, logCollapse } from '../../utils/Tools';
+const log = getLogger('TimelineNode');
 
 interface TimelineNodeProps {
   id: string;
@@ -40,7 +42,6 @@ const TimelineNode: React.FC<{ category: TimelineNodeProps }> = ({ id: parentId,
     }
     collapsedList.pop();
   }
-
   const [collapsedSelf, setCollapsedSelf] = useState(collapsedParent
     || !!flexiResumeStore.collapsedMap.get(selfId)
     || false);
@@ -48,6 +49,7 @@ const TimelineNode: React.FC<{ category: TimelineNodeProps }> = ({ id: parentId,
   // 监听折叠状态变化
   useEffect(() => {
     setCollapsedSelf(collapsedParent || !!flexiResumeStore.collapsedMap.get(selfId));
+    logCollapse(`TimelineNode`, `parent:`, collapsedParent, `self:`, !!flexiResumeStore.collapsedMap.get(selfId), selfId);
   }, [collapsedParent, selfId]);
 
   // const collapsedMsg = ` ID:"${selfId}" 折叠:${collapsedSelf} 
@@ -72,7 +74,7 @@ const TimelineNode: React.FC<{ category: TimelineNodeProps }> = ({ id: parentId,
         </CategoryTitle>
         <CategoryBody>
           {
-            category?.children && <Timeline id={selfId} categories={category?.children} />
+            category?.children && <TimelineContainer id={selfId} categories={category?.children} />
           }
           {
             !collapsedSelf && <div className='markdown-content' dangerouslySetInnerHTML={{ __html: html }} />
@@ -93,7 +95,7 @@ const CategoryTitle = styled.h3`
   font-size: 0.8rem;
 `;
 const CategoryBody = styled.span`
-  margin: 0; 
+  margin: 0;   
 `;
 
 // Timeline 节点
@@ -117,6 +119,7 @@ const Node = styled.div`
 // 节点内容
 const Content = styled.div`
   padding-left: 1.5rem;
+  width: 100%;
 `;
 
 export default TimelineNode; 

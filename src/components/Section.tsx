@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import flexiResumeStore from '../store/Store';
+import { logCollapse } from '../utils/Tools';
 interface SectionProps {
   title: string;
   animate?: any;
@@ -31,14 +32,22 @@ const Line = styled.div`
   margin-left: 0.5rem; /* 横线与标题的间距 */
 `;
 
-const InfoWrapper = styled.div` 
+const InfoWrapper = styled.div`  
   font-size: 0.8rem;
   margin: 0.5rem 0;
 `;
-const Section: React.FC<SectionProps> = ({ id, title, children, animate }) => {
+const Section: React.FC<SectionProps> = ({ id, name, title, children, animate, data: { collapsedNodes } }) => {
   // 点击标题展开/收起
-  const onToggleCollapse = () => { 
-    flexiResumeStore.collapsedMap.set(id, !flexiResumeStore.collapsedMap.get(id));
+  const onToggleCollapse = () => {
+    flexiResumeStore.collapsedMap.set(name, !flexiResumeStore.collapsedMap.get(name));
+    logCollapse(`Section`, flexiResumeStore.collapsedMap.get(name), name);
+  }
+  // 读取个性化配置中折叠列表 
+  const data = flexiResumeStore.data;
+  if (collapsedNodes) {
+    collapsedNodes.forEach(nodeId => {
+      flexiResumeStore.collapsedMap.set(nodeId, true);
+    })
   }
   return (
     <SectionWrapper>

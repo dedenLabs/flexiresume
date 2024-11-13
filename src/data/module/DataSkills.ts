@@ -2,7 +2,7 @@
 export default [
     {
         name: '编程语言',
-        content: `- **精通**: Node.js, TypeScript, JavaScript, WebAssemblyScript, ActionScript 3, C#
+        content: `- **精通**: Node, TypeScript, JavaScript, WebAssemblyScript, ActionScript 3, C#
 - **熟练/熟悉**: C/C++, Java, Python, Golang, Php, Shell`,
     },
     {

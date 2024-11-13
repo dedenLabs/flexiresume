@@ -1,7 +1,7 @@
 import React, { Suspense, lazy, useEffect } from 'react';
 import Header from '../components/Header';
 import Section from '../components/Section';
-import SkillCard from '../components/skill/SkillCard';
+import TimelineCard from '../components/timeline/TimelineCard';
 import EmploymentHistoryCard from '../components/employment_history/EmploymentHistoryCard';
 import PersonalStrengthCard from '../components/personal_strength/PersonalStrengthCard';
 import styled from 'styled-components';
@@ -10,6 +10,7 @@ import { getCurrentPositionNameByPath, updateCurrentResumeStore, watchMinWidth }
 import { IFlexiResume, IModuleInfo, ISkillLevel } from '../types/IFlexiResume';
 import flexiResumeStore from '../store/Store';
 import EducationHistoryCard from '../components/education_history/EducationHistoryCard';
+import TimelineContainer from '../components/timeline/TimelineContainer';
 
 interface FlexiResumeProps {
   path: string;
@@ -47,18 +48,24 @@ const FlexiResume: React.FC<FlexiResumeProps> = ({ path }) => {
 
   return (
     <ResumeWrapper style={{ minWidth: `${minWidth - 40}px` }}>
-      <Header {...header_info} /> 
+      <Header {...header_info} />
       {
         Object.keys(data).map((key, i) => {
           const m = data[key] as IModuleInfo;
           if (m.hidden) return null;// 隐藏不显示内容项
 
-          // 初始化界面动画
-          let animate = {
-            initial: { opacity: 0, y: -20 },
-            animate: { opacity: 1, y: 0 },
-            transition: { delay: i * 0.05 },
-          };
+          const args = {
+            id: key,
+            name: m.name,
+            // 初始化界面动画 
+            animate: {
+              initial: { opacity: 0, y: -20 },
+              animate: { opacity: 1, y: 0 },
+              transition: { delay: i * 0.05 },
+            }, 
+            data: m,
+          }
+          // console.log(args)
           switch (m.type) {
             case 'header_info':
             case 'skill_level':
@@ -66,33 +73,39 @@ const FlexiResume: React.FC<FlexiResumeProps> = ({ path }) => {
               return null;
             case 'skills':
               return (
-                <Section key={i} id={key} title={m.name} animate={animate}>
-                  <SkillCard id={m.name/* 方便折叠配置,这里使用名称作为折叠的编号 */} />
+                <Section key={i} title={m.name} {...args}>
+                  <TimelineCard id={key} {...args} />
                 </Section>
               );
             case 'employment_history':
             case 'project_experience':
               return (
-                <Section key={i} id={key} title={`${m.name}${m?.list?.length > 1 ? "（" + m?.list?.length + "）" : ""}`} animate={animate}>
-                  <EmploymentHistoryCard id={key} />
+                <Section key={i} title={`${m.name}${m?.list?.length > 1 ? "（" + m?.list?.length + "）" : ""}`} {...args}>
+                  <EmploymentHistoryCard id={key} {...args} />
                 </Section>
               );
             case 'education_history':
               return (
-                <Section key={i} id={key} title={`${m.name}${m?.list?.length > 1 ? "（" + m?.list?.length + "）" : ""}`} animate={animate}>
-                  <EducationHistoryCard id={key} />
+                <Section key={i} title={`${m.name}${m?.list?.length > 1 ? "（" + m?.list?.length + "）" : ""}`} {...args}>
+                  <EducationHistoryCard id={key} {...args} />
                 </Section>
               );
             case 'personal_strengths':
               return (
-                <Section key={i} id={key} title={m.name} animate={animate}>
-                  <PersonalStrengthCard id={key} />
+                <Section key={i} title={m.name} {...args}>
+                  <PersonalStrengthCard id={key} {...args} />
+                </Section>
+              );
+            case 'timeline':
+              return (
+                <Section key={i} title={m.name} {...args}>
+                  <TimelineCard id={key} {...args} />
                 </Section>
               );
             default:
               return (
-                <Section key={i} id={key} title={m.name} animate={animate}>
-                  <BaseCard id={key} {...m} />
+                <Section key={i} title={m.name} {...args}>
+                  <BaseCard id={key} {...args} />
                 </Section>
               );
           }

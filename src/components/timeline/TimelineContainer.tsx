@@ -11,7 +11,7 @@ interface TimelineProps {
 };
 
 // Timeline 容器
-const TimelineContainer = styled.div`
+const TimelineWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -24,13 +24,13 @@ const TimelineContainer = styled.div`
  * @param categories 组件接收的参数，类型为 TimelineProps[]，表示时间线的分类信息数组。
  * @returns 返回渲染的时间线组件 JSX 元素。
  */
-const Timeline: React.FC<{ categories: TimelineProps[] }> = ({ id, name, categories}) => { 
+const TimelineContainer: React.FC<{ categories: TimelineProps[] }> = ({ id, name, categories }) => {
   return (
-    <TimelineContainer>
+    <TimelineWrapper>
       {categories.map((category, index) => (
         <TimelineNode id={id} key={index} category={category} />
       ))}
-    </TimelineContainer>
+    </TimelineWrapper>
   );
 };
-export default Timeline; 
+export default TimelineContainer; 

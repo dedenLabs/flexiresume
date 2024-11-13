@@ -68,10 +68,10 @@ const SchoolImage = styled.img`
  * @param description 描述信息，支持Markdown格式
  * @returns 返回渲染后的就业历史记录项组件
  */
-const EmploymentHistoryItem: React.FC<IDataEducationInfo> = ({ collapsed, school_name, school_image, start_time, end_time, education_level, major }) => {
+const EmploymentHistoryItem: React.FC<IDataEducationInfo> = ({ school_name, school_image, start_time, end_time, education_level, major }) => {
     return (
         <Card>
-            {!collapsed && (
+            {(
                 <CardHeader>
                     <SchoolImage src={school_image} />
                     <CardHeaderInfo>

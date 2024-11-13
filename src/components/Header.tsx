@@ -12,6 +12,8 @@ import icon_location from '../assets/location.svg';
 // import { AiOutlineMan, AiOutlineWoman } from "react-icons/ai";
 // import { MdPhoneAndroid } from "react-icons/md";
 // import { SiWechat } from "react-icons/si";
+import { IoHome } from "react-icons/io5";
+import { QRCodeSVG } from 'qrcode.react';
 interface HeaderProps {
   name: string;
   gender: string;
@@ -27,6 +29,9 @@ interface HeaderProps {
   education: string;
   work_experience_num: string;
   work_experience: string;
+  home_page: string;
+  qrcode: boolean | string;
+  qrcode_msg: string;
 }
 const HeaderWrapper = styled.header`
   // display: flex;
@@ -59,11 +64,28 @@ const Details = styled.p`
 `;
 
 const Avatar = styled.img`
-  width: 100px;
-  height: 100px;
+  width: 6.5rem;
+  height: 6.5rem; 
   border-radius: 20%;
-  object-fit: cover;
-  float: right;
+  object-fit: cover;   
+  ${(props) => props.qrcode ? `
+    margin-right: 1rem;
+    float: left
+    `: `
+    float: right
+  `}
+`;
+const QRCodeContener = styled.div`
+    // margin: 0 0.4rem;
+    width: 6.5rem;
+    height: 6.5rem; 
+    float: right;
+    text-align: center;
+    font-size: 0.75rem; 
+`;
+const QRCode = styled.img` 
+    width: 100%;
+    height: 100%; 
 `;
 const Vline = styled.em`
     margin: 0 0.4rem;
@@ -77,6 +99,7 @@ const Icon = styled.img`
     width: 1rem;
     height: 1rem; 
 `;
+
 const GenderIcon = styled.img.withConfig({
   shouldForwardProp: (prop) => prop !== 'isMale',
 }) <{ isMale?: number }>`
@@ -91,32 +114,60 @@ const GenderIcon = styled.img.withConfig({
     };
  `}
 `;
-const IconStyle = { fontSize: 18 };
-const Header: React.FC<HeaderProps> = ({ name, avatar, gender, position, expected_salary, location, is_male, email, phone, wechat, status, age, education, work_experience_num, work_experience }) => (
-  <HeaderWrapper>
-    <InfoWrapper>
-      <motion.div key={location.pathname} initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <Avatar src={avatar} />
-        <Name>{name}
-          {/* {is_male == 1 ? <AiOutlineMan style={{ color: '#3ea8da' }} /> : <AiOutlineWoman style={{ color: 'pink' }} />} */}
-          <GenderIcon src={/*这个图标比react-icons的厚实好看*/is_male == 1 ? icon_male : icon_woman} isMale={is_male} />
-        </Name>
-        <Position>{position}-{location} {expected_salary}</Position>
-        <Details>
-          <Icon src={icon_experience} />{work_experience_num}<Vline />
-          {age}<Vline /> {gender}<Vline />
-          {education} <Vline />
-          {status}
-        </Details>
-        <Details>
-          {/* <MdPhoneAndroid style={IconStyle} />{phone}<Vline /> */}
-          {/* <SiWechat style={IconStyle} />{wechat}<Vline /> */}
-          <Icon src={icon_phone} />{phone}<Vline />
-          <Icon src={icon_wx} />{wechat} <Vline />
-          <Icon src={icon_email} />{email}</Details>
-      </motion.div>
-    </InfoWrapper>
-  </HeaderWrapper>
-);
+const IconStyle = { fontSize: "1rem", margin: '0 0.4rem' };
 
+
+
+const Header: React.FC<HeaderProps> = ({ name, qrcode, qrcode_msg, home_page, avatar, gender, position, expected_salary, location, is_male, email, phone, wechat, status, age, education, work_experience_num, work_experience }) => {
+  return (
+    <HeaderWrapper>
+      <InfoWrapper>
+        <motion.div key={location.pathname} initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          {qrcode && window.innerWidth > 680/* 尺寸较小 或 已经在移动设备上隐藏二维码 */ ? <QRCodeContener>
+            <QRCodeSVG value={
+              typeof (qrcode) == "string" ? qrcode : window.location.href//检测使用的url为string类型时使用固定url，否则使用当前浏览器地址url
+            } size={150} width="100%" height="100%" />
+            {qrcode_msg}
+          </QRCodeContener> : null}
+          <Avatar qrcode={qrcode} src={avatar} />
+          <Name>{name}
+            {/* {is_male == 1 ? <AiOutlineMan style={{ color: '#3ea8da' }} /> : <AiOutlineWoman style={{ color: 'pink' }} />} */}
+            <GenderIcon src={/*这个图标比react-icons的厚实好看*/is_male == 1 ? icon_male : icon_woman} isMale={is_male} />
+            {home_page ? (
+              <>
+                {/* <Details> */}
+                <IoHome style={IconStyle} /><a className="no-link-icon" href={home_page} style={{
+                  // all: "initial", //清空所有样式
+                  fontSize: "1rem",
+                  letterSpacing: "0rem" // 重新设置字母间距
+                }}>{home_page}</a>
+                {/* <Vline /> */}
+                {/* </Details> */}
+              </>
+            ) : null}
+          </Name>
+          <Position>{position}-{location} {expected_salary}</Position>
+
+          <Details>
+            <Icon src={icon_experience} />{work_experience_num}<Vline />
+            {age}<Vline /> {gender}<Vline />
+            {education} <Vline />
+            {status}
+          </Details>
+
+
+          <Details>
+            {/* <MdPhoneAndroid style={IconStyle} />{phone}<Vline /> */}
+            {/* <SiWechat style={IconStyle} />{wechat}<Vline /> */}
+            <Icon src={icon_email} />{email}<Vline />
+            <Icon src={icon_phone} />{phone}<Vline />
+            <Icon src={icon_wx} />{wechat}
+
+            {/* <Icon src={icon_email} />{home_page} */}
+          </Details>
+        </motion.div>
+      </InfoWrapper>
+    </HeaderWrapper >
+  );
+}
 export default Header;

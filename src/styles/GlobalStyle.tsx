@@ -1,5 +1,4 @@
-import { createGlobalStyle } from 'styled-components';
-import icon_url from '../assets/url.svg';
+import { createGlobalStyle } from 'styled-components'; 
 const maxWidth = `${920}px`;
 const GlobalStyle = createGlobalStyle` 
   body {
@@ -21,11 +20,30 @@ const GlobalStyle = createGlobalStyle`
       border-radius: 5px; 
       border: 1px solid #ddd;
   } 
-
+  
   .markdown-content img {
     max-width: 100%; /* 图片宽度自适应父容器 */
     height: auto;    /* 自动调整高度保持比例 */ 
   }
+
+  .markdown-content video,
+  .markdown-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 5px 0;
+    border-radius: 12px; /* 圆角 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* 阴影 */
+    background-color: #fff; 
+    /* 视频的悬浮缩放效果 */ 
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  /* 悬浮效果 */
+  .markdown-content video:hover,
+  .markdown-content img:hover{
+    transform: scale(1.03); /* 略微放大 */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* 增强阴影 */
+  } 
 
   #root {
     display: flex;  
@@ -50,7 +68,7 @@ const GlobalStyle = createGlobalStyle`
       width: 1rem; /* 图标宽度 */
       height: 1rem; /* 图标高度 */
       margin-right: 0.4rem; /* 图标和文本的间距 */
-      background: url(${icon_url}) no-repeat center;
+      background: url(images/url.svg) no-repeat center;
       background-size: contain; /* 保证图标自适应 */
     }
   }

@@ -21,12 +21,12 @@ const CardWrapper = styled.div`
 	// color: #004545;
 `;
 
-const PersonalStrengthCard: React.FC<PersonalStrengthCardProps> = ({ id }) => {
+const PersonalStrengthCard: React.FC<PersonalStrengthCardProps> = ({ id, name, data: { content } }) => {
 	const data = flexiResumeStore.data;
 	// 定义折叠状态，组别折叠状态默认全部展开 
-	const { collapsedItems } = useCollapser(id, 1);
+	const { collapsedItems } = useCollapser(name, 1);
 	// 将 content 转换为 HTML, 获取到可以实时更新数据并渲染的html结构数据
-	const markdownContent = checkConvertMarkdownToHtml(data?.personal_strengths?.content || "");
+	const markdownContent = checkConvertMarkdownToHtml(content || "");
 	if (!collapsedItems[0]) {
 		return (
 			<CardWrapper>

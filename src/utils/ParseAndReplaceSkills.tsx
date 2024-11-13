@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import SkillItem from '../components/skill/SkillItem'; // 根据 SkillItem 的实际路径导入
 import ReactMarkdown from 'react-markdown';
 import { remark } from 'remark';
 import html from 'remark-html';
+import { visit } from 'unist-util-visit';
 import flexiResumeStore from '../store/Store';
-import { replaceVariables } from './Tools';
+import { getLogger, replaceVariables } from './Tools';
+import { QRCodeSVG } from 'qrcode.react';
+const logMarkdown = getLogger(`Markdown`);
 
 interface Skill {
     name: string;
@@ -41,7 +44,7 @@ export const parseAndReplaceSkills = (text: string, useHtml = false): string | R
                 // 仅在客户端渲染技能组件
                 if (typeof window !== "undefined") {
                     return ReactDOMServer.renderToStaticMarkup(tsx).toString();
-                } 
+                }
             }
             return part;
         })
@@ -59,6 +62,117 @@ export const parseAndReplaceSkills = (text: string, useHtml = false): string | R
 
 };
 
+
+// 支持的热门视频格式
+const videoFormats = ['.mp4', '.webm', '.ogg', '.mov', '.avi'];
+// 自定义 remark 插件来转换视频链接
+function remarkVideoLazyLoad() {
+    return (tree) => {
+        // 遍历 AST 节点，查找视频链接
+        visit(tree, 'link', (node, index, parent) => {
+            // console.log(`检查链接是否包含视频 URL:`,node.url,node.children[0].value);
+            // 检查链接是否包含视频 URL
+            if (videoFormats.some(format => node.url.endsWith(format))) {
+                // 替换成 HTML 视频标签
+                let arr = node.url.split('.');
+                let fileType = arr.pop();
+                let filePath = arr.join(".");
+                /**
+                 * @title 批量转换视频格式
+                 * 使用 convert.bat input.mp4 命令会帮忙生成其他压缩格式的视频, 可以根据客户端支持程度选择流量最小的格式
+                 * 需要提前安装 ffmpeg 工具 https://ffmpeg.org/download.html
+                 * -------------------------------convert.bat---------------------------------
+                    @echo off
+                    setlocal
+
+                    if "%~1"=="" (
+                        echo 请提供输入文件名称，例如：1.mp4
+                        exit /b
+                    )
+
+                    set input=%~1
+                    set filename=%~n1
+                    set ext=%~x1
+
+                    rem 转换为 H.264 格式
+                    ffmpeg -i "%input%" -c:v libx264 -c:a aac "%filename%_h264%ext%"
+
+                    rem 转换为 VP9 格式
+                    ffmpeg -i "%input%" -c:v libvpx-vp9 -c:a libopus "%filename%_vp9.webm"
+
+                    rem 转换为 HEVC 格式
+                    ffmpeg -i "%input%" -c:v libx265 -c:a aac "%filename%_hevc%ext%"
+
+                    echo 转换完成！      
+                 * -------------------------------------------------------------------          
+                 */
+                parent.children[index] = {
+                    type: 'html',
+                    // 暂停所有其他视频
+                    value: `<video class="remark-video" loading="lazy" controls width="100%" onplay="                    
+                        document.querySelectorAll('.remark-video').forEach(video => {
+                        if (video !== this) video.pause();
+                        });
+                        this.play();
+                    "> 
+                    <source src="${filePath}_hevc.mp4" type="video/mp4; codecs=hevc">
+                    <source src="${filePath}_vp9.webm" type="video/webm; codecs=vp9, opus">                    
+                    <source src="${filePath}_h264.mp4" type="video/mp4; codecs=avc1.42E01E, mp4a.40.2">
+                    <source src="${node.url}" type="video/${fileType}">
+                    你的浏览器不支持该视频格式
+                    </video>`,
+                };
+            }
+        });
+    };
+}
+
+
+function remarkImagesLazyLoad() {
+    return (tree) => {
+        visit(tree, 'image', (node) => {
+            node.data = node.data || {};
+            node.data.hProperties = node.data.hProperties || {};
+            node.data.hProperties.loading = 'lazy';
+        });
+    };
+}
+
+function remarkQRCodeLazyLoad() {
+    return (tree) => {
+        const replace = (node) => {
+            // 匹配 `QRCode: url size=200` 格式的内容
+            const qrCodeRegex = /(?:[\s]|^)!QRCode:\s*(\S+)(?:\s+size=(\d+))?/g;
+            const match = qrCodeRegex.exec(node.value);
+            // const match = node.value.match(qrCodeRegex);
+            if (match) {
+                const url = match[1] || window.location.href;
+                const size = parseInt(match[2], 10) || 150; // 默认尺寸为 150
+
+                // 将节点类型改为 html，使用自定义组件
+                node.type = 'html';
+                const tsx = <QRCodeSVG value={url}
+                    size={size}
+                    style={{ maxWidth: "100%" }}
+                />;
+                const rendered = ReactDOMServer.renderToStaticMarkup(tsx).toString();
+                logMarkdown(`二维码`, `url:${url} size:${size} type:${node.type} 
+value: ${node.value} 
+rendered: ${rendered.slice(0, 100)} ...
+match[0]: ${match[0]}
+match[1]: ${match[1]}
+match[2]: ${match[2]}
+`);
+                node.value = node.value.replace(qrCodeRegex, rendered);
+            }
+        }
+        // visit(tree, 'link', replace);
+        visit(tree, 'html', replace);
+        visit(tree, 'text', replace);
+    };
+}
+
+
 /**
 * 将 Markdown 文本转换为 HTML 文本，并可选地添加动画效果
 *
@@ -75,7 +189,13 @@ export const checkConvertMarkdownToHtml = (content: string) => {
 
     React.useEffect(() => {
         const convertMarkdownToHtml = async () => {
-            const result = await remark().use(html).process(content);
+            const result = await remark()
+                .use(remarkQRCodeLazyLoad) // 使用自定义视频插件
+                .use(remarkVideoLazyLoad) // 使用自定义视频插件
+                .use(remarkImagesLazyLoad) // 懒加载
+                .use(html, { sanitize: false }) // 确保转换为 HTML 
+                .process(content);
+
             // parseAndReplaceSkills 将 Markdown 文本中的技能名称替换为相应的 React 组件,Html 化.
             let processedContent = parseAndReplaceSkills(result.toString().trim(), true) as string;
             // Markdown 标签包裹，去除多余的 p 标签

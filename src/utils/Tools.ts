@@ -3,7 +3,14 @@ import flexiResumeStore from '../store/Store';
 import originData from '../data/Data';
 import React, { useState, useEffect } from 'react';
 import { reaction } from 'mobx';
+import debug from 'debug';
 
+/** 获取日志 */
+export function getLogger(moduleName: string) {
+    return debug('app:' + moduleName);
+}
+/** 获取折叠面板的日志 */
+export const logCollapse = debug('app:折叠');
 /**
  * 格式化简历title名称,同时也是保存网页时的名称
  * @param template 
@@ -81,10 +88,8 @@ export function getCurrentPositionNameByPath(path: string): string {
  * @return {*}  {string}
  */
 export function updateCurrentResumeStore(postion: string): string {
-    useEffect(() => {
-        // 更新当前位置
-        flexiResumeStore.collapsedMap.clear();// 清空折叠信息
-    }, [postion]);
+    // 更新当前位置
+    flexiResumeStore.collapsedMap.clear();// 清空折叠信息 
 
     const selectedPositonData = originData.expected_positions[postion];
     const newData = assignDeep({}, originData, selectedPositonData);
@@ -217,7 +222,6 @@ export function calculateWorkDuration(start: string, end: string) {
  */
 export function watchTitleCollapser(id, cb) {
     useEffect(() => {
-        // console.log('useSingleCollapser:', id);
         if (!flexiResumeStore.collapsedMap.has(id)) {
             flexiResumeStore.collapsedMap.set(id, false); // 默认值为 false
         }
@@ -247,14 +251,15 @@ export function useCollapser(id: string, count: number) {
     const toggleCollapse = (index: number, v?: boolean) => {
         setCollapsedItems({ ...collapsedItems, [index]: v ?? !collapsedItems[index] });
     };
-    // 监听折叠状态变化，更新节点折叠状态
-    watchTitleCollapser(id, (value) => {
+    const setCollapsedAllItems = (value?: boolean) => {
         const newCollapsedState = {};
         // console.log(`更新列表(${length}):`, id, value);
         for (let index = 0; index < count; index++) {
             newCollapsedState[index] = value;
         }
         setCollapsedItems(newCollapsedState);
-    });
-    return { collapsedItems, toggleCollapse };
+    };
+    // 监听折叠状态变化，更新节点折叠状态
+    watchTitleCollapser(id, setCollapsedAllItems);
+    return { collapsedItems, toggleCollapse, setCollapsedAllItems };
 }

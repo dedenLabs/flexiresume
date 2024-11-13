@@ -1,10 +1,10 @@
-import DataEducationHistory from "./DataEducationHistory";
-import DataEmploymentHistory from "./DataEmploymentHistory";
-import DataOpenSourceProject from "./DataOpenSourceProject";
-import DataPersonalInfluence from "./DataPersonalInfluence";
-import DataPersonalProjects from "./DataPersonalProjects";
-import DataProjectExperience from "./DataProjectExperience";
-import DataSkills from "./DataSkills";
+import DataEducationHistory from "../module/DataEducationHistory";
+import DataEmploymentHistory from "../module/DataEmploymentHistory";
+import DataOpenSourceProject from "../module/DataOpenSourceProjects";
+import DataPersonalInfluence from "../module/DataPersonalInfluence";
+import DataPersonalProjects from "../module/DataPersonalProjects";
+import DataProjectExperience from "../module/DataProjectExperience";
+import DataSkills from "../module/DataSkills";
 
 export default {
     personal_strengths: {
@@ -27,6 +27,8 @@ export default {
         name: "职业规划",
         content: ` 
 寻求（
+- **[虚拟社区/游戏/组长](https://resume.deden.cn/game)**
+- **[外包服务](https://resume.deden.cn/contracttask)** 
 - **[居家办公-前后端开发](https://resume.deden.cn/frontend)**  
 - **[云基础设施开发 / 高并发场景（电商/游戏/应用）后端开发](https://resume.deden.cn/backend)** 
 - **[技术总监 / 游戏技术总监 / CTO](https://resume.deden.cn/cto)**  
@@ -39,7 +41,7 @@ export default {
         name: "个人作品",
         list: DataPersonalProjects,
     },
-    open_source_project: {
+    open_source_projects: {
         "type": "project_experience",// 开源项目
         name: "开源项目",
         list: DataOpenSourceProject
@@ -48,7 +50,7 @@ export default {
     {
         "type": "skills",// 技能模块
         name: "技术栈",
-        types: DataSkills,
+        categories: DataSkills,
     },
     employment_history: {
         "type": "employment_history",// 工作经历模块
