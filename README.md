@@ -32,7 +32,9 @@
 ## 安装使用
 
 > git clone https://github.com/dedenLabs/FlexiResume.git
+> 
 > cd FlexiResume
+> 
 > npm install
 
 ## 在线DEMO
@@ -157,6 +159,9 @@ switch (m.type) {
 
 ## 路线图
 ✔ README.md文档使用教程优化
+
 [ ] 站点加载性能优化,增加骨架屏
+
 [ ] 增加多语言版本支持
+
 [ ] 增加设置白天黑夜模式
