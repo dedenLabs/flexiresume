@@ -8,7 +8,7 @@ export default {
     header_info: {
         "type": "header_info", // 简历头部模块
         name: "陈剑",
-        email: "deden.labs@gmail.com",
+        email: "jk@deden.cn",
         gender: "男",
         avatar: "/images/avatar.webp",//https://photocartoon.net/ 这是一个将照片转换为卡通形象的网站
         location: "上海",
@@ -29,8 +29,8 @@ export default {
 
 
         // 生成二维码的URL地址
-        // qrcode: true,// 不指定特定URL会默认根据当前URL地址动态生成二维码,或直接填写URL地址生成固定的二维码
-        qrcode: "https://demo.deden.cn:8080/game",// 生成固定的URL地址二维码
+        qrcode: true,// 不指定特定URL会默认根据当前URL地址动态生成二维码,或直接填写URL地址生成固定的二维码
+        // qrcode: "https://resume.deden.cn/game",// 生成固定的URL地址二维码
         qrcode_msg: "扫描查看体验更好",//二维码提示信息
     } as IHeaderInfo,
     skill_level:
@@ -196,6 +196,7 @@ export default {
                 position: "虚拟社区/游戏",
                 expected_salary: "期望薪资 100k-150k 15薪",
             },
+            target: { hidden: true, },// 隐藏 职业规划 
             personal_strengths: {
                 "type": "personal_strengths",// 个人优势模块
                 name: "个人优势",
@@ -227,6 +228,7 @@ export default {
                                 
                                 `
             },
+            target: { hidden: true, },// 隐藏 职业规划 
             header_info: {// 这里的会覆盖上面默认的数据,根据不同期望的职位设定不同的期望薪资等参数 
                 position: "Web前端开发",
                 expected_salary: "期望薪资 80k-100k 15薪",
@@ -250,6 +252,7 @@ export default {
                                 
                                 `
             },
+            target: { hidden: true, },// 隐藏 职业规划 
             header_info: {
                 position: "后端开发",
                 expected_salary: "期望薪资 70k-90k 15薪",
@@ -276,6 +279,7 @@ export default {
 - 拥有10年以上管理经验，具备敏捷开发和迭代开发的实践经验，熟悉精益方法论及KPI与OKR的应用。多次完整经历初创公司周期，参与过从0到1上市和从0到1解散，这些经历显著提升了我的个人能力，并扩展了技术覆盖面，积累了团队组建经验。            
             `
             },
+            target: { hidden: true, },// 隐藏 职业规划 
             header_info: {
                 position: "技术总监/CTO",
                 expected_salary: "期望薪资 100k-150k 15薪",
@@ -294,9 +298,9 @@ export default {
             skills: {
                 collapsedNodes: ["技术栈",]
             },
-            open_source_projects: {
-                collapsedNodes: ["开源项目",]
-            },
+            // open_source_projects: {
+            //     collapsedNodes: ["开源项目",]
+            // },
             project_experience: {
                 collapsedNodes: ["项目经历",]
             },

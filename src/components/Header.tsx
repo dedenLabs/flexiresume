@@ -159,7 +159,8 @@ const Header: React.FC<HeaderProps> = ({ name, qrcode, qrcode_msg, home_page, av
           <Details>
             {/* <MdPhoneAndroid style={IconStyle} />{phone}<Vline /> */}
             {/* <SiWechat style={IconStyle} />{wechat}<Vline /> */}
-            <Icon src={icon_email} />{email}<Vline />
+            <Icon src={icon_email} /><a href={"mailto:" + email} className="no-link-icon">{email}</a>
+            <Vline />
             <Icon src={icon_phone} />{phone}<Vline />
             <Icon src={icon_wx} />{wechat}
 

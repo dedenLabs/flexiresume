@@ -26,8 +26,8 @@ const GlobalStyle = createGlobalStyle`
     height: auto;    /* 自动调整高度保持比例 */ 
   }
 
-  .markdown-content video,
-  .markdown-content img {
+  .markdown-content video:not(.no-effect-icon),
+  .markdown-content img:not(.no-effect-icon) {
     max-width: 100%;
     height: auto;
     margin: 5px 0;
@@ -37,14 +37,14 @@ const GlobalStyle = createGlobalStyle`
     /* 视频的悬浮缩放效果 */ 
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
-  
+ 
   /* 悬浮效果 */
-  .markdown-content video:hover,
-  .markdown-content img:hover{
+  .markdown-content video:not(.no-effect-icon):hover,
+  .markdown-content img:not(.no-effect-icon):hover{
     transform: scale(1.03); /* 略微放大 */
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* 增强阴影 */
   } 
-
+  
   #root {
     display: flex;  
     justify-content: center; /* 水平居中 */
@@ -57,6 +57,7 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
   }
+  
   a:not(.no-link-icon) {
     text-decoration: none;
     color: inherit;

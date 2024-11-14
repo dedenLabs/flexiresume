@@ -1,4 +1,9 @@
-# FlexiResume
+<p align="center">
+<img src="public/images/flexiresume.webp" alt="LOGO">
+</p>
+<p align="center" style="font-size:5rem">
+FlexiResume
+</p>
 
 
 **项目起源：**
@@ -25,9 +30,7 @@
 - **作品外链与时间线**：提供作品外链功能，并允许嵌套时间线描述技能或成长路径，展示用户的职业发展历程。
 
 技术栈采用 **Vite+React+SWC+TypeScript+Mobx+framer-motion+remark-html**，项目无第三方 UI 框架嵌入，以便最大程度上支持用户的个性化调整需求。通过这一项目，我希望不仅能优化自己的求职体验，也能帮助更多人找到更合适的机会。
-
 提供了一个灵活、高效的简历生成工具，帮助用户在求职中脱颖而出，获得积极反馈。
-
 
 ## 安装使用
 
@@ -154,7 +157,21 @@ switch (m.type) {
 
 ## 全局CSS
 > src\styles\GlobalStyle.tsx
- 
+### no-link-icon
+ 默认所有链接前面会添加跳转URL的图标,如果不需要请添加`className="no-link-icon"`来取消图标:
+``` js
+<Icon src={icon_email} /> <a href={"mailto:" + email} className="no-link-icon">{email}</a>
+<IoHome><a className="no-link-icon" href={home_page}>{home_page}</a>
+```
+### no-effect-icon
+ 与`className="no-link-icon"`逻辑一致,只是这个是移除默认的缩放效果和阴影.
+ 如果是直接使用html语法,`className`需要换成`class`,如下:
+``` js
+<p align="center">
+    <img class="no-effect-icon" src="images/flexiresume.webp" alt="LOGO">
+</p>
+<p align="center" style="font-size:5rem">
+```
 
 
 ## 路线图
@@ -165,3 +182,7 @@ switch (m.type) {
 [ ] 增加多语言版本支持
 
 [ ] 增加设置白天黑夜模式
+
+
+## QQ交流群
+![QQ群](public/images/qq1.webp)

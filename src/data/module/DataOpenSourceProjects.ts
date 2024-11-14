@@ -5,6 +5,12 @@ export default [
         "end_time": "2024/11",
         "position": "独立完成",
         "description": `
+<p align="center">
+    <img class="no-effect-icon" src="images/flexiresume.webp" alt="LOGO">
+</p>
+<p align="center" style="font-size:5rem">
+FlexiResume
+</p>
 
 **项目起源：**
 
@@ -41,6 +47,13 @@ export default [
         "end_time": "至今",
         "position": "独立完成",
         "description": `--- 
+<p align="center">
+    <img class="no-effect-icon" src="images/xcast.webp" alt="LOGO">
+</p>
+    <p align="center" style="font-size:5rem">
+XCast
+</p>
+
 **项目概述**  
 > XCast 是一个专为游戏开发、软件配置管理等领域设计的 Excel 转换工具，支持将 Excel 文件高效地转换为 JSON 或 CSV 格式。
 此工具特别适用于依赖复杂数据配置和多人协作的项目（如数值策划或配置信息管理），
