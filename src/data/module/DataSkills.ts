@@ -2,20 +2,15 @@
 export default [
     {
         name: '编程语言',
-        content: `- **精通**: Node, TypeScript, JavaScript, WebAssemblyScript, ActionScript 3, C#
+        content: `- **精通**: Node, TypeScript, JavaScript, C#, WebAssemblyScript, ActionScript 3
 - **熟练/熟悉**: C/C++, Java, Python, Golang, Php, Shell`,
     },
     {
         name: '前端开发',
-        children: [
-            {
-                name: '性能与体验',
-                content: `- **精通/熟悉**: WebAssembly, WebGL/WebGPU, OffscreenCanvas, Web Worker, Service Worker, PWA
-- *具备从2G到5G时代的前端开发经验，精通核心站点性能指标优化（LCP、FID、TTFB、FCP、TBT、TTI），通过资源调度、脚本优化、CDN加速等技术手段，全面提升加载速度与用户交互体验。*`,
-            },
+        children: [           
             {
                 name: '框架/库',
-                content: `- **精通**: React, Vue, Redux/MobX, Three.js, LayaAir, Egret, ECharts, TradingVueJs, Vite, WebPack, Pm2, H5互动/游戏开发
+                content: `- **精通**: React, Vue, Redux/MobX, ECharts, TradingVueJs, Vite, WebPack, Pm2, Three.js, Pixi.js, LayaAir, Egret, H5互动/游戏开发
 - **熟练/熟悉**: Angular, Web3.js, TradingView`,
             },
             {
@@ -25,6 +20,11 @@ export default [
             {
                 name: 'Hybrid 应用开发',
                 content: `- **精通/熟悉**: Cordova, React Native, Taro, Flutter, Onsen UI, Ionic, Quasar, Framework7, Weex, Electron, Harman AIR`,
+            },
+            {
+                name: '性能与体验',
+                content: `- **精通/熟悉**: WebAssembly, WebGL/WebGPU, OffscreenCanvas, Web Worker, Service Worker, PWA
+- *具备从2G到5G时代的前端开发经验，精通TCP/UDP/Socket协议 (开发过一套**基于socket协议的传输框架**, 性能上优越与protobuf, 为公司申请过**专利技术**)，精通核心站点性能指标优化（LCP、FID、TTFB、FCP、TBT、TTI），通过资源调度、脚本优化、CDN缓存策略、CDN防劫持、端TCP请求版本缓存等技术手段，全面提升加载速度与用户交互体验。*`,
             },
         ],
         content: `*具备与 UI/UX 团队高效对接的经验，能够在技术上确保项目的性能和用户体验，适用于电商、活动、互动游戏、直播、即时通讯（IM）等场景。拥有多语言版本和账号授权等海外项目经验，能够灵活应对复杂的前端需求。*
@@ -57,22 +57,17 @@ export default [
         ],
         content: `*熟练掌握分布式高并发架构设计，具备在电商大促期间（如双十一）保持系统稳定的能力。通过 CDN 预分发、微服务架构、Redis缓存、限流、缓存预扣、异步处理、分表分库、读写分离等手段，有效管理后台系统。善于提前准备扩容与监控方案，保障零停机发布。*
 >`,
-    },
-    {
-        name: '游戏开发',
-        content: `  
-- **精通/熟练**: Unity, Three.js, LayaAir, Egret, Adobe Animate, Adobe Photoshop（美术UI生成引擎UI源码）`,
-    },
+    },    
     {
         name: 'DevOps',
         children: [
             {
                 name: '自动化部署与管理',
-                content: `- **精通/熟练**: Git、Jenkins、Docker、XCode、Kubernetes（K8s）等工具，具备部署一键自动编译项目、一键自打包 Android/iOS 应用、一键发布版本的能力。`
+                content: `- **精通/熟练**: Git/SVN、Jenkins、Docker、XCode、Kubernetes（K8s）等工具，具备部署一键自动编译项目、一键自打包 Android/iOS 应用、一键发布版本的能力。`
             },
             {
                 name: '云平台实操经验',
-                content: `- **熟练/熟悉**: AWS、Azure、腾讯云和阿里云使用经验，熟悉各类云产品操作及微服务架构部署。`
+                content: `- **熟练/熟悉**: AWS、Azure、腾讯云和阿里云使用经验，熟悉各类云产品操作及微服务架构部署，了解 PaaS、aPaaS、边缘计算等概念。`
             },
             {
                 name: 'CICD与容器化',
@@ -80,10 +75,15 @@ export default [
             },
             {
                 name: '工作流优化',
-                content: `- **熟练/熟悉**: 具备业务痛点消除、代码托管、PaaS 与 aPaaS 部署、自动化开发及敏捷系统的实践经验。`
+                content: `- **熟练/熟悉**: 具备业务痛点消除、代码托管等部署、自动化开发及敏捷系统的实践经验。`
             },
         ],
         content: ``
+    },
+    {
+        name: '游戏开发',
+        content: `  
+- **精通/熟练**: Unity, Three.js, LayaAir, Egret, Adobe Animate, Adobe Photoshop（美术UI生成引擎UI源码）`,
     },
     {
         name: '团队管理',

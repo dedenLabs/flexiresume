@@ -129,7 +129,7 @@ const Header: React.FC<HeaderProps> = ({ name, qrcode, qrcode_msg, home_page, av
             } size={150} width="100%" height="100%" />
             {qrcode_msg}
           </QRCodeContener> : null}
-          <Avatar qrcode={qrcode} src={avatar} />
+          <Avatar qrcode={qrcode ? 1 : 0} src={avatar} />
           <Name>{name}
             {/* {is_male == 1 ? <AiOutlineMan style={{ color: '#3ea8da' }} /> : <AiOutlineWoman style={{ color: 'pink' }} />} */}
             <GenderIcon src={/*这个图标比react-icons的厚实好看*/is_male == 1 ? icon_male : icon_woman} isMale={is_male} />

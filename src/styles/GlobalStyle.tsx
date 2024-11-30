@@ -1,4 +1,4 @@
-import { createGlobalStyle } from 'styled-components'; 
+import { createGlobalStyle } from 'styled-components';
 const maxWidth = `${920}px`;
 const GlobalStyle = createGlobalStyle` 
   body {
@@ -8,7 +8,17 @@ const GlobalStyle = createGlobalStyle`
     color: #333;
     letter-spacing: 0.02em; /* 调整为你需要的值 */   
     word-break: break-all;
+
+     
+    /* 背景图 */
+    background-image: url('images/flexi-resume.jpg');
+    
+    /* 背景图平铺 */
+    background-repeat: repeat; 
+    background-size: 180px; 
   }
+  
+  
 
   /* 针对代码块的样式 */
   pre {

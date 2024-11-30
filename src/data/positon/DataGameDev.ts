@@ -11,14 +11,9 @@ export default {
     personal_strengths: {
         "type": "personal_strengths",// 个人优势模块
         name: "个人优势",
-        content: `### 精通全栈开发及高并发系统优化，尤其在 Node、React、Canvas 游戏与动画开发方面具备深厚经验，拥有 React 和 Hybrid 开发优化、前端工程化、工具建设、监控及性能优化的独到见解与实践。
+        content: `#### 精通全栈开发及高并发系统优化，尤其在 Node、React、Canvas 游戏与动画开发方面具备深厚经验，拥有 React 和 Hybrid 开发优化、前端工程化、工具建设、监控及性能优化的独到见解与实践。
 `
-    },
-    personal_influence: {// 个人影响力与行业认可
-        "type": "base",
-        name: "个人影响力与行业认可",
-        content: DataPersonalInfluence
-    },
+    },    
     target: {
         "type": "base",// 职业规划
         name: "职业规划",
@@ -33,11 +28,6 @@ export default {
 ）职位，致力于构建高效、可维护的系统架构，提升团队开发效率。
        `,
     },
-    personal_projects: {
-        "type": "timeline",// 个人作品
-        name: "虚拟社区/游戏 作品",
-        categories: DataGameProjects,
-    },
     open_source_projects: {
         "type": "project_experience",// 开源项目
         name: "开源项目",
@@ -49,6 +39,16 @@ export default {
         name: "技术栈",
         categories: DataSkills,
     },
+    personal_influence: {// 个人影响力与行业认可
+        "type": "base",
+        name: "个人影响力与行业认可",
+        content: DataPersonalInfluence
+    },
+    personal_projects: {
+        "type": "timeline",// 个人作品
+        name: "虚拟社区/游戏 作品",
+        categories: DataGameProjects,
+    }, 
     employment_history: {
         "type": "employment_history",// 工作经历模块
         "name": "工作经历",

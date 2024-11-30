@@ -4,6 +4,7 @@ import GlobalStyle from './styles/GlobalStyle';
 import Tabs from './components/Tabs';
 import originData from './data/Data';
 import flexiResumeStore from './store/Store';
+import { ImageViewerProvider } from './components/image_viewer/ImageViewerContext';
 // import FlexiResume from './pages/FlexiResume';
 const FlexiResume = lazy(() => import('./pages/FlexiResume'));
 
@@ -20,23 +21,25 @@ const defaultPath = tabs.find(([, , isHomePage]) => isHomePage)?.[1] || "/";
 // 路由
 const App: React.FC = () => (
   <>
-    <GlobalStyle />
-    <Router>
-      <Tabs /> {/* 页签导航栏 */}
-      <Routes>
-        {
-          tabs.map(([title, path], i) => (
-            // <Route key={i} path={path} element={<FlexiResume path={path} />} />
-            <Route key={i} path={path} element={
-              <Suspense fallback={<div>请稍后...</div>}>
-                <FlexiResume path={path} />
-              </Suspense>
-            } />
-          ))
-        }
-        <Route path="/" element={<Navigate to={defaultPath} />} />
-      </Routes>
-    </Router>
+    <ImageViewerProvider >
+      <GlobalStyle />
+      <Router>
+        <Tabs /> {/* 页签导航栏 */}
+        <Routes>
+          {
+            tabs.map(([title, path], i) => (
+              // <Route key={i} path={path} element={<FlexiResume path={path} />} />
+              <Route key={i} path={path} element={
+                <Suspense fallback={<div>请稍后...</div>}>
+                  <FlexiResume path={path} />
+                </Suspense>
+              } />
+            ))
+          }
+          <Route path="/" element={<Navigate to={defaultPath} />} />
+        </Routes>
+      </Router>
+    </ImageViewerProvider >
   </>
 );
 

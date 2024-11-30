@@ -257,7 +257,8 @@ export function useCollapser(id: string, count: number) {
         for (let index = 0; index < count; index++) {
             newCollapsedState[index] = value;
         }
-        setCollapsedItems(newCollapsedState);
+        // setCollapsedItems(newCollapsedState);
+        setTimeout(() => setCollapsedItems(newCollapsedState), 0);//防止夸组件错误,修改为下一个周期渲染
     };
     // 监听折叠状态变化，更新节点折叠状态
     watchTitleCollapser(id, setCollapsedAllItems);

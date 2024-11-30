@@ -6,6 +6,8 @@ export default [
  <p align="center"> !QRCode:https://demo.deden.cn:8080 size=200 </p> 
  <p align="center"> 
   <a href="https://demo.deden.cn:8080" target="_blank">https://demo.deden.cn:8080</a>
+  <br/>
+  域名未备案免费解析方案，可尝试不同网络环境或PC端访问。
  </p>
 `,
     },
@@ -68,8 +70,6 @@ export default [
                 name: '赛尔号H5（2015年、支持多端发布、技术含量最高）',
                 content: ` 
 > 这款游戏是我**使用技术含量最高**的项目，涉及了**多端发布、后端服务器、CI/CD、多端打包、资源管理、热编译、EUI 配置界面生成、反射技术、硬链接技术、性能、CDN策略、资源防劫持、Android和iOs资源增量热更**等。
-
-> 项目采用了针对游戏自研的**商业软件（个人独有技术，软件计划未来上市）**，能够快速使用Flash制作的资源在游戏中使用。
 
 > 值得一提的是，该游戏上线到现在近10年，Html5发展到如今很多**新技术已经成熟**，该游戏从**画质到流畅度**还有非常大的提升空间。
 

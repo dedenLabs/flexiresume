@@ -4,6 +4,8 @@ import SkillItem from '../components/skill/SkillItem'; // 根据 SkillItem 的�
 import ReactMarkdown from 'react-markdown';
 import { remark } from 'remark';
 import html from 'remark-html';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism'; // 选择一个高亮主题
 import { visit } from 'unist-util-visit';
 import flexiResumeStore from '../store/Store';
 import { getLogger, replaceVariables } from './Tools';
@@ -133,7 +135,39 @@ function remarkImagesLazyLoad() {
         visit(tree, 'image', (node) => {
             node.data = node.data || {};
             node.data.hProperties = node.data.hProperties || {};
+
+            // 添加懒加载属性
             node.data.hProperties.loading = 'lazy';
+
+            // 为每个图片添加一个点击事件
+            node.data.hProperties.onClick = `$handleImageClick('${node.url}')`; // 使用openModal函数打开图片
+            node.data.hProperties.style = 'cursor: pointer;'; // 鼠标悬停时显示指针
+
+
+            // // 修改图片外层结构，包裹在 div 中
+            // const imageUrl = node.url; // 获取图片URL
+            // const altText = node.alt || ''; // 获取图片的alt文本
+
+            // // 修改node的HTML输出，将图片包裹在 div 中
+            // node.type = 'html'; // 将类型修改为html
+            // node.value = `<div class="image-container" onclick="window.$handleImageClick('${imageUrl}')">
+            //     <img src="${imageUrl}" alt="${altText}" loading="lazy" style="cursor: pointer;" />
+            // </div>`;
+        });
+
+        visit(tree, 'html', (node) => {
+            const imgRegex = /<img[^>]+src="([^"]+)"[^>]*>/g;
+            let match;
+            while ((match = imgRegex.exec(node.value)) !== null) {
+                const imgUrl = match[1]; 
+                var newImageHtml = match[0].replace(/^<img\s/, `<img onclick="window.$handleImageClick('${imgUrl}')" loading="lazy" `)
+                if (newImageHtml.search(`style="`) == -1) {
+                    newImageHtml = newImageHtml.replace(/^<img\s/, `<img style="cursor: pointer;" `)
+                } else {
+                    newImageHtml = newImageHtml.replace(`style="`, `style="cursor: pointer;`);
+                }
+                node.value = node.value.replace(match[0], newImageHtml);
+            }
         });
     };
 }
@@ -196,11 +230,29 @@ export const checkConvertMarkdownToHtml = (content: string) => {
                 .use(html, { sanitize: false }) // 确保转换为 HTML 
                 .process(content);
 
+            let processedContent = result.toString().trim();
+            // 添加代码高亮
+            processedContent = processedContent.replace(
+                /<pre>\s*<code\s*(?:class="language-(\w+)")?>([\s\S]*?)<\/code>\s*<\/pre>/g,
+                (match, lang, code) => {
+                    const language = lang || 'ts'; // 默认使用 js 语言
+                    const tsx = (
+                        <SyntaxHighlighter language={language} style={vs}>
+                            {code}
+                        </SyntaxHighlighter>
+                    );
+                    const codeHtml = ReactDOMServer.renderToStaticMarkup(tsx).toString();
+                    return codeHtml;
+                }
+            );
+
+
             // parseAndReplaceSkills 将 Markdown 文本中的技能名称替换为相应的 React 组件,Html 化.
-            let processedContent = parseAndReplaceSkills(result.toString().trim(), true) as string;
+            processedContent = parseAndReplaceSkills(processedContent, true) as string;
             // Markdown 标签包裹，去除多余的 p 标签
             processedContent = processedContent.replace(/^<p>(.*?)<\/p>$/g, '$1');
             processedContent = replaceVariables(processedContent, flexiResumeStore.data);
+
             // 刷新数据
             setHtmlContent(processedContent);
         };

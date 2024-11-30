@@ -8,6 +8,8 @@ import TimelineContainer from './TimelineContainer';
 import flexiResumeStore from '../../store/Store';
 import CollapseIcon from './CollapseIcon';
 import { getLogger, logCollapse } from '../../utils/Tools';
+import { Node, CategoryTitle, CategoryBody, Content } from './TimelineStyles';
+
 const log = getLogger('TimelineNode');
 
 interface TimelineNodeProps {
@@ -42,13 +44,13 @@ const TimelineNode: React.FC<{ category: TimelineNodeProps }> = ({ id: parentId,
     }
     collapsedList.pop();
   }
-  const [collapsedSelf, setCollapsedSelf] = useState(collapsedParent
-    || !!flexiResumeStore.collapsedMap.get(selfId)
-    || false);
+  const [collapsedSelf, setCollapsedSelf] = useState(
+    flexiResumeStore.collapsedMap.get(selfId) == undefined ? collapsedParent : flexiResumeStore.collapsedMap.get(selfId)
+      || false);
 
   // 监听折叠状态变化
   useEffect(() => {
-    setCollapsedSelf(collapsedParent || !!flexiResumeStore.collapsedMap.get(selfId));
+    setCollapsedSelf(flexiResumeStore.collapsedMap.get(selfId) == undefined ? collapsedParent : flexiResumeStore.collapsedMap.get(selfId));
     logCollapse(`TimelineNode`, `parent:`, collapsedParent, `self:`, !!flexiResumeStore.collapsedMap.get(selfId), selfId);
   }, [collapsedParent, selfId]);
 
@@ -84,42 +86,5 @@ const TimelineNode: React.FC<{ category: TimelineNodeProps }> = ({ id: parentId,
     </Node>
   );
 };
-
-
-
-const CategoryTitle = styled.h3`
-  cursor: pointer;
-  margin: 0;
-  padding: 0;
-  color: #333;
-  font-size: 0.8rem;
-`;
-const CategoryBody = styled.span`
-  margin: 0;   
-`;
-
-// Timeline 节点
-const Node = styled.div`
-  display: flex;
-  flex-direction: row;
-  position: relative; 
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0.5rem;
-    top: 0;
-    width: 1px;
-    height: 100%;
-    background: #ccc;
-  }
-`;
-
-
-// 节点内容
-const Content = styled.div`
-  padding-left: 1.5rem;
-  width: 100%;
-`;
 
 export default TimelineNode; 

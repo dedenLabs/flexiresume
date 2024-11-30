@@ -49,6 +49,7 @@ const TabLink = styled(NavLink)`
   border-left: 1px solid ${borderColor};
   transition: background-color 0.3s, border 0.3s;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
 
   &:hover, &.active {
     background-color: #f0f0f0;

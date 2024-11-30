@@ -6,9 +6,9 @@ export default [
         "position": "独立完成",
         "description": `
 <p align="center">
-    <img class="no-effect-icon" src="images/flexiresume.webp" alt="LOGO">
+    <img class="no-effect-icon" src="images/flexiresume.webp" alt="FlexiResume" style="width:60%">
 </p>
-<p align="center" style="font-size:5rem">
+<p align="center" style="font-size:3rem">
 FlexiResume
 </p>
 
@@ -48,9 +48,9 @@ FlexiResume
         "position": "独立完成",
         "description": `--- 
 <p align="center">
-    <img class="no-effect-icon" src="images/xcast.webp" alt="LOGO">
+    <img class="no-effect-icon" src="images/xcast.webp" alt="XCast" style="width:60%">
 </p>
-    <p align="center" style="font-size:5rem">
+    <p align="center" style="font-size:3rem">
 XCast
 </p>
 
