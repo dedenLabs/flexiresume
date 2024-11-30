@@ -159,7 +159,7 @@ function remarkImagesLazyLoad() {
             const imgRegex = /<img[^>]+src="([^"]+)"[^>]*>/g;
             let match;
             while ((match = imgRegex.exec(node.value)) !== null) {
-                const imgUrl = match[1]; 
+                const imgUrl = match[1];
                 var newImageHtml = match[0].replace(/^<img\s/, `<img onclick="window.$handleImageClick('${imgUrl}')" loading="lazy" `)
                 if (newImageHtml.search(`style="`) == -1) {
                     newImageHtml = newImageHtml.replace(/^<img\s/, `<img style="cursor: pointer;" `)
@@ -237,9 +237,11 @@ export const checkConvertMarkdownToHtml = (content: string) => {
                 (match, lang, code) => {
                     const language = lang || 'ts'; // 默认使用 js 语言
                     const tsx = (
-                        <SyntaxHighlighter language={language} style={vs}>
-                            {code}
-                        </SyntaxHighlighter>
+                        <div style={{ maxWidth: '100%', overflowX: 'auto' ,  whiteSpace: `pre-wrap`}}>
+                            <SyntaxHighlighter language={language} style={vs}>
+                                {code}
+                            </SyntaxHighlighter>
+                        </div>
                     );
                     const codeHtml = ReactDOMServer.renderToStaticMarkup(tsx).toString();
                     return codeHtml;

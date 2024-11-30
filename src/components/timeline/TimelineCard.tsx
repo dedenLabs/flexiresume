@@ -9,9 +9,10 @@ import { Node } from './TimelineStyles';
 
 interface TimelineCardProps { id: string }
 
-const TimelineWrapper = styled(motion.span)`
+const TimelineWrapper = styled(motion.div)`
   margin: 0px 2px;
   display: inline-block;
+  max-width: 100%;
 `;
 
 

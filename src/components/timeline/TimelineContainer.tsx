@@ -17,7 +17,8 @@ const TimelineWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 800px; 
+  max-width: 800px;  
+  overflow-x: auto; /* 允许横向滚动 */
 `;
 
 /**

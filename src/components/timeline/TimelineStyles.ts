@@ -17,6 +17,8 @@ export const Node = styled.div`
   display: flex;
   flex-direction: row;
   position: relative; 
+  width: 100%; /* 或者 max-width: 100%; */
+  overflow-x: auto; 
 
   &::before {
     content: '';
@@ -33,5 +35,6 @@ export const Node = styled.div`
 // 节点内容
 export const Content = styled.div`
   padding-left: 1.5rem;
-  width: 100%;
+  width: 100%; 
+  overflow-x: auto; 
 `;
