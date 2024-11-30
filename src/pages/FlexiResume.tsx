@@ -47,7 +47,7 @@ const FlexiResume: React.FC<FlexiResumeProps> = ({ path }) => {
   const minWidth = watchMinWidth(800);
 
   return (
-    <ResumeWrapper style={{ minWidth: `${minWidth - 40}px`,  maxWidth: `100%` }}>
+    <ResumeWrapper style={{ minWidth: `${minWidth - 40}px`,  maxWidth: `800px` }}>
       <Header {...header_info} />
       {
         Object.keys(data).map((key, i) => {
