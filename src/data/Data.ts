@@ -306,7 +306,7 @@ Serverless架构/事件驱动架构
             personal_strengths: {
                 "type": "personal_strengths",// 个人优势模块                
                 name: "个人优势",
-                content: `#### <span style="margin-left: 2em;"></span>拥有15年以上的技术主导经验，2010年在淘米网络评选为职级技术阶梯T4-2，具备对标**阿里P9**的能力，精通全栈开发及游戏开发，专注于AI及高并发系统优化。
+                content: `#### <span style="margin-left: 2em;"></span>拥有15年以上的技术主导经验，2010年在淘米网络评选为职级技术阶梯T4-2，精通全栈开发及游戏开发，专注于AI及高并发系统优化。
 >
 #### <span style="margin-left: 2em;"></span>擅于解决疑难杂症、技术选型、技术攻关、系统架构、性能调优以及跨端应用方案。解决前端、后端和运维问题。
 >
@@ -333,7 +333,7 @@ Serverless架构/事件驱动架构
                 // 是否显示个人主页的URL地址
                 home_page: "",
                 // 生成二维码的URL地址
-                qrcode: false,
+                qrcode: true,
             },
             personal_projects: {
                 collapsedNodes: ["虚拟社区/游戏 作品",
@@ -360,6 +360,7 @@ Serverless架构/事件驱动架构
                 collapsedNodes: [
                     "技术顾问服务 + 外部资源转换服务",
                     ["技术顾问服务 + 外部资源转换服务.服务亮点.资源转换服务特性", false/*不折叠*/],
+                    ["技术顾问服务 + 外部资源转换服务.服务内容.资源转换服务", false/*不折叠*/],
                 ]
             },
             resource_conversion_demo: {

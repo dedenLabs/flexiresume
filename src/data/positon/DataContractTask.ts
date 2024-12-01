@@ -16,18 +16,17 @@ export default {
 >
 #### <span style="margin-left: 2em;"></span>行业先驱，深耕页游社区技术，多次主导经典虚拟社区开发。独创了一套资源转换技术，可完美复刻 Flash 动画表现，确保经典内容无缝迁移到现代平台。
 
-> **<p align="right">------ 拥有行业顶尖的技术经验 和 独有的Flash资源迁移技术</p>**  
+> **<p align="right">------ 拥有行业顶尖的技术经验</p>**  
 `
-    },
-    personal_influence: {// 个人影响力与行业认可
-        "type": "base",
-        name: "个人影响力 与 行业认可",
-        content: DataPersonalInfluence
-    },
+    },   
     contract_task: {// 外包服务
         "type": "base",
-        name: "外包服务",
+        name: "技术顾问服务 / 资源转换服务 / 外包服务",
         content: `
+> ### 独有的<span style="font-size:1.5em;color:#c00">资源转换</span>与<span style="font-size:1.5em;color:#a00">迁移技术</span>，让<span style="font-size:1.2em;"> HTML5 </span>游戏<span style="font-size:1.5em;color:#0a0"> 开发效率</span>几何倍提升。
+> 
+> ---
+> 
 > ## 承接（
 > - **原 Flash 经典项目 转 HTML5 项目**（*支持超大型项目，需要提供完整源码和资源。*）
 
@@ -41,6 +40,11 @@ export default {
 > ## ）服务
 
 `
+    },
+    personal_influence: {// 个人影响力与行业认可
+        "type": "base",
+        name: "个人影响力 与 行业认可",
+        content: DataPersonalInfluence
     },
     html5_game_bottleneck: {// HTML5游戏行业瓶颈 与 解决方案
         "type": "timeline",
@@ -240,42 +244,51 @@ export default {
 > >         <tr>
 > >             <td><strong>未优化 - 保证画质</strong></td>
 > >             <td>398帧</td>
-> >             <td><strong>76.416MB</strong></td>
-> >             <td><strong>408MB</strong> = 428(长) × 314(高) × 4(字节) × 398(帧数) / 1024 / 1024 × 2 (两只精灵)</td>
+> >             <td><strong><span style="font-size:1.2em;color:#a00">76MB</span></strong></td>
+> >             <td><strong><span style="font-size:1.2em;color:#f00">408MB</span></strong> = 428(长) × 314(高) × 4(字节) × 398(帧数) / 1024 / 1024 × 2 (两只精灵)</td>
 > >             <td>不支持通道和滤镜</td>
 > >             <td>内存大、加载慢、位图解码卡顿</td>
 > >         </tr>
 > >         <tr>
 > >             <td><strong>砍帧方案 - 降低流畅度</strong></td>
 > >             <td>100帧(<strong>砍帧</strong>)</td>
-> >             <td><strong>19MB</strong></td>
-> >             <td>102MB = 408MB / 4</td>
+> >             <td><strong><span style="font-size:1.2em;color:#a00">19MB</span></strong></td>
+> >             <td><strong><span style="font-size:1.2em;color:#f00">102MB</span></strong> = 408MB / 4</td>
 > >             <td>不支持通道和滤镜</td>
 > >             <td>内存大、加载慢、位图解码卡顿</td>
 > >         </tr>
-> >         <tr>
-> >             <td><strong>资源转换服务解决方案-高清流畅无砍帧👇</strong></td>
-> >             <td></td>
-> >             <td></td>
-> >             <td></td>
-> >             <td></td>
-> >             <td></td>
-> >         </tr>
+> >     </tbody>
+> > </table>
+> > 
+> > ---
+> > <strong>资源转换服务-解决方案-高清流畅无砍帧👇</strong>
+> > ---
+> > 
+> > <table>
+> >     <tbody> 
 > >         <tr>
 > >             <td><strong>矢量图方案</strong></td>
 > >             <td>398帧</td>
-> >             <td><strong>490KB</strong></td>
-> >             <td>小于490KB × 10</td>
+> >             <td><span style="font-size:1.2em;color:#0a0"><strong>490KB</strong></span></td>
+> >             <td>大于<strong><span style="font-size:1.2em;color:#aa0">490KB</span></strong>小于<span style="font-size:1.2em;color:#aa0"><strong>490KB × 10</strong></span></td>
 > >             <td>支持通道和滤镜</td>
-> >             <td>内存极小、加载极快、无卡顿，需考虑低端机渲染性能</td>
+> >             <td>内存极小、加载极快、性能一般，需考虑低端机渲染性能</td>
 > >         </tr>
 > >         <tr>
 > >             <td><strong>位图方案</strong></td>
 > >             <td>398帧</td>
-> >             <td><strong>596KB</strong></td>
-> >             <td>13MB(可与矢量图结合降低内存) = (1024 × 1024 × 4 + 628 × 1024 × 4) × 2 (两只精灵)</td>
+> >             <td><strong><span style="font-size:1.2em;color:#0a0">596KB</span></strong></td>
+> >             <td><span style="font-size:1.2em;color:#aa0"><strong>13MB</strong></span>(可与矢量图结合降低内存) = (1024 × 1024 × 4 + 628 × 1024 × 4) × 2 (两只精灵)</td>
 > >             <td>支持通道和滤镜</td>
-> >             <td>内存偏大、加载快、无卡顿，需考虑内存优化</td>
+> >             <td>内存偏大、加载快、无卡顿性能极高，需考虑内存优化</td>
+> >         </tr>
+> >         <tr>
+> >             <td><strong><span style="font-size:1.2em;color:#000">最佳方案</span><br/>(矢量/位图结合)</strong></td>
+> >             <td>398帧</td>
+> >             <td>两则之间</td>
+> >             <td>两则之间</td>
+> >             <td>支持通道和滤镜</td>
+> >             <td>内存中等、加载快、无卡顿，性能高</td>
 > >         </tr>
 > >     </tbody>
 > > </table>
