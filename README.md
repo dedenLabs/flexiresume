@@ -41,7 +41,7 @@ FlexiResume
 > npm install
 
 ## 在线DEMO
-> [https://resume.deden.cn](https://resume.deden.cn)
+> [https://demo.deden.cn:8080/](https://demo.deden.cn:8080/)
 ## 调试
 > npm run dev
 
