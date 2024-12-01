@@ -42,6 +42,9 @@ FlexiResume
 
 ## 在线DEMO
 > [https://demo.deden.cn:8080/](https://demo.deden.cn:8080/)
+> 
+![DEMO](public/images/demo.jpeg)
+> 
 ## 调试
 > npm run dev
 
