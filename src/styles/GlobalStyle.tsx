@@ -1,4 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
+import { replaceCDNBaseURL } from '../utils/Tools';
 const maxWidth = `${920}px`;
 const GlobalStyle = createGlobalStyle` 
   body {
@@ -11,7 +12,7 @@ const GlobalStyle = createGlobalStyle`
 
      
     /* 背景图 */
-    background-image: url('images/flexi-resume.jpg');
+    background-image: url('${replaceCDNBaseURL('images/flexi-resume.jpg')}');
     
     /* 背景图平铺 */
     background-repeat: repeat; 
@@ -54,6 +55,32 @@ const GlobalStyle = createGlobalStyle`
     transform: scale(1.03); /* 略微放大 */
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* 增强阴影 */
   } 
+
+  .video-wrapper {
+    position: relative;
+    background: #f5f5f5;
+    min-height: 200px;
+  }
+
+  .lazy-video {
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .lazy-video.loaded {
+    opacity: 1;
+  }
+
+  .loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 8px 16px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border-radius: 4px;
+  }
   
   #root {
     display: flex;  
@@ -79,7 +106,7 @@ const GlobalStyle = createGlobalStyle`
       width: 1rem; /* 图标宽度 */
       height: 1rem; /* 图标高度 */
       margin-right: 0.4rem; /* 图标和文本的间距 */
-      background: url(images/url.svg) no-repeat center;
+      background: url(${replaceCDNBaseURL("images/url.svg")}) no-repeat center;
       background-size: contain; /* 保证图标自适应 */
     }
   }

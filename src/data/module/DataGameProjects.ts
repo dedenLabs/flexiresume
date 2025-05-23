@@ -7,7 +7,7 @@ export default [
  <p align="center"> 
   <a href="https://demo.deden.cn:8080" target="_blank">https://demo.deden.cn:8080</a>
   <br/>
-  域名未备案免费解析方案，可尝试不同网络环境或PC端访问。
+  <b><span style="color:#f00">域名未备案免费解析方案，可尝试不同网络环境或PC端访问。</span></b>
  </p>
 `,
     },
@@ -93,7 +93,7 @@ export default [
         content: ``,
     },
     {
-        name: '联机物理对战类（2018年、战车-大型微信游戏）',
+        name: '联机物理对战类（2018年、战车-重量级微信游戏）',
         children: [
             {
                 name: '导弹打冲击',

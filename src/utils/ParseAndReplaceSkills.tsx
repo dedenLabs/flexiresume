@@ -8,7 +8,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism'; // 选择一个高亮主题
 import { visit } from 'unist-util-visit';
 import flexiResumeStore from '../store/Store';
-import { getLogger, replaceVariables } from './Tools';
+import { getLogger, replaceCDNBaseURL, replaceVariables, stopOtherVideos } from './Tools';
 import { QRCodeSVG } from 'qrcode.react';
 const logMarkdown = getLogger(`Markdown`);
 
@@ -78,7 +78,7 @@ function remarkVideoLazyLoad() {
                 // 替换成 HTML 视频标签
                 let arr = node.url.split('.');
                 let fileType = arr.pop();
-                let filePath = arr.join(".");
+                let filePath = replaceCDNBaseURL(arr.join("."));
                 /**
                  * @title 批量转换视频格式
                  * 使用 convert.bat input.mp4 命令会帮忙生成其他压缩格式的视频, 可以根据客户端支持程度选择流量最小的格式
@@ -106,24 +106,79 @@ function remarkVideoLazyLoad() {
                     ffmpeg -i "%input%" -c:v libx265 -c:a aac "%filename%_hevc%ext%"
 
                     echo 转换完成！      
-                 * -------------------------------------------------------------------          
+                 * -------------------------------------------------------------------   
+
+                // <source src="${filePath}_hevc.mp4" type="video/mp4; codecs=hevc">
+                // <source src="${filePath}_vp9.webm" type="video/webm; codecs=vp9, opus">                    
+                // <source src="${filePath}_h264.mp4" type="video/mp4; codecs=avc1.42E01E, mp4a.40.2">
+                // <source src="${node.url}" type="video/${fileType}">       
                  */
                 parent.children[index] = {
                     type: 'html',
                     // 暂停所有其他视频
-                    value: `<video class="remark-video" loading="lazy" controls width="100%" onplay="                    
-                        document.querySelectorAll('.remark-video').forEach(video => {
-                        if (video !== this) video.pause();
-                        });
-                        this.play();
-                    "> 
-                    <source src="${filePath}_hevc.mp4" type="video/mp4; codecs=hevc">
-                    <source src="${filePath}_vp9.webm" type="video/webm; codecs=vp9, opus">                    
-                    <source src="${filePath}_h264.mp4" type="video/mp4; codecs=avc1.42E01E, mp4a.40.2">
-                    <source src="${node.url}" type="video/${fileType}">
-                    你的浏览器不支持该视频格式
-                    </video>`,
+                    value: `<div class="video-wrapper">
+                        <video class="remark-video lazy-video" controls width="100%" 
+                        
+                        data-sources='${JSON.stringify({
+                        // hevc: `${filePath}_hevc.mp4`,
+                        // vp9: `${filePath}_vp9.webm`,
+                        // h264: `${filePath}_h264.mp4`,
+                        original: `${node.url}`,
+                    })}'
+                        onplay='${stopOtherVideos}'> 
+                        
+                        你的浏览器不支持该视频格式
+                        </video> 
+                        <div class="loading-indicator">加载中...</div>
+                    </div>
+                    `,
                 };
+            }
+        });
+
+
+        visit(tree, 'html', (node) => {
+            const videoRegex = /<video[^>]+src="([^"]+)"[^>]*>/g;
+            let match;
+            while ((match = videoRegex.exec(node.value)) !== null) {
+                const videoUrl = match[1];
+                var newVideoHtml = match[0].replace(/^<video\s/, `<video onplay='${stopOtherVideos}' `);
+                if (newVideoHtml.search(`style="`) == -1) {
+                    newVideoHtml = newVideoHtml.replace(/^<video\s/, `<video style="cursor: pointer;" `)
+                } else {
+                    newVideoHtml = newVideoHtml.replace(`style="`, `style="cursor: pointer;`);
+                }
+                node.value = node.value.replace(match[0], newVideoHtml);
+                // console.log(1, node.value);
+                // replaceCDNBaseURL(videoUrl)
+                node.value = node.value.replace(/\s+src=["'][^"']+["']/, ` `);
+                // node.value = node.value.replace(/\s+src=["'][^"']+["']/, ` src=\"${videoUrl}"`);
+
+                // const videoUrl_1 = replaceCDNBaseURL(videoUrl);
+                // const videoUrl_2 = replaceCDNBaseURL(videoUrl, 1);
+                // let oldValue = node.value;
+                // node.value = node.value.replace(/\/\s*>$/, ` >
+                // <source src="${videoUrl_1}" type="video/mp4"> 
+                // <source src="${videoUrl_2}" type="video/mp4"> 
+                // </video>`);
+                // if (oldValue == node.value) {
+                //     node.value = node.value.replace(/[^/]>\s*$/, `$1  >
+                // <source src="${videoUrl_1}" type="video/mp4">
+                // <source src="${videoUrl_2}" type="video/mp4"> 
+                // </video>
+                // `);
+                // }
+
+                const hasClass = node.value.search(/\W+class\s*=/) != -1;
+                let oldValue = node.value;
+                node.value = node.value.replace(/\/\s*>$/, `${hasClass ? "" : " class=\"remark-video\""} data-sources='${JSON.stringify({ original: `${videoUrl}`, })}'>  
+                </video>`);
+                if (oldValue == node.value) {
+                    node.value = node.value.replace(/([^/])>\s*$/, `${hasClass ? "" : "$1 class=\"remark-video\""} data-sources='${JSON.stringify({ original: `${videoUrl}`, })}'/>`);
+                }
+                node.value = node.value.replace(/\bclass\s*=\s*"([^"']+)"/, ` class="$1 lazy-video"`);
+ 
+                // console.log(2, node.value);
             }
         });
     };
@@ -133,33 +188,38 @@ function remarkVideoLazyLoad() {
 function remarkImagesLazyLoad() {
     return (tree) => {
         visit(tree, 'image', (node) => {
+            const originalUrl = replaceCDNBaseURL(node.url);
+            node.url = originalUrl;
             node.data = node.data || {};
             node.data.hProperties = node.data.hProperties || {};
 
             // 添加懒加载属性
             node.data.hProperties.loading = 'lazy';
-
+            node.data.hProperties.src = originalUrl;
+            // console.log(originalUrl)
             // 为每个图片添加一个点击事件
-            node.data.hProperties.onClick = `$handleImageClick('${node.url}')`; // 使用openModal函数打开图片
-            node.data.hProperties.style = 'cursor: pointer;'; // 鼠标悬停时显示指针
+            node.data.hProperties.onClick = `$handleImageClick('${originalUrl}')`; // 使用openModal函数打开图片
+            node.data.hProperties.style = 'cursor: pointer;'; // 鼠标悬停时显示指针 
 
 
             // // 修改图片外层结构，包裹在 div 中
-            // const imageUrl = node.url; // 获取图片URL
-            // const altText = node.alt || ''; // 获取图片的alt文本
+            //     // const imageUrl = node.url; // 获取图片URL
+            //     const altText = node.alt || ''; // 获取图片的alt文本
 
-            // // 修改node的HTML输出，将图片包裹在 div 中
-            // node.type = 'html'; // 将类型修改为html
-            // node.value = `<div class="image-container" onclick="window.$handleImageClick('${imageUrl}')">
-            //     <img src="${imageUrl}" alt="${altText}" loading="lazy" style="cursor: pointer;" />
-            // </div>`;
+            //     // 修改node的HTML输出，将图片包裹在 div 中
+            //     node.type = 'html'; // 将类型修改为html
+            //     node.value = ` 
+            //         <img src="${originalUrl}" alt="${altText}" onclick="window.$handleImageClick('${originalUrl}')" loading="lazy" style="${node?.data?.hProperties?.style || 'cursor: pointer;'}" />
+            //   `;
+            //   console.log(node.value);
         });
+
 
         visit(tree, 'html', (node) => {
             const imgRegex = /<img[^>]+src="([^"]+)"[^>]*>/g;
             let match;
             while ((match = imgRegex.exec(node.value)) !== null) {
-                const imgUrl = match[1];
+                const imgUrl = replaceCDNBaseURL(match[1]);
                 var newImageHtml = match[0].replace(/^<img\s/, `<img onclick="window.$handleImageClick('${imgUrl}')" loading="lazy" `)
                 if (newImageHtml.search(`style="`) == -1) {
                     newImageHtml = newImageHtml.replace(/^<img\s/, `<img style="cursor: pointer;" `)
@@ -167,6 +227,8 @@ function remarkImagesLazyLoad() {
                     newImageHtml = newImageHtml.replace(`style="`, `style="cursor: pointer;`);
                 }
                 node.value = node.value.replace(match[0], newImageHtml);
+                node.value = node.value.replace(/\s+src=["'][^"']+["']/, ` src=\"${imgUrl}"`);
+                // console.log(node.value);
             }
         });
     };
@@ -237,7 +299,7 @@ export const checkConvertMarkdownToHtml = (content: string) => {
                 (match, lang, code) => {
                     const language = lang || 'ts'; // 默认使用 js 语言
                     const tsx = (
-                        <div style={{ maxWidth: '100%', overflowX: 'auto' ,  whiteSpace: `pre-wrap`}}>
+                        <div style={{ maxWidth: '100%', overflowX: 'auto', whiteSpace: `pre-wrap` }}>
                             <SyntaxHighlighter language={language} style={vs}>
                                 {code}
                             </SyntaxHighlighter>

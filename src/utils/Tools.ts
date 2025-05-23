@@ -11,6 +11,8 @@ export function getLogger(moduleName: string) {
 }
 /** 获取折叠面板的日志 */
 export const logCollapse = debug('app:折叠');
+/** 播放视频时停止其他真正播放的视频 */
+export const stopOtherVideos = `document.querySelectorAll(".remark-video").forEach(video => { if (video !== this) video.pause();});`;
 /**
  * 格式化简历title名称,同时也是保存网页时的名称
  * @param template 
@@ -263,4 +265,71 @@ export function useCollapser(id: string, count: number) {
     // 监听折叠状态变化，更新节点折叠状态
     watchTitleCollapser(id, setCollapsedAllItems);
     return { collapsedItems, toggleCollapse, setCollapsedAllItems };
+}
+
+
+/**
+ *  video标签懒加载
+ *  - 在页面载入时，增加一个 IntersectionObserver
+ *  - 监听 video 标签的可见性
+ *  - 如果 video 可见，加载视频
+ *  - 如果 video 不可见，移除观察
+ *  - 兼容旧浏览器的滚动检测
+ *  @returns {void}
+ */
+export function useLazyVideo() {
+    const loadVideo = (videoEl) => {
+        const sources = JSON.parse(videoEl.dataset.sources);
+        //     videoEl.innerHTML = `
+        //     <source src="${sources.hevc}" type="video/mp4; codecs=hevc">
+        //     <source src="${sources.vp9}" type="video/webm; codecs=vp9, opus">
+        //     <source src="${sources.h264}" type="video/mp4; codecs=avc1.42E01E, mp4a.40.2">
+        //     <source src="${sources.original}" type="video/${sources.original.split('.').pop()}">
+        //   `;
+        videoEl.innerHTML = ` 
+        <source src="${replaceCDNBaseURL(sources.original)}" type="video/mp4">
+        <source src="${replaceCDNBaseURL(sources.original, 1)}" type="video/mp4">
+      `;
+        videoEl.classList.remove('lazy-video');
+        videoEl.removeAttribute('data-sources');
+        const loadingIndicator = videoEl.parentNode.querySelector('.loading-indicator');
+        loadingIndicator?.remove();
+    };
+
+    const scrollHandler = () => {
+        document.querySelectorAll('.lazy-video').forEach(video => {
+            const rect = video.getBoundingClientRect();
+            if (rect.top < window.innerHeight + 200 && rect.bottom > 0) {
+                loadVideo(video);
+            }
+        });
+    };
+    window.addEventListener('scroll', scrollHandler);
+    window.addEventListener('resize', scrollHandler);
+    scrollHandler();
+}
+
+/**
+ * 将URL地址替换为CDN上的地址
+ * @param url 需要替换的URL
+ * @param sourceIndex CDN 源地址索引
+ * @returns 替换后的URL或原始URL
+ */
+export function replaceCDNBaseURL(url: string, sourceIndex = 0) {
+    // 静态资源目录白名单
+    const staticResourceDirs = originData.header_info.cdn_static_assets_dirs;
+
+    const shouldUseCDN = originData.header_info.use_static_assets_from_cdn;
+    const staticAssetsCdnBaseUrls = originData.header_info.static_assets_cdn_base_urls;
+    const cdnBaseURL = shouldUseCDN ? staticAssetsCdnBaseUrls[sourceIndex] : "";
+
+    if (!cdnBaseURL || !url) return url;
+
+    // 检查URL是否以任一静态资源目录开头（支持绝对路径和相对路径）
+    const dirPattern = staticResourceDirs.map(dir => `^\\/?${dir}\\/`).join('|');
+    const isStaticResource = new RegExp(dirPattern).test(url);
+
+    return isStaticResource
+        ? (cdnBaseURL + url).replace(/^\/+/, '/') // 合并并规范化路径
+        : url;
 }

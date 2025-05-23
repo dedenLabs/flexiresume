@@ -1,6 +1,6 @@
 export default [
     {
-        "company_name": "FlexiResume 多职位自定义简历生成器 (React+Mobx)",
+        "company_name": "FlexiResume 多职位自定义简历生成器 (Vite+React+SWC+TypeScript+Mobx+framer-motion+remark-html)",
         "start_time": "2024/10",
         "end_time": "2024/11",
         "position": "独立完成(一周内)",

@@ -7,10 +7,15 @@ export default [
     },
     {
         name: '前端开发',
-        children: [           
+        children: [          
+            {
+                name: '游戏开发',
+                content: `  
+- **精通/熟练**: Unity, Cocos Creator, LayaAir, Egret, H5游戏包内更新, H5游戏打包, Three.js, Adobe Animate, Adobe Photoshop（美术UI生成Unity/Egret引擎UI源码）, 游戏脚手架`,
+            }, 
             {
                 name: '框架/库',
-                content: `- **精通**: React, Vue, Redux/MobX, ECharts, TradingVueJs, Vite, WebPack, Pm2, Three.js, Pixi.js, LayaAir, Egret, H5互动/游戏开发
+                content: `- **精通**: Unity, Cocos Creator, LayaAir, Egret, Three.js, Pixi.js, React, Vue, Redux/MobX, ECharts, TradingVueJs, Vite, WebPack, Pm2,
 - **熟练/熟悉**: Angular, Web3.js, TradingView`,
             },
             {
@@ -79,12 +84,7 @@ export default [
             },
         ],
         content: ``
-    },
-    {
-        name: '游戏开发',
-        content: `  
-- **精通/熟练**: Unity, Three.js, LayaAir, Egret, Adobe Animate, Adobe Photoshop（美术UI生成引擎UI源码）`,
-    },
+    },   
     {
         name: '团队管理',
         content: `- **精通/熟练**: 敏捷开发、迭代开发、精益、KPI、OKR、团队组建、成员培训、代码审查、课程分享、员工招聘。

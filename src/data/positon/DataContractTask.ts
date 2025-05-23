@@ -12,13 +12,19 @@ export default {
     personal_strengths: {
         "type": "personal_strengths",// 个人优势模块
         name: "个人优势",
-        content: `#### <span style="margin-left: 2em;"></span>曾是《摩尔庄园》、《摩尔庄园2》、《赛尔号H5》 项目的技术负责人。同时也是淘米创业初首批原班人马之一，核心成员，拥有社区类行业顶尖技术，好的社区架构要求有非常丰富的综合知识和经验。 
->
-#### <span style="margin-left: 2em;"></span>行业先驱，深耕页游社区技术，多次主导经典虚拟社区开发。独创了一套资源转换技术，可完美复刻 Flash 动画表现，确保经典内容无缝迁移到现代平台。
+        content: `### 🎮 虚拟社区技术领袖｜🛠️ 资源转换方案专家
+- #### <span style="font-size: 1.8em;">🚀 亿级用户架构经验</span>：作为淘米创始团队核心成员，主导《<a href="https://mole.61.com" target="_blank">摩尔庄园</a>》《<a href="https://s.61.com" target="_blank">赛尔号H5</a>》等标杆项目技术架构，独创🏗️分布式聊天引擎与🔗实时交互系统，支撑💯万人同时在线场景，沉淀出社区类产品工业化开发范式。
 
-> **<p align="right">------ 拥有行业顶尖的技术经验</p>**  
+### 💎 资源转换技术攻坚：
+- #### ⚡ <span style="font-size: 1.5em;">Flash遗产焕新专家</span>：研发🔄动画资源智能转换引擎，实现🎨Flash素材95%+无损迁移至HTML5平台，成功复刻🔍《摩尔庄园》经典玩法，节省70%+美术资源重构成本。
+- #### 🌐 <span style="font-size: 1.5em;">跨平台移植方案</span>：建立📦游戏资产自动化转换流水线，支持🖼️Spine动画/🕹️Cocos组件/📡WebGL渲染等技术的无缝衔接，缩短多平台适配周期60%+。
+
+### 🏆 技术顾问服务优势：
+- #### 🧩 <span style="font-size: 1.8em;">全周期解决方案</span>：提供从💻遗留系统评估到🔧架构改造的完整技术路线图，独创🔄「资源-逻辑-表现」三层迁移模型，解决🛡️代码腐化与🌌技术债务难题。
+- #### 📈 <span style="font-size: 1.5em;">成本优化专家</span>：通过🚀自动化测试框架+📊智能回归验证，降低传统迁移方案50%+人力投入，实现💰ROI可量化的技术改造。
+
 `
-    },   
+},   
     contract_task: {// 外包服务
         "type": "base",
         name: "技术顾问服务 / 资源转换服务 / 外包服务",
@@ -265,6 +271,16 @@ export default {
 > > ---
 > > 
 > > <table>
+> >     <thead>
+> >         <tr>
+> >             <th><strong>优化方案</strong></th>
+> >             <th><strong>总帧数</strong></th>
+> >             <th><strong>体积</strong></th>
+> >             <th><strong>内存</strong></th>
+> >             <th><strong>特效</strong></th>
+> >             <th><strong>体验</strong></th>
+> >         </tr>
+> >     </thead>
 > >     <tbody> 
 > >         <tr>
 > >             <td><strong>矢量图方案</strong></td>

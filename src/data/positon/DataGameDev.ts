@@ -27,12 +27,7 @@ export default {
 
 ）职位，致力于构建高效、可维护的系统架构，提升团队开发效率。
        `,
-    },
-    open_source_projects: {
-        "type": "project_experience",// 开源项目
-        name: "开源项目",
-        list: DataOpenSourceProject
-    },
+    },    
     skills:
     {
         "type": "skills",// 技能模块
@@ -49,15 +44,20 @@ export default {
         name: "虚拟社区/游戏 作品",
         categories: DataGameProjects,
     }, 
-    employment_history: {
-        "type": "employment_history",// 工作经历模块
-        "name": "工作经历",
-        "list": DataEmploymentHistory
-    },
+    open_source_projects: {
+        "type": "project_experience",// 开源项目
+        name: "开源项目",
+        list: DataOpenSourceProject
+    },    
     project_experience: {
         "type": "project_experience",// 项目经历模块
         "name": "项目经历",
         "list": DataProjectExperience
+    },
+    employment_history: {
+        "type": "employment_history",// 工作经历模块
+        "name": "工作经历",
+        "list": DataEmploymentHistory
     },
     education_history: {
         "type": "education_history",// 教育经历模块

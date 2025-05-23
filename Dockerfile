@@ -9,4 +9,4 @@ COPY ssl/cert.pem /etc/nginx/ssl/cert.pem
 COPY ssl/key.pem /etc/nginx/ssl/key.pem
 
 # 复制 Web 应用的静态文件
-COPY dist /usr/share/nginx/html
+COPY docs /usr/share/nginx/html

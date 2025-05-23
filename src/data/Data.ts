@@ -13,21 +13,32 @@ export default {
         avatar: "/images/avatar.webp",//https://photocartoon.net/ 这是一个将照片转换为卡通形象的网站
         location: "上海",
         is_male: "1",// 1男 0女 显示图标
-        phone: "138******99",
-        wechat: "ta******ck",
-        status: "💚挂靠-随时到岗",//💚离职-随时到岗 💛在职-月内到岗 💗在职-暂不换工作
+        phone: "13*******99",
+        wechat: "taomeejack",
+        status: "💚随时到岗",//💚离职-随时到岗 💛在职-月内到岗 💗在职-暂不换工作
         age: "38岁",
         education: "本科",
         work_experience_num: "18年以上工作经验",
         position: "前端开发",
-        expected_salary: "期望薪资 90k-150k",
+        expected_salary: "期望薪资 面议",
         //用来保存简历时的简历名称格式,同时也是浏览器title的格式
         resume_name_format: "{position}-{name}-{age}-{location}",
 
         // 是否显示个人主页的URL地址
-        home_page: "https://demo.deden.cn:8080",
-        // home_page: "https://resume.deden.cn",
+        home_page: "https://dedenlabs.github.io/flexiresume",
+        // home_page: "https://resume.deden.cn", 
 
+        // 是否使用CDN加载静态资源
+        use_static_assets_from_cdn: true,
+
+        // 静态资源CDN地址
+        static_assets_cdn_base_urls: [
+            "https://cdn.jsdelivr.net/gh/dedenLabs/flexiresume-static/",
+            "https://dedenlabs.github.io/flexiresume-static/"
+        ],
+
+        // 静态资源目录白名单
+        cdn_static_assets_dirs: ["images"],
 
         // 生成二维码的URL地址
         qrcode: true,// 不指定特定URL会默认根据当前URL地址动态生成二维码,或直接填写URL地址生成固定的二维码
@@ -40,7 +51,12 @@ export default {
         name: "技能熟练度",
         list: [
             ["Node", 3],
+            ["微信游戏", 3],
+            ["H5游戏打包", 3],
+            ["游戏脚手架", 3],
+            ["H5游戏包内更新", 3],
             ["Canvas", 3],
+            ["Cocos Creator", 2],
             ["Wasm", 3],
             ["CICD集成", 3],
             ["微前端", 3],
@@ -208,32 +224,48 @@ export default {
         "game": assignDeep(JSON.parse(JSON.stringify(DataGameDev)), {
             "is_home_page": true,// 作为首页
             header_info: {
-                position: "虚拟社区/游戏",
+                position: "游戏主程",
                 expected_salary: "期望薪资 面议",
             },
             target: { hidden: true, },// 隐藏 职业规划 
             personal_strengths: {
                 "type": "personal_strengths",// 个人优势模块
                 name: "个人优势",
-                content: `#### <span style="margin-left: 2em;"></span>精通全栈开发及游戏开发，拥有独立完成复杂项目能力。
->
-#### <span style="margin-left: 2em;"></span>全职网站开发4年+，Web游戏15年+（Unity端游3年+），精通于web端网站和游戏架构，脚手架制作、抽象组件化、模块化、CICD集成/自动化部署、网页动画、交互、游戏、前后端Wasm密集计算性能加速、Node服务器渲染/游戏开发、CDN策略和预热，熟悉微前端、沙箱和样式隔离、跨端、主流MVVM框架等。
->
-#### <span style="margin-left: 2em;"></span>技术阶梯2010年时在淘米网络属于T4-2，担任技术主导者角色15年+。擅长解决疑难杂症、技术选型、技术攻关、系统架构、性能调优以及跨端应用方案。精通精通全栈开发及高并发系统优化，尤其在 Node、React、Canvas 游戏与动画开发方面具备深厚经验，拥有 React 和 Hybrid 开发优化、前端工程化、工具建设、监控及性能优化的独到见解与实践。
->
-#### <span style="margin-left: 2em;"></span>精通大型虚拟社区架构，拥有丰富项目经验，自研出成熟的社区架构体系和工具流，实现模块化高效开发。支持超大型社区的代码增量编译、资源压缩和打包发布，实现自动化上线流程。适用于 Web 超大型社区、元宇宙及 AR/VR 虚拟社区，提供高效稳定的解决方案。 
+                content: `### 🎮 全栈游戏主程｜🛠️ 15年+架构设计专家（Unity/Cocos/H5全领域）
+- #### 🚀 <span style="font-size: 1.8em;">全栈技术攻坚</span>：精通TypeScript/Node.js技术生态，主导构建⚙️企业级脚手架、📦模块化架构及🤖CI/CD自动化体系，擅长通过🚀Wasm加速、⚡SSR/服务端渲染突破性能瓶颈。
 
+### 🌐 全平台开发专家：
+- #### 📱 <span style="font-size: 1.5em;">多端部署能力</span>：成功发布🎮微信/抖音小游戏、📲Hybrid混合应用及📦Web打包原生应用，掌握🛡️微前端沙箱与🌐跨端渲染核心技术。
 
-*<p align="right">---------好的架构技术真的可以一当十</p>*
-                                `
+### 🏆 高复杂度系统架构：
+- #### 💻 <span style="font-size: 1.8em;">引擎深度定制</span>：基于🕹️Unity/Laya/Egret/Cocos Creator/Pixi.js/Three.js打造百万DAU项目，自研🖥️Node.js游戏服务集群及📡CDN智能预热系统，突破高并发技术瓶颈。
+
+### 🏰 虚拟社区架构先锋：
+- #### 🌌 <span style="font-size: 1.5em;">元宇宙技术体系</span>：自研🏰Web超大型社区框架，实现👓AR/VR虚拟社区的🔧增量编译、🤖自动化发布及📊资源优化方案，支撑亿级用户场景。
+
+### 🔭 技术领导力认证：
+- #### 🛠️ <span style="font-size: 1.5em;">T4级技术专家</span>（淘米网络认证）：15年+主导🏗️系统架构设计、🔍技术选型攻关及⚡性能调优经验，沉淀📜AS3/H5/Hybrid开发规范与📈工程化监控体系。`
             },
             skills:
             {
                 collapsedNodes: [//折叠不展示的内容
                     "技术栈.前端开发",
+                    ["技术栈.前端开发.游戏开发", false],
+                    ["技术栈.前端开发.性能与体验", false],
                     "技术栈.客户端开发",
+                    "技术栈.后端开发",
+                    ["技术栈.后端开发.框架/技术", false],
+                    ["技术栈.后端开发.负载均衡/缓存策略/消息队列", false],
                     "技术栈.DevOps",
-                    "技术栈.团队管理",
+                    ["技术栈.DevOps.自动化部署与管理", false],
+                    ["技术栈.DevOps.CICD与容器化", false],
+                    // "技术栈.团队管理",
+                ]
+            },
+            open_source_projects:
+            {
+                collapsedNodes: [
+                    "开源项目.XCast 配置生成协同工具",
                 ]
             },
         }),
@@ -241,15 +273,19 @@ export default {
             personal_strengths: {
                 "type": "personal_strengths",// 个人优势模块
                 name: "个人优势",
-                content: `#### <span style="margin-left: 2em;"></span>精通全栈开发及游戏开发，拥有独立完成复杂项目能力。全职网站开发4年+，Web游戏15年+，精通于web端网站和游戏架构，脚手架制作、抽象组件化、模块化、CICD集成/自动化部署、网页动画、交互、游戏、前后端Wasm密集计算性能加速、Node服务器渲染/游戏开发、CDN策略和预热，熟悉微前端、沙箱和样式隔离、跨端、主流MVVM框架等。
->
-#### <span style="margin-left: 2em;"></span>精通Typescript/JavaScript、CSS、HTML、DOM、TCP/UDP/Socket协议等前端技术，熟悉ES6/7等相关标准、Web安全等；尤其在 Node、React、Canvas 游戏与动画开发方面具备深厚经验，拥有 React、Vue、Hybrid 开发优化经验；前端工程化、工具建设、监控及性能优化的独到见解与实践。
-                                
-                                `
+                content: `### 🔧全栈技术专家｜🕹️15年+游戏架构经验(涵盖 Unity[C#] 和 H5开发 的端游)
+- #### <span style="font-size: 1.8em;">🌐深耕TypeScript/JavaScript技术生态</span>，精通<span style="font-size: 1.5em;">⚛️React/Vue</span>🖋️框架体系与<span style="font-size: 1.5em;">Node.js</span>全栈开发，主导设计过<span style="font-size: 1.5em;">企业级脚手架工具链与CI/CD⚙️自动化部署方案</span>，擅长通过Wasm加速🚀、SSR/SSG渲染优化实现毫秒级性能突破⚡。
+- #### 📱 多平台开发经验：微信/抖音/支付宝等平台的🎮小游戏和小程序开发经验，H5打包📦 iOS/Android并成功提审上线完整经验✅。
+### 🌟在高复杂度Web图形领域具备独特优势：
+- #### 基于<span style="font-size: 1.5em;">Canvas/WebGL</span>深度定制<span style="font-size: 1.5em;">🕹️CocosCreator/Laya/Egret/PixiJS/Three.js/Unity</span>等游戏引擎，构建百万DAU级🎯游戏项目；
+- #### 主导研发<span style="font-size: 1.5em;">Node.js</span>游戏服务集群🖥️与CDN智能预热系统📡，突破高并发技术瓶颈🚀。
+- #### 📊 体系化解决方案沉淀：持续输出前端工程化🔧、Hybrid混合开发优化📱及Web安全防护🛡️方案，在模块化架构设计📦、微前端实施🔄、跨端渲染引擎开发🌐等领域沉淀丰富实战经验💼。
+`
             },
             target: { hidden: true, },// 隐藏 职业规划 
+            personal_influence: { hidden: true, },// 隐藏 个人影响力与行业认可
             header_info: {// 这里的会覆盖上面默认的数据,根据不同期望的职位设定不同的期望薪资等参数 
-                position: "Web前端开发",
+                position: "前端开发工程师",
                 expected_salary: "期望薪资 面议",
             },
             skills:
@@ -260,7 +296,7 @@ export default {
                     "技术栈.游戏开发",
                     "技术栈.客户端开发",
                     // "技术栈.DevOps",
-                    "技术栈.团队管理",
+                    // "技术栈.团队管理",
                 ]
             },
         }),
@@ -268,37 +304,37 @@ export default {
             personal_strengths: {
                 "type": "personal_strengths",// 个人优势模块
                 name: "个人优势",
-                content: `#### <span style="margin-left: 2em;"></span>具备扎实的后端技术能力，精通Node并熟练使用 Koa、Next.js、Express 等框架，精通 BFF、GraphQL、RESTful API 设计与实现，擅长系统架构优化、高并发处理以及 Linux 环境下的开发与部署，能够根据需求灵活选择技术栈，确保服务的高可用性与稳定性。
->
-**框架/技术**
-- 精通:Koa, Next.js, Express, SSR/SSG, Socket, RabbitMQ, Nginx, API(BFF, GraphQL, RESTful)
-熟练/熟悉: Spring MVC, ELK Stack (Elasticsearch, Logstash, Kibana), WebRTC, OpenSearch
+                content: `### 🚀 Node.js后端专家｜🛠️ 高可用架构设计师
+- #### <span style="font-size: 1.8em;">⚙️ 全栈服务开发</span>：基于Koa/Express/Next.js构建🏗️企业级BFF中间层，精通🔗GraphQL/RESTful API设计，擅长通过⚡SSR/SSG实现服务端性能飞跃。
 
-**微服务架构**
-- 精通/熟悉: Docker, Kubernetes, RabbitMQ/Kafka, Spring Boot, Spring Cloud
-Serverless架构/事件驱动架构 
-- 精通/熟悉: 阿里云FC/腾讯SCF/AWS Lambda/Azure Functions, API Gateway,EventBridge/Node EventEmitter
+### ☁️ 云原生技术实践：
+- #### 🚢 <span style="font-size: 1.5em;">容器化开发经验</span>：完成本地环境📦Docker/Kubernetes容器化改造方案，实现🛠️微服务拆分验证与🚦CI/CD自动化测试流程搭建，通过云服务ECS实现🔄资源弹性伸缩与🔒基础运维监控。
+- #### ⚡ <span style="font-size: 1.5em;">Serverless应用探索</span>：基于阿里云函数计算实现🔄定时任务无服务器化改造，完成📊日志采集系统与🔍异常请求追踪告警方案设计。
 
-**负载均衡/缓存策略/消息队列**
-- 精通/熟悉: Nginx/HAProxy/Pm2, Redis, RabbitMQ/Kafka
+### 🏗️ 高并发解决方案：
+- #### ⚡ <span style="font-size: 1.8em;">千万级流量架构</span>：通过🔗RabbitMQ消息队列实现业务解耦，部署📡Nginx负载均衡策略支撑日均百万级请求，设计📈Redis二级缓存方案降低接口响应耗时50%+。
 
-**数据库**
-- 精通/熟练: Redis, MongoDB, MySQL（SQL和NoSQL）                       
-                                `
+### 🗃️ 数据存储实战：
+- #### 🔍 <span style="font-size: 1.5em;">多数据库协同开发</span>：运用MySQL事务机制保障💰电商订单数据一致性，完成📜MongoDB分片集群基础搭建与🗃️文档型数据存取方案设计。
+- #### 🚀 <span style="font-size: 1.5em;">性能优化实践</span>：通过索引优化提升MySQL复杂查询效率30%+，运用📦MongoDB聚合管道完成🔢百万级用户行为数据分析，构建🔄Redis流式热点数据缓存策略。
+
+### 🔥 Linux生产环境实战：
+- #### 🐧 <span style="font-size: 1.5em;">全链路部署实践</span>：掌握📦Pm2集群部署方案，实施🔐Jenkins自动化发布流程，通过📡ELK日志分析实现🔧接口性能监控与异常告警。`
             },
             target: { hidden: true, },// 隐藏 职业规划 
+            personal_influence: { hidden: true, },// 隐藏 个人影响力与行业认可 
             header_info: {
-                position: "后端开发",
+                position: "NodeJs开发",
                 expected_salary: "期望薪资 面议",
             },
             skills:
             {
                 collapsedNodes: [//折叠不展示的内容
-                    "技术栈.前端开发",
+                    // "技术栈.前端开发",
                     // "技术栈.后端开发",
                     "技术栈.客户端开发",
                     "技术栈.DevOps",
-                    "技术栈.团队管理",
+                    // "技术栈.团队管理",
                 ]
             },
         }),
@@ -306,34 +342,38 @@ Serverless架构/事件驱动架构
             personal_strengths: {
                 "type": "personal_strengths",// 个人优势模块                
                 name: "个人优势",
-                content: `#### <span style="margin-left: 2em;"></span>拥有15年以上的技术主导经验，2010年在淘米网络评选为职级技术阶梯T4-2，精通全栈开发及游戏开发，专注于AI及高并发系统优化。
->
-#### <span style="margin-left: 2em;"></span>擅于解决疑难杂症、技术选型、技术攻关、系统架构、性能调优以及跨端应用方案。解决前端、后端和运维问题。
->
-#### <span style="margin-left: 2em;"></span>诺基亚时代开始，第一批开启页游时代的开发者，拥有丰富的大小型游戏项目开发经验，独立设计开发核心底层模块的能力，能够有效应对未来复杂应用场景，具备独特的竞争优势。
->
-#### <span style="margin-left: 2em;"></span>对AI领域有浓厚的兴趣，目前在电商应用（*如推荐系统、搜索引擎、视觉搜索和用户行为预测*）方面有研究，了解训练与部署，并持续学习相关技术。
->
-#### <span style="margin-left: 2em;"></span>拥有10年以上管理经验，具备敏捷开发和迭代开发的实践经验，熟悉精益方法论及KPI与OKR的应用。多次完整经历初创公司周期，参与过从0到1上市和从0到1解散，这些经历显著提升了我的个人能力，并扩展了技术覆盖面，积累了团队组建经验。            
-            `
+                content: `### 🎖️ T4级技术领袖｜🚀 15年+全栈攻坚专家
+- #### <span style="font-size: 1.8em;">🏆 技术领导力认证</span>：淘米网络T4-2职级（2010年），主导🔧全栈架构设计与🕹️游戏引擎开发，突破⚡AI推荐系统响应速度与💻高并发服务性能瓶颈。
+
+### 🕹️ 游戏工业化先驱：
+- #### ⏳ <span style="font-size: 1.5em;">页游时代开拓者</span>：从诺基亚时代开始构建🎮大型虚拟社区，独立设计📦分布式聊天引擎与🔗实时战斗系统核心模块，支撑💯万人同时在线。
+- #### 🚦 <span style="font-size: 1.5em;">复杂场景应对专家</span>：历经📈千万DAU项目完整生命周期，沉淀🛠️模块化开发体系与⚙️跨端渲染解决方案。
+
+### 👥 技术驱动型管理实践：
+- #### ⚡ <span style="font-size: 1.5em;">敏捷开发实践者</span>：通过Jira/Trello实施🔄双周迭代开发，建立📊看板任务跟踪机制，缩短需求响应周期30%+，主导🔍代码评审规范制定，通过同行评审机制降低线上事故率50%+。
+- #### 🛠️ <span style="font-size: 1.5em;">技术决策主导者</span>：在初创公司周期中构建📜技术选型评估模型，主导架构选型会议并输出🔗技术可行性报告，通过自动化测试框架实现80%+核心接口覆盖率。
+
+### 🌐 协作流程标准化：
+- #### 📦 <span style="font-size: 1.5em;">SOP协作体系构建</span>：制定跨部门协作标准操作程序（SOP），明确🔄需求对接/🛠️技术联调/🔍问题追溯三阶段职责矩阵，通过📈流程可视化看板缩短沟通耗时40%+。
+`
             },
             target: { hidden: true, },// 隐藏 职业规划 
             header_info: {
-                position: "技术总监/CTO",
+                position: "技术管理",
                 expected_salary: "期望薪资 面议",
             },
             //skills cto职业要全部展示,所以不用折叠,这里不用填写相应的折叠数据
         }),
         "contracttask": assignDeep(JSON.parse(JSON.stringify(DataContractTask)), {
             header_info: {
-                position: "技术顾问/H5资源转换/外包",
+                position: "技术顾问/游戏资源优化/外包",
                 expected_salary: "价格面议",
                 status: "💚空闲-可接外包",
 
                 // 是否显示个人主页的URL地址
                 home_page: "",
                 // 生成二维码的URL地址
-                qrcode: true,
+                // qrcode: true,
             },
             personal_projects: {
                 collapsedNodes: ["虚拟社区/游戏 作品",

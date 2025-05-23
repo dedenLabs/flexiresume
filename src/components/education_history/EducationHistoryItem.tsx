@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
-import { calculateWorkDuration } from '../../utils/Tools';
+import { calculateWorkDuration, replaceCDNBaseURL } from '../../utils/Tools';
 import { IModuleInfo } from '../../types/IFlexiResume';
 // 简历教育信息
 export interface IDataEducationInfo extends IModuleInfo {
@@ -73,7 +73,7 @@ const EmploymentHistoryItem: React.FC<IDataEducationInfo> = ({ school_name, scho
         <Card>
             {(
                 <CardHeader>
-                    <SchoolImage src={school_image} />
+                    <SchoolImage src={replaceCDNBaseURL(school_image)} />
                     <CardHeaderInfo>
                         <strong>{school_name}</strong>
                         <PositionSeparator>|</PositionSeparator>

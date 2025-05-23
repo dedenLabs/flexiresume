@@ -51,16 +51,16 @@ export default {
         "type": "base",
         name: "个人影响力与行业认可",
         content: DataPersonalInfluence
+    },   
+    project_experience: {
+        "type": "project_experience",// 项目经历模块
+        "name": "项目经历",
+        "list": DataProjectExperience
     },
     employment_history: {
         "type": "employment_history",// 工作经历模块
         "name": "工作经历",
         "list": DataEmploymentHistory
-    },
-    project_experience: {
-        "type": "project_experience",// 项目经历模块
-        "name": "项目经历",
-        "list": DataProjectExperience
     },
     education_history: {
         "type": "education_history",// 教育经历模块
