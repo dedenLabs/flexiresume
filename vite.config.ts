@@ -20,7 +20,7 @@ const customEntry = () => ({
         // 直接写入文件系统
         fs.writeFileSync(outputPath, indexContent);
       });
- 
+
       fs.copyFileSync('public/favicon.ico', 'docs/favicon.ico');
       fs.copyFileSync('public/robots.txt', 'docs/robots.txt');
     } catch (err) {
@@ -83,6 +83,7 @@ const customEntry = () => ({
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => ({
+  base: command === 'serve' ? '/' : './',
   plugins: [react()],
   publicDir: command === 'serve' ? 'public' : false, // 🔥 必须关闭默认 public 复制
   build: {
