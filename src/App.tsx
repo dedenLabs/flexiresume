@@ -33,7 +33,7 @@ const App: React.FC = () => {
     <>
       <ImageViewerProvider >
         <GlobalStyle />
-        <Router>
+        <Router basename={originData.header_info.route_base_name}>
           <Tabs /> {/* 页签导航栏 */}
           <Routes>
             {

@@ -18,7 +18,8 @@ export interface IHeaderInfo extends IModuleInfo {
     position: string; // 职位
     expected_salary: string; // 期望薪资
     resume_name_format: string; // 简历名称
-    use_static_assets_from_cdn: string; // 是否使用CDN加载静态资源
+    use_static_assets_from_cdn: string; // 是否使用CDN加载静态资源    
+    route_base_name: string; // 静态资源目录的基础名称
 }
 // 技能等级
 export interface ISkillLevel extends IModuleInfo {
