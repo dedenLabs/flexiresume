@@ -59,7 +59,7 @@ const GlobalStyle = createGlobalStyle`
   .video-wrapper {
     position: relative;
     background: #f5f5f5;
-    min-height: 200px;
+    min-height: 100px;
   }
 
   .lazy-video {
