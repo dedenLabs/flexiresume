@@ -77,8 +77,8 @@ const GlobalStyle = createGlobalStyle`
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 8px 16px;
-    background: rgba(0,0,0,0.7);
-    color: white;
+    // background: rgba(0,0,0,0.7);
+    color: #000;
     border-radius: 4px;
   }
   

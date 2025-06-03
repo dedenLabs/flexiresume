@@ -26,15 +26,16 @@ export default {
 
         // 是否显示个人主页的URL地址
         home_page: "https://dedenlabs.github.io/flexiresume",
-        // home_page: "https://resume.deden.cn", 
 
         // 是否使用CDN加载静态资源
         use_static_assets_from_cdn: true,
 
         // 静态资源CDN地址
         static_assets_cdn_base_urls: [
+            // "",
             "https://cdn.jsdelivr.net/gh/dedenLabs/flexiresume-static/",
-            "https://dedenlabs.github.io/flexiresume-static/"
+            "https://dedenlabs.github.io/flexiresume-static/",
+            "https://demo.deden.cn:8080/",
         ],
 
         // 静态资源目录白名单
@@ -47,7 +48,7 @@ export default {
         // 生成二维码的URL地址
         qrcode: true,// 不指定特定URL会默认根据当前URL地址动态生成二维码,或直接填写URL地址生成固定的二维码
         // qrcode: "https://resume.deden.cn/game",// 生成固定的URL地址二维码
-        qrcode_msg: "扫描查看体验更好",//二维码提示信息
+        qrcode_msg: "",//二维码提示信息
     } as IHeaderInfo,
     skill_level:
     {
@@ -281,7 +282,7 @@ export default {
 - #### <span style="font-size: 1.8em;">🌐深耕TypeScript/JavaScript技术生态</span>，精通<span style="font-size: 1.5em;">⚛️React/Vue</span>🖋️框架体系与<span style="font-size: 1.5em;">Node.js</span>全栈开发，主导设计过<span style="font-size: 1.5em;">企业级脚手架工具链与CI/CD⚙️自动化部署方案</span>，擅长通过Wasm加速🚀、SSR/SSG渲染优化实现毫秒级性能突破⚡。
 - #### 📱 多平台开发经验：微信/抖音/支付宝等平台的🎮小游戏和小程序开发经验，H5打包📦 iOS/Android并成功提审上线完整经验✅。
 ### 🌟在高复杂度Web图形领域具备独特优势：
-- #### 基于<span style="font-size: 1.5em;">Canvas/WebGL</span>深度定制<span style="font-size: 1.5em;">🕹️CocosCreator/Laya/Egret/PixiJS/Three.js/Unity</span>等游戏引擎，构建百万DAU级🎯游戏项目；
+- #### 跨引擎开发经验：基于<span style="font-size: 1.5em;">Canvas/WebGL</span>深度定制<span style="font-size: 1.5em;">🕹️CocosCreator/Laya/Egret/PixiJS/Three.js/Unity</span>等游戏引擎，构建百万DAU级🎯游戏项目；
 - #### 主导研发<span style="font-size: 1.5em;">Node.js</span>游戏服务集群🖥️与CDN智能预热系统📡，突破高并发技术瓶颈🚀。
 - #### 📊 体系化解决方案沉淀：持续输出前端工程化🔧、Hybrid混合开发优化📱及Web安全防护🛡️方案，在模块化架构设计📦、微前端实施🔄、跨端渲染引擎开发🌐等领域沉淀丰富实战经验💼。
 `
@@ -347,10 +348,10 @@ export default {
                 "type": "personal_strengths",// 个人优势模块                
                 name: "个人优势",
                 content: `### 🎖️ T4级技术领袖｜🚀 15年+全栈攻坚专家
-- #### <span style="font-size: 1.8em;">🏆 技术领导力认证</span>：淘米网络T4-2职级（2010年），主导🔧全栈架构设计与🕹️游戏引擎开发，突破⚡AI推荐系统响应速度与💻高并发服务性能瓶颈。
+- #### <span style="font-size: 1.8em;">🏆 技术领导力认证</span>：淘米网络T4-2职级（2010年），主导🔧游戏架构设计与🕹️系统开发，游戏最高同时在线突破80万。
 
 ### 🕹️ 游戏工业化先驱：
-- #### ⏳ <span style="font-size: 1.5em;">页游时代开拓者</span>：从诺基亚时代开始构建🎮大型虚拟社区，独立设计📦分布式聊天引擎与🔗实时战斗系统核心模块，支撑💯万人同时在线。
+- #### ⏳ <span style="font-size: 1.5em;">页游时代开拓者</span>：从诺基亚时代开始构建🎮大型虚拟社区，独立设计了基于位图高压缩率动画播放引擎，实现玩家千人同屏。
 - #### 🚦 <span style="font-size: 1.5em;">复杂场景应对专家</span>：历经📈千万DAU项目完整生命周期，沉淀🛠️模块化开发体系与⚙️跨端渲染解决方案。
 
 ### 👥 技术驱动型管理实践：

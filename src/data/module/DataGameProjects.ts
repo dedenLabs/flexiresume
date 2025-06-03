@@ -97,10 +97,9 @@ export default [
         children: [
             {
                 name: '导弹打冲击',
-                content: ` 
-> [视频](images/game/tank/3.mp4)
-> [视频](images/game/tank/1.mp4)
-> [视频](images/game/tank/2.mp4)
+                content: `  
+> <video src="images/game/tank/1.mp4" controls="controls" style="width:30%"/> <video src="images/game/tank/2.mp4" controls="controls" style="width:30%"/>  <video src="images/game/tank/3.mp4" controls="controls" style="width:30%"/> 
+
 > *一整套游戏利用了复杂的资源打包技术, 能够将大型游戏源码体积控制在微信允许的范围内.*
 `
             },
@@ -166,7 +165,10 @@ export default [
             {
                 name: '卡片对战2（Unity）',
                 content: ` 
-> [视频](images/game/kp/2.mp4)  
+>  <p align="center"><video src="images/game/kp/2.mp4" controls="controls" style="width:45%"/>  <img src="images/game/kp/2.png" style="width:45%"/> </p>
+>  <p align="center"> <img src="images/game/kp/6.png" style="width:45%"/> <img src="images/game/kp/5.png" style="width:45%"/> </p>
+>  <p align="center"> <img src="images/game/kp/3.png" style="width:45%"/> <img src="images/game/kp/4.png" style="width:45%"/> </p>
+>  <p align="center"><img src="images/game/kp/7.png" style="width:100%"/> </p>
 > 没有备份,只能手机里一些美素资源图拼凑 .
 `
             },
@@ -186,7 +188,7 @@ export default [
             {
                 name: '泡泡龙',
                 content: ` 
-> [视频](images/game/ppl/3.mp4)  
+>  [视频](images/game/ppl/3.mp4)  
 `
             },
         ],
@@ -198,8 +200,7 @@ export default [
             {
                 name: '餐厅经营',
                 content: ` 
-> [视频](images/game/kxcf/1.mp4)
-> ![图片](images/game/kxcf/2.webp)  
+>  <p align="center"> <img src="images/game/kxcf/2.webp" style="width:45%"/>  <video src="images/game/kxcf/1.mp4" controls="controls" style="width:45%"/> </p>
 `
             },
             {
@@ -218,20 +219,21 @@ export default [
             {
                 name: '泡泡龙',
                 content: ` 
-> [视频](images/game/ppl/2.mp4)
+>  <p align="center"> <video src="images/game/ppl/2.mp4" controls="controls" style="width:60%"></video> </p>
 `
             },
             {
                 name: '猜图',
                 content: ` 
-> ![图片](images/game/pic/1.webp)
+>  <p align="center"><img src="images/game/pic/1.webp" style="width:60%"/> </p>
+> 
 > 服务器关闭了无法进入游戏...
 `
             },
             {
                 name: '剁手',
                 content: ` 
-> [视频](images/game/qmds/1.mp4)
+> <p align="center"><video src="images/game/qmds/1.mp4" controls="controls" style="width:60%"></video>  </p>
 `
             },
         ],

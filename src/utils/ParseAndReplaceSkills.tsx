@@ -8,7 +8,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism'; // 选择一个高亮主题
 import { visit } from 'unist-util-visit';
 import flexiResumeStore from '../store/Store';
-import { getLogger, replaceCDNBaseURL, replaceVariables, stopOtherVideos } from './Tools';
+import { getLogger, replaceCDNBaseURL, replaceVariables } from './Tools';
 import { QRCodeSVG } from 'qrcode.react';
 const logMarkdown = getLogger(`Markdown`);
 
@@ -125,7 +125,7 @@ function remarkVideoLazyLoad() {
                         // h264: `${filePath}_h264.mp4`,
                         original: `${node.url}`,
                     })}'
-                        onplay='${stopOtherVideos}'> 
+                        onplay='stopOtherVideos(event)'> 
                         
                         你的浏览器不支持该视频格式
                         </video> 
@@ -138,48 +138,46 @@ function remarkVideoLazyLoad() {
 
 
         visit(tree, 'html', (node) => {
-            const videoRegex = /<video[^>]+src="([^"]+)"[^>]*>/g;
-            let match;
-            while ((match = videoRegex.exec(node.value)) !== null) {
-                const videoUrl = match[1];
-                var newVideoHtml = match[0].replace(/^<video\s/, `<video onplay='${stopOtherVideos}' `);
-                if (newVideoHtml.search(`style="`) == -1) {
-                    newVideoHtml = newVideoHtml.replace(/^<video\s/, `<video style="cursor: pointer;" `)
-                } else {
-                    newVideoHtml = newVideoHtml.replace(`style="`, `style="cursor: pointer;`);
-                }
-                node.value = node.value.replace(match[0], newVideoHtml);
-                // console.log(1, node.value);
-                // replaceCDNBaseURL(videoUrl)
-                node.value = node.value.replace(/\s+src=["'][^"']+["']/, ` `);
-                // node.value = node.value.replace(/\s+src=["'][^"']+["']/, ` src=\"${videoUrl}"`);
+            const videoRegex = /<video\b[^>]*\bsrc\s*=\s*["']([^"']*)["'][^>]*\/?>/gi;
+            if ((!videoRegex.test(node.value))) return;
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(node.value, 'text/html');
 
-                // const videoUrl_1 = replaceCDNBaseURL(videoUrl);
-                // const videoUrl_2 = replaceCDNBaseURL(videoUrl, 1);
-                // let oldValue = node.value;
-                // node.value = node.value.replace(/\/\s*>$/, ` >
-                // <source src="${videoUrl_1}" type="video/mp4"> 
-                // <source src="${videoUrl_2}" type="video/mp4"> 
-                // </video>`);
-                // if (oldValue == node.value) {
-                //     node.value = node.value.replace(/[^/]>\s*$/, `$1  >
-                // <source src="${videoUrl_1}" type="video/mp4">
-                // <source src="${videoUrl_2}" type="video/mp4"> 
-                // </video>
-                // `);
-                // }
-
-                const hasClass = node.value.search(/\W+class\s*=/) != -1;
-                let oldValue = node.value;
-                node.value = node.value.replace(/\/\s*>$/, `${hasClass ? "" : " class=\"remark-video\""} data-sources='${JSON.stringify({ original: `${videoUrl}`, })}'>  
-                </video>`);
-                if (oldValue == node.value) {
-                    node.value = node.value.replace(/([^/])>\s*$/, `${hasClass ? "" : "$1 class=\"remark-video\""} data-sources='${JSON.stringify({ original: `${videoUrl}`, })}'/>`);
+            doc.querySelectorAll('video').forEach(video => {
+                // 1. 添加事件监听
+                if (!video.hasAttribute('onplay')) {
+                    video.setAttribute('onplay', 'stopOtherVideos(event)');
                 }
-                node.value = node.value.replace(/\bclass\s*=\s*"([^"']+)"/, ` class="$1 lazy-video"`);
- 
-                // console.log(2, node.value);
-            }
+
+                // 2. 处理样式
+                if (!video.hasAttribute('style')) {
+                    video.style.cssText = 'cursor: pointer;';
+                } else if (!video.style.cssText.includes('cursor: pointer')) {
+                    video.style.cssText += '; cursor: pointer;';
+                }
+
+                // 3. 处理类名
+                if (!video.classList.contains('remark-video')) {
+                    video.classList.add('remark-video');
+                }
+                if (!video.classList.contains('lazy-video')) {
+                    video.classList.add('lazy-video');
+                }
+
+                // 4. 处理data-sources属性
+                const videoUrl = video.getAttribute('src');
+                video.dataset.sources = JSON.stringify({ original: videoUrl });
+
+                // 5. 移除src属性
+                video.removeAttribute('src');
+
+                // 6. 修复自闭标签
+                if (video.outerHTML.endsWith('/>')) {
+                    video.outerHTML = video.outerHTML.replace('/>', '></video>');
+                }
+            });
+
+            node.value = doc.documentElement.innerHTML;
         });
     };
 }
@@ -217,19 +215,20 @@ function remarkImagesLazyLoad() {
 
         visit(tree, 'html', (node) => {
             const imgRegex = /<img[^>]+src="([^"]+)"[^>]*>/g;
-            let match;
-            while ((match = imgRegex.exec(node.value)) !== null) {
-                const imgUrl = replaceCDNBaseURL(match[1]);
-                var newImageHtml = match[0].replace(/^<img\s/, `<img onclick="window.$handleImageClick('${imgUrl}')" loading="lazy" `)
-                if (newImageHtml.search(`style="`) == -1) {
-                    newImageHtml = newImageHtml.replace(/^<img\s/, `<img style="cursor: pointer;" `)
-                } else {
-                    newImageHtml = newImageHtml.replace(`style="`, `style="cursor: pointer;`);
+            if (imgRegex.test(node.value) == false) return;
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(node.value, 'text/html');
+            doc.querySelectorAll('img').forEach(img => {
+                const originalSrc = img.getAttribute('src');
+                img.setAttribute('src', replaceCDNBaseURL(originalSrc));
+                img.setAttribute('onclick', `window.$handleImageClick('${originalSrc}')`);
+                img.style.cursor = 'pointer';
+                if (!img.hasAttribute('loading')) {
+                    img.setAttribute('loading', 'lazy');
                 }
-                node.value = node.value.replace(match[0], newImageHtml);
-                node.value = node.value.replace(/\s+src=["'][^"']+["']/, ` src=\"${imgUrl}"`);
-                // console.log(node.value);
-            }
+            });
+            node.value = doc.body.innerHTML;
         });
     };
 }
@@ -326,3 +325,4 @@ export const checkConvertMarkdownToHtml = (content: string) => {
 
     return htmlContent;
 };
+

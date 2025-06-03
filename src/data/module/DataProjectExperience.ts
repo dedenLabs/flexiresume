@@ -99,7 +99,7 @@ export default [
 - **后端战斗系统开发**：负责后端战斗系统的实现，确保战斗逻辑的准确性与高效性，提升了整体游戏的性能和稳定性。
 
 #### 🕹️《导弹打冲击》
-> <video src="images/game/tank/1.mp4" controls="controls" style="width:30%"/> </video> <video src="images/game/tank/2.mp4" controls="controls" style="width:30%"> </video>  <video src="images/game/tank/3.mp4" controls="controls" style="width:30%"> </video> 
+> <video src="images/game/tank/1.mp4" controls="controls" style="width:30%"/> <video src="images/game/tank/2.mp4" controls="controls" style="width:30%"/>  <video src="images/game/tank/3.mp4" controls="controls" style="width:30%"/> 
 ---
         `
     },

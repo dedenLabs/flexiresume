@@ -2,7 +2,7 @@ import { Location } from 'react-router-dom';
 import flexiResumeStore from '../store/Store';
 import originData from '../data/Data';
 import React, { useState, useEffect } from 'react';
-import { reaction } from 'mobx';
+import { reaction, set } from 'mobx';
 import debug from 'debug';
 
 /** 获取日志 */
@@ -12,7 +12,9 @@ export function getLogger(moduleName: string) {
 /** 获取折叠面板的日志 */
 export const logCollapse = debug('app:折叠');
 /** 播放视频时停止其他真正播放的视频 */
-export const stopOtherVideos = `document.querySelectorAll(".remark-video").forEach(video => { if (video !== this) video.pause();});`;
+window.stopOtherVideos = function (e) {
+    document.querySelectorAll(".remark-video").forEach(video => { if (video !== e.target) video.pause(); });
+}
 /**
  * 格式化简历title名称,同时也是保存网页时的名称
  * @param template 
@@ -304,8 +306,13 @@ export function useLazyVideo() {
             }
         });
     };
-    window.addEventListener('scroll', scrollHandler);
+    let tiemr;
+    window.addEventListener('scroll', () => {
+        if (tiemr) clearTimeout(tiemr);
+        tiemr = setTimeout(scrollHandler, 100);
+    });
     window.addEventListener('resize', scrollHandler);
+    window.addEventListener('mouseup', () => setTimeout(scrollHandler, 0));
     scrollHandler();
 }
 
