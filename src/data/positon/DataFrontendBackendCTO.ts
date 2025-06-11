@@ -12,20 +12,6 @@ export default {
         name: "个人优势",
         content: ``
     },    
-    target: {
-        "type": "base",// 职业规划
-        name: "职业规划",
-        content: ` 
-寻求（
-- **[虚拟社区/游戏/组长](https://resume.deden.cn/game)**
-- **[外包服务](https://resume.deden.cn/contracttask)** 
-- **[居家办公-前后端开发](https://resume.deden.cn/frontend)**  
-- **[云基础设施开发 / 高并发场景（电商/游戏/应用）后端开发](https://resume.deden.cn/backend)** 
-- **[技术总监 / 游戏技术总监 / CTO](https://resume.deden.cn/cto)**  
-
-）职位，致力于构建高效、可维护的系统架构，提升团队开发效率。
-       `,
-    },
     personal_projects: {
         "type": "project_experience",// 个人作品
         name: "个人作品",

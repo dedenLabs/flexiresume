@@ -55,6 +55,9 @@ export default {
         "type": "skill_level",// 技能熟练度,高亮 
         name: "技能熟练度",
         list: [
+            ["游戏开发经验：19年＋", 3], 
+            ["19年＋", 3], 
+            ["GitLab CI", 1], 
             ["Node.js", 3], 
             ["Node", 3],
             ["微信游戏", 3],
@@ -62,6 +65,10 @@ export default {
             ["游戏脚手架", 3],
             ["H5游戏包内更新", 3],
             ["Protobuf", 3], 
+            ["Unreal Engine", 1], 
+            ["Golang", 1], 
+            ["Go", 1], 
+            ["C++", 2], 
             ["Canvas", 3],
             ["H5游戏", 3], 
             ["HTML5", 3], 
@@ -81,14 +88,20 @@ export default {
             ["PixiJS", 3], 
             ["Pixi.js", 3], 
             ["Three.js", 3], 
-            ["Unity", 3], 
+            ["Unity引擎", 3], 
             ["Unity WebGL", 3], 
             ["Unity3D", 3], 
+            ["Unity", 3], 
             ["Cocos Creator", 2], 
             ["CocosCreator", 2], 
             ["Wasm", 3],
             ["ECS/DOTS", 3],
+            ["ECS", 3],
+            ["DOTS", 3],
             ["CICD集成", 3],
+            ["H5引擎", 3],
+            ["Flash页游", 3],
+            ["Flash", 3],
             ["微前端", 3],
             ["沙箱和样式隔离", 3],
             ["网页三剑客", 3],
@@ -140,7 +153,7 @@ export default {
             ["Java", 2],
             ["Python", 2],
             ["Golang", 1],
-            ["PHP", 1],
+            ["PHP", 2],
             ["Shell", 2],
             ["React", 3],
             ["SWC", 3],
@@ -148,7 +161,7 @@ export default {
             ["Redux/MobX", 3],
             ["framer-motion", 3],
             ["remark-html", 3],
-            ["Three.js", 3],
+            ["Three.js", 2],
             ["LayaAir", 3],
             ["Egret", 3],
             ["ECharts", 3],
@@ -162,6 +175,7 @@ export default {
             ["TradingView", 3],
             ["Babylon.js", 2],
             ["WebGL/WebGPU", 2],
+            ["WebGPU", 2],
             ["WebXR", 2],
             ["Unity WebGL", 2],
             ["WebAssembly", 3],
@@ -183,7 +197,7 @@ export default {
             ["Git/SVN", 3],
             ["Node EventEmitter", 3],
             ["Next.js", 3],
-            ["Pixi.js", 2],
+            ["Pixi.js", 3],
             ["Express", 3],
             ["SSR/SSG", 3],
             ["Socket", 3],
@@ -265,14 +279,14 @@ export default {
             personal_strengths: {
                 "type": "personal_strengths",// 个人优势模块
                 name: "个人优势",
-                content: `### 🎮 游戏主程专家｜🛠️ 15年+游戏架构与主程实战经验（Unity/H5游戏/Cocos Creator）
+                content: `### 🎮 游戏主程专家｜🛠️ 19年＋游戏架构与实战主程经验（Unity/Cocos Creator/H5游戏/Flash页游）
 - #### 🚀 <span style="font-size: 1.8em;">全栈技术攻坚</span>：精通TS/JS/Node.js技术生态，主导构建⚙️企业级脚手架、📦模块化架构及🤖CI/CD自动化体系（含AI体系n8n），擅长通过🚀Wasm加速、动态调节算法、脏数据追踪、寻路优化、​​ECS/DOTS、SoA 方案等性能优化技巧突破瓶颈。
 
 ### 🌐 全平台开发专家：
 - #### 📱 <span style="font-size: 1.5em;">多端部署能力</span>：成功发布🎮微信/抖音小游戏、📲Hybrid混合应用及📦Web打包原生应用，掌握🛡️微前端沙箱与🌐跨端渲染核心技术。
 
 ### 🏆 高复杂度系统架构：
-- #### 💻 <span style="font-size: 1.8em;">引擎深度定制</span>：基于🕹️Unity/Laya/Egret/Cocos Creator/Pixi.js/Three.js打造百万DAU项目，自研🖥️Node.js游戏服务集群及📡CDN智能预热系统，突破高并发技术瓶颈。
+- #### 💻 <span style="font-size: 1.8em;">引擎深度定制</span>：基于🕹️Unity/Cocos Creator/LayaAir/Egret/Pixi.js/Three.js打造百万DAU项目，自研🖥️Node.js游戏服务集群及📡CDN智能预热系统，突破高并发技术瓶颈。
 
 ### 🏰 虚拟社区架构先锋：
 - #### 🌌 <span style="font-size: 1.5em;">元宇宙技术体系</span>：自研🏰Web超大型社区框架，实现👓AR/VR虚拟社区的🔧增量编译、🤖自动化发布及📊资源优化方案，支撑亿级用户场景。
@@ -307,7 +321,14 @@ export default {
             personal_strengths: {
                 "type": "personal_strengths",// 个人优势模块
                 name: "个人优势",
-                content: `### 🔧全栈技术专家｜🕹️15年+游戏架构经验(涵盖 Unity[C#] 和 H5开发 的端游)
+                content: `### 🔧全栈技术专家｜🕹️19年＋游戏架构与实战主程经验（Unity/Cocos Creator/H5游戏/Flash页游） 
+- #### 🌐全栈开发：20年+网页开发经验（含2年全职Web全栈），覆盖🖥️前端（React/Vue）、⚙️后端（Node.js/Python）、🗃️数据库（MySQL/MongoDB）、🔄DevOps全链路  
+- #### <span style="font-size: 1.8em;">🚀技术跨界融合：</span>将Web工程化思维注入游戏开发，擅长🎮游戏服务端稳定性优化（TCP/UDP协议栈调优）、🌉混合开发生态（WebGL游戏与前端框架集成），🏆代表性成果：
+> - 🚀 主导开发日均100万DAU的H5游戏架构，首屏加载优化至1.2秒内  
+> - 📊 设计分布式游戏日志分析系统，故障定位效率提升70%  
+> - ⚡ 实现项目自动化热更方案，版本迭代耗时降低90%  
+> - 🤖 开发内部工具链，团队开发效率提升50% 
+
 - #### <span style="font-size: 1.8em;">🌐深耕TypeScript/JavaScript技术生态</span>，精通<span style="font-size: 1.5em;">⚛️React/Vue</span>🖋️框架体系与<span style="font-size: 1.5em;">Node.js</span>全栈开发，主导设计过<span style="font-size: 1.5em;">企业级脚手架工具链与CI/CD⚙️自动化部署方案</span>，擅长通过Wasm加速🚀、SSR/SSG渲染优化实现毫秒级性能突破⚡。
 - #### 📱 多平台开发经验：微信/抖音/支付宝等平台的🎮小游戏和小程序开发经验，H5打包📦 iOS/Android并成功提审上线完整经验✅。
 ### 🌟在高复杂度Web图形领域具备独特优势：
