@@ -55,14 +55,39 @@ export default {
         "type": "skill_level",// 技能熟练度,高亮 
         name: "技能熟练度",
         list: [
+            ["Node.js", 3], 
             ["Node", 3],
             ["微信游戏", 3],
             ["H5游戏打包", 3],
             ["游戏脚手架", 3],
             ["H5游戏包内更新", 3],
+            ["Protobuf", 3], 
             ["Canvas", 3],
-            ["Cocos Creator", 2],
+            ["H5游戏", 3], 
+            ["HTML5", 3], 
+            ["核心开发", 3], 
+            ["DevOps", 3], 
+            ["n8n", 3], 
+            ["AS3", 3], 
+            ["WebGL", 2], 
+            ["CI/CD", 3], 
+            ["CDN智能预热", 3], 
+            ["Serverless", 2], 
+            ["小游戏", 3], 
+            ["小程序", 3], 
+            ["LayaAir", 3], 
+            ["Laya", 3], 
+            ["Egret", 3], 
+            ["PixiJS", 3], 
+            ["Pixi.js", 3], 
+            ["Three.js", 3], 
+            ["Unity", 3], 
+            ["Unity WebGL", 3], 
+            ["Unity3D", 3], 
+            ["Cocos Creator", 2], 
+            ["CocosCreator", 2], 
             ["Wasm", 3],
+            ["ECS/DOTS", 3],
             ["CICD集成", 3],
             ["微前端", 3],
             ["沙箱和样式隔离", 3],
@@ -84,6 +109,8 @@ export default {
             ["Node.js", 3],
             ["Golang", 1],
             ["CSS", 3],
+            ["性能优化", 3],
+            ["架构设计", 3],
             ["技术选型", 3],
             ["技术攻关", 3],
             ["系统架构", 3],
@@ -182,7 +209,7 @@ export default {
             ["阿里云FC", 2],
             ["腾讯SCF", 2],
             ["Android", 2],
-            ["iOS", 1],
+            ["iOS", 2],
             ["AWS Lambda", 2],
             ["Azure Functions", 2],
             ["API Gateway", 2],
@@ -199,7 +226,7 @@ export default {
             ["Adobe Photoshop", 2],
             ["Jenkins", 3],
             ["XCode", 2],
-            ["微服务架构", 3],
+            ["微服务架构", 2],
             ["AWS", 2],
             ["Azure", 2],
             ["腾讯云", 2],
@@ -222,6 +249,8 @@ export default {
             ["大型虚拟社区架构", 3],
             ["元宇宙", 3],
             ["Web 超大型社区", 3],
+            ["ActionScript 2", 3],
+            ["HTML", 3],
         ]
     },
     expected_positions: {
@@ -229,15 +258,15 @@ export default {
         "game": assignDeep(JSON.parse(JSON.stringify(DataGameDev)), {
             "is_home_page": true,// 作为首页
             header_info: {
-                position: "游戏主程",
+                position: "游戏主程专家",
                 expected_salary: "期望薪资 面议",
             },
             target: { hidden: true, },// 隐藏 职业规划 
             personal_strengths: {
                 "type": "personal_strengths",// 个人优势模块
                 name: "个人优势",
-                content: `### 🎮 全栈游戏主程｜🛠️ 15年+架构设计专家（Unity/Cocos/H5全领域）
-- #### 🚀 <span style="font-size: 1.8em;">全栈技术攻坚</span>：精通TypeScript/Node.js技术生态，主导构建⚙️企业级脚手架、📦模块化架构及🤖CI/CD自动化体系，擅长通过🚀Wasm加速、⚡SSR/服务端渲染突破性能瓶颈。
+                content: `### 🎮 游戏主程专家｜🛠️ 15年+游戏架构与主程实战经验（Unity/H5游戏/Cocos Creator）
+- #### 🚀 <span style="font-size: 1.8em;">全栈技术攻坚</span>：精通TS/JS/Node.js技术生态，主导构建⚙️企业级脚手架、📦模块化架构及🤖CI/CD自动化体系（含AI体系n8n），擅长通过🚀Wasm加速、动态调节算法、脏数据追踪、寻路优化、​​ECS/DOTS、SoA 方案等性能优化技巧突破瓶颈。
 
 ### 🌐 全平台开发专家：
 - #### 📱 <span style="font-size: 1.5em;">多端部署能力</span>：成功发布🎮微信/抖音小游戏、📲Hybrid混合应用及📦Web打包原生应用，掌握🛡️微前端沙箱与🌐跨端渲染核心技术。

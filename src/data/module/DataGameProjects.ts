@@ -1,16 +1,5 @@
 // 作品
-export default [
-    {
-        name: '下面视频如有卡顿，请转到国内源观看👇',
-        content: `
- <p align="center"> !QRCode:https://demo.deden.cn:8080 size=200 </p> 
- <p align="center"> 
-  <a href="https://demo.deden.cn:8080" target="_blank">https://demo.deden.cn:8080</a>
-  <br/>
-  <b><span style="color:#f00">域名未备案免费解析方案，可尝试不同网络环境或PC端访问。</span></b>
- </p>
-`,
-    },
+export default [    
     {
         name: '2004年独立做的第一个游戏（一个没有使用`Function、Array、for、while`只有`if..else`的游戏）',
         children: [
