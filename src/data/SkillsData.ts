@@ -232,36 +232,4 @@ export const getSkillsData = () => {
             ["HTML", 3],
         ]
     };
-};
-
-/**
- * 核心技能列表 - 用于首屏快速渲染
- *
- * 只包含最重要的技能，用于快速初始化页面
- * 避免首次加载时技能列表过长影响性能
- *
- * @returns 核心技能数组
- */
-export const getCoreSkills = () => {
-    return [
-        // AI相关核心技能
-        ["AI Agent开发", 3],
-        ["LangChain", 3],
-        ["OpenAI API", 3],
-        ["RAG检索增强", 3],
-
-        // 传统核心技能
-        ["JavaScript", 3],
-        ["TypeScript", 3],
-        ["React", 3],
-        ["Node.js", 3],
-        ["Vue", 3],
-        ["Unity", 3],
-        ["HTML5", 3],
-        ["CSS", 3],
-        ["全栈", 3],
-        ["前端开发", 3],
-        ["后端开发", 3],
-        ["游戏开发", 3],
-    ];
-};
+}; 

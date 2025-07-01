@@ -31,33 +31,33 @@ const GlobalStyle = createGlobalStyle`
     --color-shadow-dark: rgba(0, 0, 0, 0.2);
   }
 
-  /* CSS变量定义 - 深色主题 */
+  /* CSS变量定义 - 深色主题 - 护眼优化版本 */
   [data-theme="dark"] {
-    --color-primary: #3498db;
-    --color-secondary: #ecf0f1;
-    --color-accent: #e74c3c;
+    --color-primary: #4a9eff;
+    --color-secondary: #e2e8f0;
+    --color-accent: #ff6b6b;
 
-    --color-background: #1a1a1a;
-    --color-surface: #2c2c2c;
-    --color-card: #363636;
+    --color-background: #0f1419;
+    --color-surface: #1a202c;
+    --color-card: #2d3748;
 
-    --color-text-primary: #ecf0f1;
-    --color-text-secondary: #bdc3c7;
-    --color-text-disabled: #7f8c8d;
-    --color-text-inverse: #2c3e50;
+    --color-text-primary: #e2e8f0;
+    --color-text-secondary: #a0aec0;
+    --color-text-disabled: #718096;
+    --color-text-inverse: #1a202c;
 
-    --color-border-light: #404040;
-    --color-border-medium: #555555;
-    --color-border-dark: #777777;
+    --color-border-light: #2d3748;
+    --color-border-medium: #4a5568;
+    --color-border-dark: #718096;
 
-    --color-status-success: #2ecc71;
-    --color-status-warning: #f1c40f;
-    --color-status-error: #e74c3c;
-    --color-status-info: #3498db;
+    --color-status-success: #48bb78;
+    --color-status-warning: #ed8936;
+    --color-status-error: #f56565;
+    --color-status-info: #4299e1;
 
-    --color-shadow-light: rgba(0, 0, 0, 0.2);
-    --color-shadow-medium: rgba(0, 0, 0, 0.4);
-    --color-shadow-dark: rgba(0, 0, 0, 0.6);
+    --color-shadow-light: rgba(0, 0, 0, 0.1);
+    --color-shadow-medium: rgba(0, 0, 0, 0.25);
+    --color-shadow-dark: rgba(0, 0, 0, 0.4);
   }
 
   /* 全局重置和移动端优化 */
@@ -164,6 +164,25 @@ const GlobalStyle = createGlobalStyle`
     color: var(--color-text-primary);
     border-radius: 4px;
     transition: color 0.3s ease;
+  }
+
+  /* 二维码深色模式优化 */
+  [data-theme="dark"] {
+    /* 确保二维码在深色模式下有良好的对比度 */
+    svg[data-qr-code] {
+      background: var(--color-card) !important;
+      border-radius: 8px;
+      padding: 8px;
+      box-shadow: 0 2px 8px var(--color-shadow-medium);
+    }
+
+    /* 优化Markdown中的二维码显示 */
+    .markdown-content svg {
+      background: var(--color-card);
+      border-radius: 8px;
+      padding: 8px;
+      transition: background-color 0.3s ease;
+    }
   }
   
   #root {

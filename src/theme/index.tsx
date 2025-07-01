@@ -92,40 +92,40 @@ const lightTheme: ThemeColors = {
   }
 };
 
-// 深色主题
+// 深色主题 - 护眼优化版本
 const darkTheme: ThemeColors = {
-  primary: '#3498db',
-  secondary: '#ecf0f1',
-  accent: '#e74c3c',
-  
-  background: '#1a1a1a',
-  surface: '#2c2c2c',
-  card: '#363636',
-  
+  primary: '#4a9eff',        // 更柔和的蓝色
+  secondary: '#e2e8f0',      // 更温和的浅色
+  accent: '#ff6b6b',         // 更柔和的红色
+
+  background: '#0f1419',     // 更深的背景，减少眼部疲劳
+  surface: '#1a202c',       // 温和的表面色
+  card: '#2d3748',          // 更舒适的卡片背景
+
   text: {
-    primary: '#ecf0f1',
-    secondary: '#bdc3c7',
-    disabled: '#7f8c8d',
-    inverse: '#2c3e50'
+    primary: '#e2e8f0',     // 柔和的主文本色
+    secondary: '#a0aec0',   // 温和的次要文本色
+    disabled: '#718096',    // 适中的禁用文本色
+    inverse: '#1a202c'      // 反色文本
   },
-  
+
   border: {
-    light: '#404040',
-    medium: '#555555',
-    dark: '#777777'
+    light: '#2d3748',       // 更柔和的浅边框
+    medium: '#4a5568',      // 适中的边框色
+    dark: '#718096'         // 深边框色
   },
-  
+
   status: {
-    success: '#2ecc71',
-    warning: '#f1c40f',
-    error: '#e74c3c',
-    info: '#3498db'
+    success: '#48bb78',     // 护眼的成功色
+    warning: '#ed8936',     // 温和的警告色
+    error: '#f56565',       // 柔和的错误色
+    info: '#4299e1'         // 舒适的信息色
   },
-  
+
   shadow: {
-    light: 'rgba(0, 0, 0, 0.2)',
-    medium: 'rgba(0, 0, 0, 0.4)',
-    dark: 'rgba(0, 0, 0, 0.6)'
+    light: 'rgba(0, 0, 0, 0.1)',    // 更轻的阴影
+    medium: 'rgba(0, 0, 0, 0.25)',  // 适中的阴影
+    dark: 'rgba(0, 0, 0, 0.4)'      // 深阴影
   }
 };
 

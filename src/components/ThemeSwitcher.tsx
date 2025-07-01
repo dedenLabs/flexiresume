@@ -23,22 +23,22 @@ const SwitcherButton = styled.button<{ isDark: boolean }>`
   justify-content: center;
   width: 44px;
   height: 44px;
-  background: ${props => props.isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'};
-  border: 1px solid ${props => props.isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)'};
+  background: ${props => props.isDark ? 'rgba(45, 55, 72, 0.6)' : 'rgba(0, 0, 0, 0.05)'};
+  border: 1px solid ${props => props.isDark ? 'rgba(74, 85, 104, 0.6)' : 'rgba(0, 0, 0, 0.1)'};
   border-radius: 50%;
   cursor: pointer;
   font-size: 20px;
-  color: ${props => props.isDark ? '#f1c40f' : '#ff6b35'};
+  color: ${props => props.isDark ? '#ed8936' : '#ff6b35'};
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
 
   &:hover {
-    background: ${props => props.isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.08)'};
-    border-color: ${props => props.isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.15)'};
+    background: ${props => props.isDark ? 'rgba(45, 55, 72, 0.8)' : 'rgba(0, 0, 0, 0.08)'};
+    border-color: ${props => props.isDark ? 'rgba(113, 128, 150, 0.8)' : 'rgba(0, 0, 0, 0.15)'};
     transform: scale(1.05);
-    box-shadow: 0 4px 12px ${props => props.isDark ? 'rgba(241, 196, 15, 0.3)' : 'rgba(255, 107, 53, 0.3)'};
+    box-shadow: 0 4px 12px ${props => props.isDark ? 'rgba(237, 137, 54, 0.3)' : 'rgba(255, 107, 53, 0.3)'};
   }
 
   &:active {
@@ -82,8 +82,8 @@ const Tooltip = styled.div<{ isDark: boolean; isVisible: boolean }>`
   transform: translateX(-50%);
   margin-bottom: 8px;
   padding: 6px 12px;
-  background: ${props => props.isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)'};
-  color: ${props => props.isDark ? '#2c3e50' : '#ffffff'};
+  background: ${props => props.isDark ? 'rgba(226, 232, 240, 0.95)' : 'rgba(0, 0, 0, 0.8)'};
+  color: ${props => props.isDark ? '#1a202c' : '#ffffff'};
   font-size: 12px;
   border-radius: 6px;
   white-space: nowrap;
@@ -102,7 +102,7 @@ const Tooltip = styled.div<{ isDark: boolean; isVisible: boolean }>`
     left: 50%;
     transform: translateX(-50%);
     border: 4px solid transparent;
-    border-top-color: ${props => props.isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)'};
+    border-top-color: ${props => props.isDark ? 'rgba(226, 232, 240, 0.95)' : 'rgba(0, 0, 0, 0.8)'};
   }
 `;
 
@@ -113,7 +113,7 @@ const RippleEffect = styled.div<{ isActive: boolean }>`
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(160, 174, 192, 0.6) 0%, transparent 70%);
   transform: translate(-50%, -50%);
   transition: all 0.6s ease;
   pointer-events: none;

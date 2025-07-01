@@ -15,6 +15,7 @@ import icon_location from '../assets/location.svg';
 import { IoHome } from "react-icons/io5";
 import { QRCodeSVG } from 'qrcode.react';
 import { replaceCDNBaseURL } from '../utils/Tools';
+import { useTheme } from '../theme';
 interface HeaderProps {
   name: string;
   gender: string;
@@ -76,13 +77,27 @@ const Avatar = styled.img`
     float: right
   `}
 `;
-const QRCodeContener = styled.div`
+const QRCodeContener = styled.div<{ isDark?: boolean }>`
     // margin: 0 0.4rem;
     width: 6.5rem;
-    height: 6.5rem; 
+    height: 6.5rem;
     float: right;
     text-align: center;
-    font-size: 0.75rem; 
+    font-size: 0.75rem;
+
+    /* 深色模式下的二维码容器优化 */
+    ${props => props.isDark && `
+      background: rgba(226, 232, 240, 0.1);
+      border-radius: 8px;
+      padding: 4px;
+
+      /* 二维码反色处理 */
+      svg {
+        filter: invert(1) hue-rotate(180deg);
+        background: white;
+        border-radius: 4px;
+      }
+    `}
 `;
 const QRCode = styled.img` 
     width: 100%;
@@ -120,14 +135,21 @@ const IconStyle = { fontSize: "1rem", margin: '0 0.4rem' };
 
 
 const Header: React.FC<HeaderProps> = ({ name, qrcode, qrcode_msg, home_page, avatar, gender, position, expected_salary, location, is_male, email, phone, wechat, status, age, education, work_experience_num, work_experience }) => {
+  const { isDark } = useTheme();
+
   return (
     <HeaderWrapper>
       <InfoWrapper>
         <motion.div key={location.pathname} initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          {qrcode && window.innerWidth > 680/* 尺寸较小 或 已经在移动设备上隐藏二维码 */ ? <QRCodeContener>
-            <QRCodeSVG value={
-              typeof (qrcode) == "string" ? qrcode : window.location.href//检测使用的url为string类型时使用固定url，否则使用当前浏览器地址url
-            } size={150} width="100%" height="100%" />
+          {qrcode && window.innerWidth > 680/* 尺寸较小 或 已经在移动设备上隐藏二维码 */ ? <QRCodeContener isDark={isDark}>
+            <QRCodeSVG
+              value={typeof (qrcode) == "string" ? qrcode : window.location.href}
+              size={150}
+              width="100%"
+              height="100%"
+              fgColor={isDark ? "#1a202c" : "#000000"}
+              bgColor={isDark ? "#e2e8f0" : "#ffffff"}
+            />
             {qrcode_msg}
           </QRCodeContener> : null}
           <Avatar qrcode={qrcode ? 1 : 0} src={replaceCDNBaseURL(avatar)} />

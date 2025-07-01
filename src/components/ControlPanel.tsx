@@ -22,17 +22,17 @@ const PanelContainer = styled.div<{ isDark: boolean }>`
   align-items: center;
   gap: 12px;
   padding: 12px;
-  background: ${props => props.isDark ? 'rgba(44, 44, 44, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
-  border: 1px solid ${props => props.isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'};
+  background: ${props => props.isDark ? 'rgba(26, 32, 44, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
+  border: 1px solid ${props => props.isDark ? 'rgba(45, 55, 72, 0.8)' : 'rgba(0, 0, 0, 0.1)'};
   border-radius: 12px;
   backdrop-filter: blur(20px);
-  box-shadow: 0 8px 32px ${props => props.isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.1)'};
+  box-shadow: 0 8px 32px ${props => props.isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'};
   z-index: 1000;
   transition: all 0.3s ease;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 40px ${props => props.isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.15)'};
+    box-shadow: 0 12px 40px ${props => props.isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.15)'};
   }
 
   @media (max-width: 768px) {
@@ -46,7 +46,7 @@ const PanelContainer = styled.div<{ isDark: boolean }>`
 const Divider = styled.div<{ isDark: boolean }>`
   width: 1px;
   height: 24px;
-  background: ${props => props.isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)'};
+  background: ${props => props.isDark ? 'rgba(74, 85, 104, 0.6)' : 'rgba(0, 0, 0, 0.1)'};
   transition: background 0.3s ease;
 `;
 
@@ -57,16 +57,16 @@ const PanelButton = styled.button<{ isDark: boolean }>`
   width: 36px;
   height: 36px;
   background: transparent;
-  border: 1px solid ${props => props.isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)'};
+  border: 1px solid ${props => props.isDark ? 'rgba(74, 85, 104, 0.6)' : 'rgba(0, 0, 0, 0.1)'};
   border-radius: 8px;
   cursor: pointer;
-  color: ${props => props.isDark ? '#ecf0f1' : '#2c3e50'};
+  color: ${props => props.isDark ? '#e2e8f0' : '#2c3e50'};
   font-size: 16px;
   transition: all 0.3s ease;
 
   &:hover {
-    background: ${props => props.isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'};
-    border-color: ${props => props.isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.2)'};
+    background: ${props => props.isDark ? 'rgba(45, 55, 72, 0.8)' : 'rgba(0, 0, 0, 0.05)'};
+    border-color: ${props => props.isDark ? 'rgba(113, 128, 150, 0.8)' : 'rgba(0, 0, 0, 0.2)'};
     transform: scale(1.05);
   }
 
@@ -94,19 +94,19 @@ const ToggleButton = styled.button<{ isDark: boolean }>`
   justify-content: center;
   width: 48px;
   height: 48px;
-  background: ${props => props.isDark ? 'rgba(44, 44, 44, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
-  border: 1px solid ${props => props.isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'};
+  background: ${props => props.isDark ? 'rgba(26, 32, 44, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
+  border: 1px solid ${props => props.isDark ? 'rgba(45, 55, 72, 0.8)' : 'rgba(0, 0, 0, 0.1)'};
   border-radius: 50%;
   cursor: pointer;
-  color: ${props => props.isDark ? '#ecf0f1' : '#2c3e50'};
+  color: ${props => props.isDark ? '#e2e8f0' : '#2c3e50'};
   font-size: 20px;
   backdrop-filter: blur(20px);
-  box-shadow: 0 4px 16px ${props => props.isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.1)'};
+  box-shadow: 0 4px 16px ${props => props.isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'};
   transition: all 0.3s ease;
 
   &:hover {
     transform: scale(1.1);
-    box-shadow: 0 6px 20px ${props => props.isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.15)'};
+    box-shadow: 0 6px 20px ${props => props.isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.15)'};
   }
 
   &:active {
@@ -117,11 +117,11 @@ const ToggleButton = styled.button<{ isDark: boolean }>`
 const ExpandedPanel = styled.div<{ isDark: boolean }>`
   margin-top: 12px;
   padding: 16px;
-  background: ${props => props.isDark ? 'rgba(44, 44, 44, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
-  border: 1px solid ${props => props.isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'};
+  background: ${props => props.isDark ? 'rgba(26, 32, 44, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
+  border: 1px solid ${props => props.isDark ? 'rgba(45, 55, 72, 0.8)' : 'rgba(0, 0, 0, 0.1)'};
   border-radius: 12px;
   backdrop-filter: blur(20px);
-  box-shadow: 0 8px 32px ${props => props.isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.1)'};
+  box-shadow: 0 8px 32px ${props => props.isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'};
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -138,7 +138,7 @@ const ControlGroup = styled.div`
 const ControlLabel = styled.span<{ isDark: boolean }>`
   font-size: 14px;
   font-weight: 500;
-  color: ${props => props.isDark ? '#ecf0f1' : '#2c3e50'};
+  color: ${props => props.isDark ? '#e2e8f0' : '#2c3e50'};
 `;
 
 interface ControlPanelProps {

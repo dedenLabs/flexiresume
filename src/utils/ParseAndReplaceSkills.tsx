@@ -325,15 +325,26 @@ function remarkQRCodeLazyLoad() {
                 const url = match[1] || window.location.href;
                 const size = parseInt(match[2], 10) || 150; // 默认尺寸为 150
 
+                // 检测当前主题模式
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
                 // 将节点类型改为 html，使用自定义组件
                 node.type = 'html';
-                const tsx = <QRCodeSVG value={url}
+                const tsx = <QRCodeSVG
+                    value={url}
                     size={size}
-                    style={{ maxWidth: "100%" }}
+                    style={{
+                        maxWidth: "100%",
+                        background: isDark ? '#e2e8f0' : '#ffffff',
+                        borderRadius: '8px',
+                        padding: '8px'
+                    }}
+                    fgColor={isDark ? "#1a202c" : "#000000"}
+                    bgColor={isDark ? "#e2e8f0" : "#ffffff"}
                 />;
                 const rendered = ReactDOMServer.renderToStaticMarkup(tsx).toString();
-                logMarkdown(`二维码`, `url:${url} size:${size} type:${node.type} 
-value: ${node.value} 
+                logMarkdown(`二维码`, `url:${url} size:${size} isDark:${isDark} type:${node.type}
+value: ${node.value}
 rendered: ${rendered.slice(0, 100)} ...
 match[0]: ${match[0]}
 match[1]: ${match[1]}
