@@ -188,20 +188,60 @@ interface ExpectedPositions {
 
 ### Skills
 
-技能数据结构。
+FlexiResume 支持两种技能数据结构：
+
+#### 1. 技能树结构 (DataSkills.ts)
 
 ```typescript
-interface Skills {
-  type: 'skills';
-  name: string;                    // 模块名称
-  list: SkillCategory[];           // 技能分类列表
+interface SkillTreeNode {
+  name: string;                    // 技能分类名称
+  content?: string;                // 技能描述内容 (支持Markdown)
+  children?: SkillTreeNode[];      // 子技能分类
 }
 
-interface SkillCategory {
-  name: string;                    // 分类名称
-  level: number;                   // 熟练度 (0-100)
-  list: string[];                  // 技能列表
+// 使用示例
+const skillTree: SkillTreeNode[] = [
+  {
+    name: '编程语言',
+    content: '- **精通**: JavaScript, TypeScript\n- **熟练**: Python, Java'
+  },
+  {
+    name: '前端开发',
+    children: [
+      {
+        name: '框架/库',
+        content: '- **精通**: React, Vue\n- **熟练**: Angular'
+      }
+    ]
+  }
+];
+```
+
+#### 2. 技能熟练度结构 (SkillsData.ts)
+
+```typescript
+interface SkillLevel {
+  type: 'skill_level';
+  name: string;                    // 模块名称
+  list: [string, number][];        // [技能名称, 熟练度等级]
 }
+
+// 熟练度等级定义
+type SkillProficiency = 1 | 2 | 3;
+// 1: 了解 (基本掌握，需要指导)
+// 2: 熟练 (能够独立完成复杂任务)
+// 3: 精通 (深度掌握，能够指导他人)
+
+// 使用示例
+const skillLevels: SkillLevel = {
+  type: 'skill_level',
+  name: '技能熟练度',
+  list: [
+    ['JavaScript', 3],    // 精通
+    ['Python', 2],        // 熟练
+    ['Golang', 1]         // 了解
+  ]
+};
 ```
 
 ### EmploymentHistory

@@ -78,28 +78,63 @@ export const Data: IFlexiResume = {
 
 ### 技能配置
 
-在 `src/data/module/` 目录下配置您的技能：
+FlexiResume 支持两种技能展示方式：
+
+#### 1. 技能树结构 (DataSkills.ts)
+
+在 `src/data/module/DataSkills.ts` 中配置技能树结构：
 
 ```typescript
-// src/data/module/DataSkills.ts
-export const DataSkills = {
-  type: "skills",
-  name: "技能清单",
-  list: [
-    {
-      name: "前端开发",
-      level: 90,  // 熟练度 0-100
-      list: ["React", "Vue", "TypeScript", "JavaScript"]
-    },
-    {
-      name: "后端开发", 
-      level: 85,
-      list: ["Node.js", "Python", "Java", "Go"]
-    }
-    // ... 更多技能
-  ]
+// src/data/module/DataSkills.ts - 技能树结构
+export default [
+  {
+    name: '编程语言',
+    content: `- **精通**: Node, TypeScript, JavaScript, C#
+- **熟练/熟悉**: C/C++, Java, Python, Golang`
+  },
+  {
+    name: '前端开发',
+    children: [
+      {
+        name: '框架/库',
+        content: `- **精通**: React, Vue, Redux/MobX
+- **熟练/熟悉**: Angular, Web3.js`
+      },
+      {
+        name: '游戏开发',
+        content: `- **精通/熟练**: Unity, Cocos Creator, Three.js`
+      }
+    ],
+    content: `*具备与 UI/UX 团队高效对接的经验...*`
+  }
+];
+```
+
+#### 2. 技能熟练度 (SkillsData.ts)
+
+在 `src/data/SkillsData.ts` 中配置技能熟练度等级：
+
+```typescript
+// src/data/SkillsData.ts - 技能熟练度配置
+export const getSkillsData = () => {
+  return {
+    type: "skill_level",
+    name: "技能熟练度",
+    list: [
+      ["JavaScript", 3],    // 3: 精通
+      ["TypeScript", 3],    // 3: 精通
+      ["Python", 2],        // 2: 熟练
+      ["Golang", 1],        // 1: 了解
+      // ... 更多技能
+    ]
+  };
 };
 ```
+
+**熟练度等级说明**：
+- `3`: 精通 (深度掌握，能够指导他人) - 高亮显示
+- `2`: 熟练 (能够独立完成复杂任务) - 中等显示
+- `1`: 了解 (基本掌握，需要指导) - 普通显示
 
 ---
 

@@ -149,6 +149,46 @@ case 'custom_module':
 
 ## 📝 模块自定义
 
+### 技能模块自定义
+
+FlexiResume 提供两种技能展示方式，您可以根据需要选择或同时使用：
+
+#### 1. 技能树模块 (推荐用于详细展示)
+
+```typescript
+// src/data/module/DataSkills.ts
+export default [
+  {
+    name: '技能分类名称',
+    content: `- **精通**: 技能1, 技能2
+- **熟练**: 技能3, 技能4`,
+    children: [
+      {
+        name: '子分类',
+        content: '子分类技能描述'
+      }
+    ]
+  }
+];
+```
+
+#### 2. 技能熟练度模块 (推荐用于快速展示)
+
+```typescript
+// src/data/SkillsData.ts
+export const getSkillsData = () => {
+  return {
+    type: "skill_level",
+    name: "技能熟练度",
+    list: [
+      ["技能名称", 3],  // 3=精通, 2=熟练, 1=了解
+      ["另一个技能", 2],
+      // ... 更多技能
+    ]
+  };
+};
+```
+
 ### 创建自定义模块
 
 1. **定义模块数据结构**
