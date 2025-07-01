@@ -7,38 +7,50 @@ import flexiResumeStore from '../store/Store';
 const borderColor = `#aaa`;
 const minWidth = `${920}px`;
 
-const TabsWrapper = styled.nav` 
-  padding: 0 40px;
+const TabsWrapper = styled.nav`
+  /* 移动端样式 - 修复横向溢出问题 */
+  padding: 0 10px; /* 减少左右padding */
   position: relative;
   display: flex;
   flex-direction: row;
   margin-top: 20px;
-  max-width: ${minWidth};
+  width: 100%; /* 确保不超出容器宽度 */
+  max-width: 100vw; /* 不超出视口宽度 */
   box-sizing: border-box;
   top: 2px;
-  justify-content: flex-end; 
-  
+  justify-content: flex-start; /* 改为左对齐，避免溢出 */
+  overflow-x: auto; /* 允许横向滚动，但尽量避免 */
+  overflow-y: hidden;
 
-  @media (min-width: ${minWidth}) { 
+  /* 隐藏滚动条但保持功能 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  @media (min-width: ${minWidth}) {
     position: absolute;
     width: 45px;
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
     top: 115px;
     left: 50%;
     transform: translateX(405px);
     border-radius: 8px 8px 0 0;
     align-items: flex-end;
+    overflow: visible; /* 桌面端恢复正常 */
   }
 
   /* 在打印时隐藏 */
   @media print {
-    display: none; 
+    display: none;
   }
 `;
 
 const TabLink = styled(NavLink)`
-  padding: 10px 20px;
+  /* 移动端样式优化 */
+  padding: 8px 12px; /* 减少padding避免溢出 */
   text-decoration: none;
   color: black;
   border: 2px solid transparent; /* 默认无边框 */
@@ -50,6 +62,9 @@ const TabLink = styled(NavLink)`
   transition: background-color 0.3s, border 0.3s;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
   background-color: #fff;
+  white-space: nowrap; /* 防止文字换行 */
+  font-size: 14px; /* 移动端使用较小字体 */
+  flex-shrink: 0; /* 防止被压缩 */
 
   &:hover, &.active {
     background-color: #f0f0f0;
@@ -57,21 +72,21 @@ const TabLink = styled(NavLink)`
     border-top: 2px solid #333; /* 激活状态显示右侧边框 */
   }
 
-  @media (min-width: ${minWidth}) { 
+  @media (min-width: ${minWidth}) {
     padding: 10px 10px;
     margin: 2px 0;
     border: none;
     text-align: center;
-    
-    /* 竖向排列文本 */ 
+    font-size: 16px; /* 桌面端恢复正常字体大小 */
+
+    /* 竖向排列文本 */
     writing-mode: vertical-rl;
-    text-orientation: mixed;            
+    text-orientation: mixed;
     border-radius: 0px 8px 8px 0px;
     border-top: 1px solid ${borderColor};
     border-right: 1px solid ${borderColor};
     border-bottom: 1px solid ${borderColor};
     border-left: 0px solid ${borderColor};
-
 
     &:hover, &.active {
       background-color: #f0f0f0;

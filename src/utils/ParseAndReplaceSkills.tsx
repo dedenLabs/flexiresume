@@ -4,8 +4,89 @@ import SkillItem from '../components/skill/SkillItem'; // 根据 SkillItem 的�
 import ReactMarkdown from 'react-markdown';
 import { remark } from 'remark';
 import html from 'remark-html';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism'; // 选择一个高亮主题
+// 轻量级代码高亮组件 - 不依赖react-syntax-highlighter
+const LightCodeBlock: React.FC<{ language: string; children: string }> = ({ language, children }) => {
+    // 简单的语法高亮样式映射
+    const getLanguageStyle = (lang: string) => {
+        const baseStyle = {
+            backgroundColor: '#f6f8fa',
+            padding: '16px',
+            borderRadius: '8px',
+            border: '1px solid #d1d9e0',
+            overflow: 'auto',
+            fontSize: '14px',
+            lineHeight: '1.45',
+            fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+            position: 'relative' as const,
+            margin: '16px 0'
+        };
+
+        // 根据语言类型添加不同的边框颜色
+        const languageColors: Record<string, string> = {
+            'javascript': '#f7df1e',
+            'typescript': '#3178c6',
+            'python': '#3776ab',
+            'java': '#ed8b00',
+            'csharp': '#239120',
+            'cpp': '#00599c',
+            'css': '#1572b6',
+            'html': '#e34f26',
+            'json': '#000000',
+            'bash': '#4eaa25',
+            'shell': '#4eaa25'
+        };
+
+        const color = languageColors[lang.toLowerCase()] || '#6e7681';
+        return {
+            ...baseStyle,
+            borderLeft: `4px solid ${color}`
+        };
+    };
+
+    return (
+        <div style={{ position: 'relative' }}>
+            {/* 语言标签 */}
+            <div style={{
+                position: 'absolute',
+                top: '8px',
+                right: '12px',
+                fontSize: '12px',
+                color: '#6e7681',
+                backgroundColor: '#ffffff',
+                padding: '2px 8px',
+                borderRadius: '4px',
+                border: '1px solid #d1d9e0',
+                zIndex: 1
+            }}>
+                {language}
+            </div>
+            <pre style={getLanguageStyle(language)}>
+                <code style={{
+                    backgroundColor: 'transparent',
+                    padding: '0',
+                    fontSize: 'inherit',
+                    color: '#24292e'
+                }}>
+                    {children}
+                </code>
+            </pre>
+        </div>
+    );
+};
+
+// 完全禁用react-syntax-highlighter，使用轻量级方案
+// 这样可以减少1.5MB+的包大小
+const useOnlyLightHighlighter = true;
+
+// 保留接口以防将来需要
+const loadAdvancedSyntaxHighlighter = async (language: string) => {
+    if (useOnlyLightHighlighter) {
+        return null; // 强制使用轻量级高亮
+    }
+
+    // 这部分代码被禁用，以减少包大小
+    return null;
+};
 import { visit } from 'unist-util-visit';
 import flexiResumeStore from '../store/Store';
 import { getLogger, replaceCDNBaseURL, replaceVariables } from './Tools';
@@ -292,22 +373,71 @@ export const checkConvertMarkdownToHtml = (content: string) => {
                 .process(content);
 
             let processedContent = result.toString().trim();
-            // 添加代码高亮
-            processedContent = processedContent.replace(
-                /<pre>\s*<code\s*(?:class="language-(\w+)")?>([\s\S]*?)<\/code>\s*<\/pre>/g,
-                (match, lang, code) => {
-                    const language = lang || 'ts'; // 默认使用 js 语言
-                    const tsx = (
-                        <div style={{ maxWidth: '100%', overflowX: 'auto', whiteSpace: `pre-wrap` }}>
-                            <SyntaxHighlighter language={language} style={vs}>
-                                {code}
-                            </SyntaxHighlighter>
-                        </div>
+
+            // 检查是否包含代码块
+            const hasCodeBlocks = /<pre>\s*<code/.test(processedContent);
+            if (hasCodeBlocks) {
+                // 处理代码块，优先使用轻量级高亮
+                const codeBlockPromises: Promise<string>[] = [];
+                const codeBlockMatches: Array<{ match: string; lang: string; code: string; index: number }> = [];
+
+                // 收集所有代码块
+                processedContent.replace(
+                    /<pre>\s*<code\s*(?:class="language-(\w+)")?>([\s\S]*?)<\/code>\s*<\/pre>/g,
+                    (match, lang, code, offset) => {
+                        const language = lang || 'text';
+                        codeBlockMatches.push({ match, lang: language, code, index: offset });
+                        return match;
+                    }
+                );
+
+                // 并行处理所有代码块
+                for (const { match, lang, code } of codeBlockMatches) {
+                    codeBlockPromises.push(
+                        (async () => {
+                            // 尝试加载高级语法高亮
+                            const advancedHighlighter = await loadAdvancedSyntaxHighlighter(lang);
+
+                            if (advancedHighlighter) {
+                                const { SyntaxHighlighter, vs } = advancedHighlighter;
+                                const tsx = (
+                                    <div style={{ maxWidth: '100%', overflowX: 'auto' }}>
+                                        <SyntaxHighlighter language={lang} style={vs}>
+                                            {code}
+                                        </SyntaxHighlighter>
+                                    </div>
+                                );
+                                return ReactDOMServer.renderToStaticMarkup(tsx);
+                            } else {
+                                // 使用轻量级高亮
+                                const tsx = <LightCodeBlock language={lang}>{code}</LightCodeBlock>;
+                                return ReactDOMServer.renderToStaticMarkup(tsx);
+                            }
+                        })()
                     );
-                    const codeHtml = ReactDOMServer.renderToStaticMarkup(tsx).toString();
-                    return codeHtml;
                 }
-            );
+
+                try {
+                    const renderedCodeBlocks = await Promise.all(codeBlockPromises);
+
+                    // 替换所有代码块
+                    let blockIndex = 0;
+                    processedContent = processedContent.replace(
+                        /<pre>\s*<code\s*(?:class="language-(\w+)")?>([\s\S]*?)<\/code>\s*<\/pre>/g,
+                        () => renderedCodeBlocks[blockIndex++]
+                    );
+                } catch (error) {
+                    console.warn('代码高亮处理失败，使用基础样式:', error);
+                    // 降级到基础样式
+                    processedContent = processedContent.replace(
+                        /<pre>\s*<code\s*(?:class="language-(\w+)")?>([\s\S]*?)<\/code>\s*<\/pre>/g,
+                        (match, lang, code) => {
+                            const tsx = <LightCodeBlock language={lang || 'text'}>{code}</LightCodeBlock>;
+                            return ReactDOMServer.renderToStaticMarkup(tsx);
+                        }
+                    );
+                }
+            }
 
 
             // parseAndReplaceSkills 将 Markdown 文本中的技能名称替换为相应的 React 组件,Html 化.

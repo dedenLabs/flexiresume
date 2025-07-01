@@ -85,18 +85,24 @@ export function getCurrentPositionNameByPath(path: string): string {
 }
 
 /**
- * 更新当前简历数据
+ * 更新当前简历数据（异步版本）
  *
  * @export
  * @param {string} postion 岗位名称
- * @return {*}  {string}
+ * @return {Promise<void>}
  */
-export function updateCurrentResumeStore(postion: string): string {
+export async function updateCurrentResumeStore(postion: string): Promise<void> {
     // 更新当前位置
-    flexiResumeStore.collapsedMap.clear();// 清空折叠信息 
+    flexiResumeStore.collapsedMap.clear();// 清空折叠信息
 
-    const selectedPositonData = originData.expected_positions[postion];
-    const newData = assignDeep({}, originData, selectedPositonData);
+    // 异步加载职位数据和完整技能数据
+    const [positionData, skillsData] = await Promise.all([
+        originData.loadPositionData(postion),
+        originData.loadSkillsData()
+    ]);
+
+    const selectedPositonData = assignDeep({}, positionData, originData.expected_positions[postion]);
+    const newData = assignDeep({}, originData, selectedPositonData, { skill_level: skillsData });
 
     // 更新当前简历数据
     flexiResumeStore.data = newData as IFlexiResume;

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Section from '../components/Section';
 import TimelineCard from '../components/timeline/TimelineCard';
@@ -11,6 +11,8 @@ import { IFlexiResume, IModuleInfo, ISkillLevel } from '../types/IFlexiResume';
 import flexiResumeStore from '../store/Store';
 import EducationHistoryCard from '../components/education_history/EducationHistoryCard';
 import TimelineContainer from '../components/timeline/TimelineContainer';
+import SkeletonLoader from '../components/SkeletonLoader';
+import SEOHead from '../components/SEOHead';
 
 interface FlexiResumeProps {
   path: string;
@@ -38,16 +40,39 @@ const ResumeWrapper = styled.div`
  */
 const FlexiResume: React.FC<FlexiResumeProps> = ({ path }) => {
   const postionName = path.slice(1);
-  updateCurrentResumeStore(postionName);
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState(flexiResumeStore.data);
 
-  const data = flexiResumeStore.data;
-  const header_info = data.header_info;
+  // 异步加载数据
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        await updateCurrentResumeStore(postionName);
+        setData(flexiResumeStore.data);
+      } catch (error) {
+        console.error('Failed to load position data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [postionName]);
 
   // 计算最小宽度
   const minWidth = watchMinWidth(800);
 
+  // 显示加载状态 - 使用骨架屏
+  if (isLoading) {
+    return <SkeletonLoader />;
+  }
+
+  const header_info = data.header_info;
+
   return (
     <ResumeWrapper style={{ minWidth: `${minWidth - 40}px`,  maxWidth: `800px` }}>
+      <SEOHead position={postionName} />
       <Header {...header_info} />
       {
         Object.keys(data).map((key, i) => {

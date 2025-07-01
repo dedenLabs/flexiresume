@@ -1,8 +1,272 @@
-import DataFrontendBackendCTO from "./positon/DataFrontendBackendCTO";
 import { IFlexiResume, IHeaderInfo } from "../types/IFlexiResume";
 import { assignDeep } from "../utils/Tools";
-import DataGameDev from "./positon/DataGameDev";
-import DataContractTask from "./positon/DataContractTask";
+
+/**
+ * 懒加载职位数据
+ *
+ * 根据不同的职位类型动态加载对应的数据文件，
+ * 这样可以减少初始包大小，提升首屏加载速度
+ *
+ * @param position 职位标识符
+ * @returns Promise<职位数据对象>
+ */
+const loadPositionData = async (position: string) => {
+    switch (position) {
+        case 'game':
+            // 游戏开发岗位数据
+            return (await import("./positon/DataGameDev")).default;
+        case 'frontend':
+        case 'backend':
+        case 'cto':
+            // 前端/后端/CTO岗位共享数据
+            return (await import("./positon/DataFrontendBackendCTO")).default;
+        case 'contracttask':
+            // 外包/技术顾问岗位数据
+            return (await import("./positon/DataContractTask")).default;
+        case 'agent':
+            // AI Agent工程师岗位数据
+            return (await import("./positon/DataAgentEngineer")).default;
+        default:
+            return {};
+    }
+};
+
+/**
+ * 懒加载完整技能数据
+ */
+const loadSkillsData = async () => {
+    const { getSkillsData } = await import("./SkillsData");
+    return getSkillsData();
+};
+
+/**
+ * 获取核心技能数据（同步）
+ * 用于快速初始化，避免循环依赖
+ */
+const getCoreSkills = () => {
+    return [
+        // AI相关核心技能
+        ["AI Agent开发", 3],
+        ["LangChain", 3],
+        ["OpenAI API", 3],
+        ["RAG检索增强", 3],
+
+        // 传统核心技能
+        ["游戏开发经验：19年＋", 3],
+        ["19年＋", 3],
+        ["网页设计", 3],
+        ["GitLab CI", 1],
+        ["Node.js", 3],
+        ["Node", 3],
+        ["全栈", 3],
+        ["网页开发经验：20年＋", 3],
+        ["微信游戏", 3],
+        ["H5游戏打包", 3],
+        ["游戏脚手架", 3],
+        ["H5游戏包内更新", 3],
+        ["Protobuf", 3],
+        ["Unreal Engine", 1],
+        ["Golang", 1],
+        ["Go", 1],
+        ["C++", 2],
+        ["Canvas", 3],
+        ["H5游戏", 3],
+        ["HTML5", 3],
+        ["核心开发", 3],
+        ["DevOps", 3],
+        ["n8n", 3],
+        ["AS3", 3],
+        ["WebGL", 2],
+        ["CI/CD", 3],
+        ["CDN智能预热", 3],
+        ["Serverless", 2],
+        ["小游戏", 3],
+        ["小程序", 3],
+        ["LayaAir", 3],
+        ["Laya", 3],
+        ["Egret", 3],
+        ["PixiJS", 3],
+        ["Pixi.js", 3],
+        ["Three.js", 3],
+        ["Unity引擎", 3],
+        ["Unity WebGL", 3],
+        ["Unity3D", 3],
+        ["Unity", 3],
+        ["Cocos Creator", 2],
+        ["CocosCreator", 2],
+        ["Wasm", 3],
+        ["ECS/DOTS", 3],
+        ["ECS", 3],
+        ["DOTS", 3],
+        ["CICD集成", 3],
+        ["H5引擎", 3],
+        ["Flash页游", 3],
+        ["Flash", 3],
+        ["微前端", 3],
+        ["沙箱和样式隔离", 3],
+        ["网页三剑客", 3],
+        ["MVVM框架", 3],
+        ["项目推进", 3],
+        ["AI领域", 2],
+        ["页游时代", 3],
+        ["技术攻坚", 3],
+        ["团队协作", 3],
+        ["项目架构", 3],
+        ["H5互动/游戏开发", 3],
+        ["Unity游戏开发", 3],
+        ["JavaScript", 3],
+        ["TypeScript", 3],
+        ["React Native", 2],
+        ["React", 3],
+        ["Vue", 3],
+        ["Node.js", 3],
+        ["Golang", 1],
+        ["CSS", 3],
+        ["性能优化", 3],
+        ["架构设计", 3],
+        ["技术选型", 3],
+        ["技术攻关", 3],
+        ["系统架构", 3],
+        ["性能调优", 3],
+        ["跨端应用方案", 2],
+        ["解决疑难杂症", 3],
+        ["敏捷开发", 3],
+        ["迭代开发", 3],
+        ["精益", 2],
+        ["KPI", 2],
+        ["OKR", 3],
+        ["团队组建", 3],
+        ["0到1上市", 3],
+        ["0到1解散", 3],
+        ["落地经验", 3],
+        ["初创公司", 3],
+        ["技术领导", 3],
+        ["职级评定标准", 2],
+        ["技术规范", 2],
+        ["Node.js", 3],
+        ["TypeScript", 3],
+        ["JavaScript", 3],
+        ["WebAssemblyScript", 3],
+        ["ActionScript 3", 3],
+        ["C#", 3],
+        ["C/C++", 2],
+        ["Java", 2],
+        ["Python", 2],
+        ["Golang", 1],
+        ["PHP", 2],
+        ["Shell", 2],
+        ["React", 3],
+        ["SWC", 3],
+        ["Mobx", 3],
+        ["Redux/MobX", 3],
+        ["framer-motion", 3],
+        ["remark-html", 3],
+        ["Three.js", 2],
+        ["LayaAir", 3],
+        ["Egret", 3],
+        ["ECharts", 3],
+        ["TradingVueJs", 3],
+        ["Vite", 3],
+        ["WebPack", 2],
+        ["Pm2", 3],
+        ["H5互动/游戏开发", 3],
+        ["Angular", 2],
+        ["Web3.js", 2],
+        ["TradingView", 3],
+        ["Babylon.js", 2],
+        ["WebGL/WebGPU", 2],
+        ["WebGPU", 2],
+        ["WebXR", 2],
+        ["Unity WebGL", 2],
+        ["WebAssembly", 3],
+        ["OffscreenCanvas", 3],
+        ["Web Worker", 3],
+        ["Service Worker", 2],
+        ["PWA", 2],
+        ["Cordova", 3],
+        ["Hybrid", 2],
+        ["Taro", 2],
+        ["Flutter", 1],
+        ["Onsen UI", 2],
+        ["Ionic", 3],
+        ["Quasar", 1],
+        ["Framework7", 1],
+        ["Weex", 2],
+        ["Electron", 3],
+        ["Koa", 3],
+        ["Git/SVN", 3],
+        ["Node EventEmitter", 3],
+        ["Next.js", 3],
+        ["Pixi.js", 3],
+        ["Express", 3],
+        ["SSR/SSG", 3],
+        ["Socket", 3],
+        ["TCP/UDP/Socket", 3],
+        ["CDN缓存策略", 3],
+        ["CDN防劫持", 3],
+        ["端TCP请求版本缓存", 3],
+        ["RabbitMQ", 3],
+        ["Nginx", 3],
+        ["API(BFF, GraphQL, RESTful)", 3],
+        ["Spring MVC", 1],
+        ["Spring Async", 1],
+        ["LCP、FID、TTFB、FCP、TBT、TTI", 3],
+        ["ELK Stack (Elasticsearch, Logstash, Kibana)", 2],
+        ["WebRTC", 2],
+        ["OpenSearch", 1],
+        ["Docker", 3],
+        ["Kubernetes", 2],
+        ["HAProxy", 2],
+        ["Kafka", 2],
+        ["Spring Boot", 2],
+        ["Spring Cloud", 2],
+        ["阿里云FC", 2],
+        ["腾讯SCF", 2],
+        ["Android", 2],
+        ["iOS", 2],
+        ["AWS Lambda", 2],
+        ["Azure Functions", 2],
+        ["API Gateway", 2],
+        ["EventBridge", 2],
+        ["Node EventEmitter", 3],
+        ["Nginx/HAProxy/PM2", 3],
+        ["Spring Cloud LoadBalancer", 2],
+        ["Redis", 3],
+        ["MongoDB", 3],
+        ["MySQL（SQL和NoSQL）", 2],
+        ["Unity", 3],
+        ["Harman AIR", 3],
+        ["Adobe Animate", 3],
+        ["Adobe Photoshop", 2],
+        ["Jenkins", 3],
+        ["XCode", 2],
+        ["微服务架构", 2],
+        ["AWS", 2],
+        ["Azure", 2],
+        ["腾讯云", 2],
+        ["阿里云", 2],
+        ["CICD 流程", 3],
+        ["K8s", 2],
+        ["容器化", 2],
+        ["CDN 策略优化", 3],
+        ["PaaS", 2],
+        ["aPaaS", 2],
+        ["敏捷系统", 3],
+        ["代码托管", 3],
+        ["代码审查", 2],
+        ["课程分享", 2],
+        ["员工招聘", 2],
+        ["技术线职级标准制定", 2],
+        ["技术编码规范制定", 2],
+        ["绩效考核", 2],
+        ["AR/VR", 2],
+        ["大型虚拟社区架构", 3],
+        ["元宇宙", 3],
+        ["Web 超大型社区", 3],
+        ["ActionScript 2", 3],
+        ["HTML", 3],
+    ];
+};
 
 export default {
     header_info: {
@@ -50,238 +314,26 @@ export default {
         // qrcode: "https://resume.deden.cn/game",// 生成固定的URL地址二维码
         qrcode_msg: "",//二维码提示信息
     } as IHeaderInfo,
-    skill_level:
-    {
-        "type": "skill_level",// 技能熟练度,高亮 
+    skill_level: {
+        "type": "skill_level",// 技能熟练度,高亮
         name: "技能熟练度",
-        list: [
-            ["游戏开发经验：19年＋", 3], 
-            ["19年＋", 3], 
-            ["网页设计", 3], 
-            ["GitLab CI", 1], 
-            ["Node.js", 3], 
-            ["Node", 3],
-            ["全栈", 3],
-            ["网页开发经验：20年＋", 3],
-            ["微信游戏", 3],
-            ["H5游戏打包", 3],
-            ["游戏脚手架", 3],
-            ["H5游戏包内更新", 3],
-            ["Protobuf", 3], 
-            ["Unreal Engine", 1], 
-            ["Golang", 1], 
-            ["Go", 1], 
-            ["C++", 2], 
-            ["Canvas", 3],
-            ["H5游戏", 3], 
-            ["HTML5", 3], 
-            ["核心开发", 3], 
-            ["DevOps", 3], 
-            ["n8n", 3], 
-            ["AS3", 3], 
-            ["WebGL", 2], 
-            ["CI/CD", 3], 
-            ["CDN智能预热", 3], 
-            ["Serverless", 2], 
-            ["小游戏", 3], 
-            ["小程序", 3], 
-            ["LayaAir", 3], 
-            ["Laya", 3], 
-            ["Egret", 3], 
-            ["PixiJS", 3], 
-            ["Pixi.js", 3], 
-            ["Three.js", 3], 
-            ["Unity引擎", 3], 
-            ["Unity WebGL", 3], 
-            ["Unity3D", 3], 
-            ["Unity", 3], 
-            ["Cocos Creator", 2], 
-            ["CocosCreator", 2], 
-            ["Wasm", 3],
-            ["ECS/DOTS", 3],
-            ["ECS", 3],
-            ["DOTS", 3],
-            ["CICD集成", 3],
-            ["H5引擎", 3],
-            ["Flash页游", 3],
-            ["Flash", 3],
-            ["微前端", 3],
-            ["沙箱和样式隔离", 3],
-            ["网页三剑客", 3],
-            ["MVVM框架", 3],
-            ["项目推进", 3],
-            ["AI领域", 2],
-            ["页游时代", 3],
-            ["技术攻坚", 3],
-            ["团队协作", 3],
-            ["项目架构", 3],
-            ["H5互动/游戏开发", 3],
-            ["Unity游戏开发", 3],
-            ["JavaScript", 3],
-            ["TypeScript", 3],
-            ["React Native", 2],
-            ["React", 3],
-            ["Vue", 3],
-            ["Node.js", 3],
-            ["Golang", 1],
-            ["CSS", 3],
-            ["性能优化", 3],
-            ["架构设计", 3],
-            ["技术选型", 3],
-            ["技术攻关", 3],
-            ["系统架构", 3],
-            ["性能调优", 3],
-            ["跨端应用方案", 2],
-            ["解决疑难杂症", 3],
-            ["敏捷开发", 3],
-            ["迭代开发", 3],
-            ["精益", 2],
-            ["KPI", 2],
-            ["OKR", 3],
-            ["团队组建", 3],
-            ["0到1上市", 3],
-            ["0到1解散", 3],
-            ["落地经验", 3],
-            ["初创公司", 3],
-            ["技术领导", 3],
-            ["职级评定标准", 2],
-            ["技术规范", 2],
-            ["Node.js", 3],
-            ["TypeScript", 3],
-            ["JavaScript", 3],
-            ["WebAssemblyScript", 3],
-            ["ActionScript 3", 3],
-            ["C#", 3],
-            ["C/C++", 2],
-            ["Java", 2],
-            ["Python", 2],
-            ["Golang", 1],
-            ["PHP", 2],
-            ["Shell", 2],
-            ["React", 3],
-            ["SWC", 3],
-            ["Mobx", 3],
-            ["Redux/MobX", 3],
-            ["framer-motion", 3],
-            ["remark-html", 3],
-            ["Three.js", 2],
-            ["LayaAir", 3],
-            ["Egret", 3],
-            ["ECharts", 3],
-            ["TradingVueJs", 3],
-            ["Vite", 3],
-            ["WebPack", 2],
-            ["Pm2", 3],
-            ["H5互动/游戏开发", 3],
-            ["Angular", 2],
-            ["Web3.js", 2],
-            ["TradingView", 3],
-            ["Babylon.js", 2],
-            ["WebGL/WebGPU", 2],
-            ["WebGPU", 2],
-            ["WebXR", 2],
-            ["Unity WebGL", 2],
-            ["WebAssembly", 3],
-            ["OffscreenCanvas", 3],
-            ["Web Worker", 3],
-            ["Service Worker", 2],
-            ["PWA", 2],
-            ["Cordova", 3],
-            ["Hybrid", 2],
-            ["Taro", 2],
-            ["Flutter", 1],
-            ["Onsen UI", 2],
-            ["Ionic", 3],
-            ["Quasar", 1],
-            ["Framework7", 1],
-            ["Weex", 2],
-            ["Electron", 3],
-            ["Koa", 3],
-            ["Git/SVN", 3],
-            ["Node EventEmitter", 3],
-            ["Next.js", 3],
-            ["Pixi.js", 3],
-            ["Express", 3],
-            ["SSR/SSG", 3],
-            ["Socket", 3],
-            ["TCP/UDP/Socket", 3],
-            ["CDN缓存策略", 3],
-            ["CDN防劫持", 3],
-            ["端TCP请求版本缓存", 3],
-            ["RabbitMQ", 3],
-            ["Nginx", 3],
-            ["API(BFF, GraphQL, RESTful)", 3],
-            ["Spring MVC", 1],
-            ["Spring Async", 1],
-            ["LCP、FID、TTFB、FCP、TBT、TTI", 3],
-            ["ELK Stack (Elasticsearch, Logstash, Kibana)", 2],
-            ["WebRTC", 2],
-            ["OpenSearch", 1],
-            ["Docker", 3],
-            ["Kubernetes", 2],
-            ["HAProxy", 2],
-            ["Kafka", 2],
-            ["Spring Boot", 2],
-            ["Spring Cloud", 2],
-            ["阿里云FC", 2],
-            ["腾讯SCF", 2],
-            ["Android", 2],
-            ["iOS", 2],
-            ["AWS Lambda", 2],
-            ["Azure Functions", 2],
-            ["API Gateway", 2],
-            ["EventBridge", 2],
-            ["Node EventEmitter", 3],
-            ["Nginx/HAProxy/PM2", 3],
-            ["Spring Cloud LoadBalancer", 2],
-            ["Redis", 3],
-            ["MongoDB", 3],
-            ["MySQL（SQL和NoSQL）", 2],
-            ["Unity", 3],
-            ["Harman AIR", 3],
-            ["Adobe Animate", 3],
-            ["Adobe Photoshop", 2],
-            ["Jenkins", 3],
-            ["XCode", 2],
-            ["微服务架构", 2],
-            ["AWS", 2],
-            ["Azure", 2],
-            ["腾讯云", 2],
-            ["阿里云", 2],
-            ["CICD 流程", 3],
-            ["K8s", 2],
-            ["容器化", 2],
-            ["CDN 策略优化", 3],
-            ["PaaS", 2],
-            ["aPaaS", 2],
-            ["敏捷系统", 3],
-            ["代码托管", 3],
-            ["代码审查", 2],
-            ["课程分享", 2],
-            ["员工招聘", 2],
-            ["技术线职级标准制定", 2],
-            ["技术编码规范制定", 2],
-            ["绩效考核", 2],
-            ["AR/VR", 2],
-            ["大型虚拟社区架构", 3],
-            ["元宇宙", 3],
-            ["Web 超大型社区", 3],
-            ["ActionScript 2", 3],
-            ["HTML", 3],
-        ]
+        list: getCoreSkills() // 使用核心技能进行快速初始化
     },
+    /**
+     * 期望职位配置
+     *
+     * 这里只保存基础的职位信息，详细数据通过懒加载获取
+     * 每个职位包含基本的header_info配置
+     */
     expected_positions: {
-        /* `JSON.parse(JSON.stringify(DataGameDev)` 因共享了DataFrontend数据,防止数据互相影响,这里使用克隆,如果多份数据都单独写的话不需要这个步骤*/
-        "game": assignDeep(JSON.parse(JSON.stringify(DataGameDev)), {
-            "is_home_page": true,// 作为首页
+        // 游戏开发岗位 - 设为首页
+        "game": {
+            "is_home_page": true, // 标记为首页显示
             header_info: {
                 position: "游戏主程专家",
                 expected_salary: "期望薪资 面议",
             },
-            target: { hidden: true, },// 隐藏 职业规划 
-            personal_strengths: {
-                "type": "personal_strengths",// 个人优势模块
-                name: "个人优势",
+            personal_strengths: {//输入是空内容,这里的顺序是有排序的作用
                 content: `### 🎮 游戏主程专家｜🛠️ 19年＋游戏架构与实战主程经验（Unity/Cocos Creator/H5游戏/Flash页游）
 - #### 🚀 <span style="font-size: 1.8em;">全栈技术攻坚</span>：精通TS/JS/Node.js技术生态，主导构建⚙️企业级脚手架、📦模块化架构及🤖CI/CD自动化体系（含AI体系n8n），擅长通过🚀Wasm加速、动态调节算法、脏数据追踪、寻路优化、​​ECS/DOTS、SoA 方案等性能优化技巧突破瓶颈。
 
@@ -295,8 +347,8 @@ export default {
 - #### 🌌 <span style="font-size: 1.5em;">元宇宙技术体系</span>：自研🏰Web超大型社区框架，实现👓AR/VR虚拟社区的🔧增量编译、🤖自动化发布及📊资源优化方案，支撑亿级用户场景。
 
 ### 🔭 技术领导力认证：
-- #### 🛠️ <span style="font-size: 1.5em;">T4级技术专家</span>（淘米网络认证）：15年+主导🏗️系统架构设计、🔍技术选型攻关及⚡性能调优经验，沉淀📜AS3/H5/Hybrid开发规范与📈工程化监控体系。`
-            },
+- #### 🛠️ <span style="font-size: 1.5em;">T4级技术专家</span>（淘米网络认证）：15年+主导🏗️系统架构设计、🔍技术选型攻关及⚡性能调优经验，沉淀📜AS3/H5/Hybrid开发规范与📈工程化监控体系。",
+            `},
             skills:
             {
                 collapsedNodes: [//折叠不展示的内容
@@ -319,8 +371,9 @@ export default {
                     "开源项目.XCast 配置生成协同工具",
                 ]
             },
-        }),
-        "frontend": assignDeep(JSON.parse(JSON.stringify(DataFrontendBackendCTO)), {
+        },
+        // 前端开发岗位
+        "frontend": {
             personal_strengths: {
                 "type": "personal_strengths",// 个人优势模块
                 name: "个人优势",
@@ -357,8 +410,9 @@ export default {
                     // "技术栈.团队管理",
                 ]
             },
-        }),
-        "backend": assignDeep(JSON.parse(JSON.stringify(DataFrontendBackendCTO)), {
+        },
+        // 后端开发岗位
+        "backend": {
             personal_strengths: {
                 "type": "personal_strengths",// 个人优势模块
                 name: "个人优势",
@@ -395,8 +449,9 @@ export default {
                     // "技术栈.团队管理",
                 ]
             },
-        }),
-        "cto": assignDeep(JSON.parse(JSON.stringify(DataFrontendBackendCTO)), {
+        },
+        // 技术管理岗位
+        "cto": {
             personal_strengths: {
                 "type": "personal_strengths",// 个人优势模块                
                 name: "个人优势",
@@ -420,9 +475,17 @@ export default {
                 position: "技术管理",
                 expected_salary: "期望薪资 面议",
             },
-            //skills cto职业要全部展示,所以不用折叠,这里不用填写相应的折叠数据
-        }),
-        "contracttask": assignDeep(JSON.parse(JSON.stringify(DataContractTask)), {
+        },
+        // AI Agent工程师岗位 - 新增
+        "agent": {
+            header_info: {
+                position: "AI Agent工程师",
+                expected_salary: "期望薪资 面议",
+                status: "💚随时到岗", // 特殊状态标识
+            }
+        },
+        // 外包/技术顾问岗位
+        "contracttask": {
             header_info: {
                 position: "技术顾问/游戏资源优化/外包",
                 expected_salary: "价格面议",
@@ -467,6 +530,10 @@ export default {
                     ["资源转换DEMO.示例3 - 交互动画", false/*不折叠*/],
                 ]
             },
-        }),
-    }
+        },
+    },
+
+    // 导出懒加载函数供外部使用
+    loadPositionData,
+    loadSkillsData
 }// as IFlexiResume; // 这里不关联编辑是更友好,能直接跳转到配置位置
