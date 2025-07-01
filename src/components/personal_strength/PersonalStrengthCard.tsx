@@ -5,31 +5,34 @@ import EmploymentHistoryItem from '../employment_history/EmploymentHistoryItem';
 import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import flexiResumeStore from '../../store/Store';
 import { useCollapser } from '../../utils/Tools';
+import { useTheme } from '../../theme';
 
 interface EmploymentHistoryCardProps {
 	id: string;
 }
 
-const CardWrapper = styled.div`
-	display: block; 
+const CardWrapper = styled.div<{ isDark?: boolean }>`
+	display: block;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
-	background-color: #e6fcff;
+	background-color: ${props => props.isDark ? 'var(--color-surface)' : '#e6fcff'};
+	color: ${props => props.isDark ? 'var(--color-text-primary)' : '#004545'};
 	padding: 10px;
 	border-radius: 5px;
-	// border: 1px solid #82c7ad;
-	// color: #004545;
+	border: 1px solid ${props => props.isDark ? 'var(--color-border-medium)' : '#82c7ad'};
+	transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 `;
 
 const PersonalStrengthCard: React.FC<PersonalStrengthCardProps> = ({ id, name, data: { content } }) => {
 	const data = flexiResumeStore.data;
-	// 定义折叠状态，组别折叠状态默认全部展开 
+	const { isDark } = useTheme();
+	// 定义折叠状态，组别折叠状态默认全部展开
 	const { collapsedItems } = useCollapser(name, 1);
 	// 将 content 转换为 HTML, 获取到可以实时更新数据并渲染的html结构数据
 	const markdownContent = checkConvertMarkdownToHtml(content || "");
 	if (!collapsedItems[0]) {
 		return (
-			<CardWrapper>
+			<CardWrapper isDark={isDark}>
 				{/* {markdownContent} */}
 				<div className='markdown-content' dangerouslySetInnerHTML={{ __html: markdownContent }} />
 			</CardWrapper>

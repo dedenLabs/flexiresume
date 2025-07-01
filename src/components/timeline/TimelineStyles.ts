@@ -1,10 +1,11 @@
 import styled from 'styled-components';
+import { useTheme } from '../../theme';
 
-export const CategoryTitle = styled.h3`
+export const CategoryTitle = styled.h3<{ isDark?: boolean }>`
   cursor: pointer;
   margin: 0;
   padding: 0;
-  color: #333;
+  color: ${props => props.isDark ? 'var(--color-text-primary)' : '#333'};
   font-size: 0.8rem;
 `;
 

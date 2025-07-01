@@ -3,11 +3,12 @@ import { NavLink, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { formatResumeFilename, getCurrentPositionName } from '../utils/Tools';
 import flexiResumeStore from '../store/Store';
+import { useTheme } from '../theme';
 
 const borderColor = `#aaa`;
 const minWidth = `${920}px`;
 
-const TabsWrapper = styled.nav`
+const TabsWrapper = styled.nav<{ isDark?: boolean }>`
   /* 移动端样式 - 修复横向溢出问题 */
   padding: 0 10px; /* 减少左右padding */
   position: relative;
@@ -48,28 +49,29 @@ const TabsWrapper = styled.nav`
   }
 `;
 
-const TabLink = styled(NavLink)`
+const TabLink = styled(NavLink)<{ isDark?: boolean }>`
   /* 移动端样式优化 */
   padding: 8px 12px; /* 减少padding避免溢出 */
   text-decoration: none;
-  color: black;
+  color: ${props => props.isDark ? 'var(--color-text-primary)' : 'black'};
   border: 2px solid transparent; /* 默认无边框 */
   border-radius: 8px 8px 0 0;
-  border-top: 1px solid ${borderColor};
-  border-right: 1px solid ${borderColor};
-  border-bottom: 0px solid ${borderColor};
-  border-left: 1px solid ${borderColor};
-  transition: background-color 0.3s, border 0.3s;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
+  border-top: 1px solid ${props => props.isDark ? 'var(--color-border-medium)' : borderColor};
+  border-right: 1px solid ${props => props.isDark ? 'var(--color-border-medium)' : borderColor};
+  border-bottom: 0px solid ${props => props.isDark ? 'var(--color-border-medium)' : borderColor};
+  border-left: 1px solid ${props => props.isDark ? 'var(--color-border-medium)' : borderColor};
+  transition: background-color 0.3s, border 0.3s, color 0.3s;
+  box-shadow: 0 0 15px ${props => props.isDark ? 'var(--color-shadow-medium)' : 'rgba(0, 0, 0, 0.1)'};
+  background-color: ${props => props.isDark ? 'var(--color-card)' : '#fff'};
   white-space: nowrap; /* 防止文字换行 */
   font-size: 14px; /* 移动端使用较小字体 */
   flex-shrink: 0; /* 防止被压缩 */
 
   &:hover, &.active {
-    background-color: #f0f0f0;
-    border-color: #333; /* 激活状态时显示边框颜色 */
-    border-top: 2px solid #333; /* 激活状态显示右侧边框 */
+    background-color: ${props => props.isDark ? 'var(--color-surface)' : '#f0f0f0'};
+    border-color: ${props => props.isDark ? 'var(--color-primary)' : '#333'}; /* 激活状态时显示边框颜色 */
+    border-top: 2px solid ${props => props.isDark ? 'var(--color-primary)' : '#333'}; /* 激活状态显示右侧边框 */
+    color: ${props => props.isDark ? 'var(--color-primary)' : 'inherit'};
   }
 
   @media (min-width: ${minWidth}) {
@@ -83,14 +85,15 @@ const TabLink = styled(NavLink)`
     writing-mode: vertical-rl;
     text-orientation: mixed;
     border-radius: 0px 8px 8px 0px;
-    border-top: 1px solid ${borderColor};
-    border-right: 1px solid ${borderColor};
-    border-bottom: 1px solid ${borderColor};
-    border-left: 0px solid ${borderColor};
+    border-top: 1px solid ${props => props.isDark ? 'var(--color-border-medium)' : borderColor};
+    border-right: 1px solid ${props => props.isDark ? 'var(--color-border-medium)' : borderColor};
+    border-bottom: 1px solid ${props => props.isDark ? 'var(--color-border-medium)' : borderColor};
+    border-left: 0px solid ${props => props.isDark ? 'var(--color-border-medium)' : borderColor};
 
     &:hover, &.active {
-      background-color: #f0f0f0;
-      border-right: 2px solid #333; /* 激活状态显示右侧边框 */
+      background-color: ${props => props.isDark ? 'var(--color-surface)' : '#f0f0f0'};
+      border-right: 2px solid ${props => props.isDark ? 'var(--color-primary)' : '#333'}; /* 激活状态显示右侧边框 */
+      color: ${props => props.isDark ? 'var(--color-primary)' : 'inherit'};
     }
   }
 `;
@@ -103,10 +106,12 @@ const TabLink = styled(NavLink)`
 const Tabs: React.FC = () => {
   const data = flexiResumeStore.data;
   const tabs = flexiResumeStore.tabs;
+  const { isDark } = useTheme();
+
   if (!tabs.length) {
     document.title = data?.header_info?.position || 'My Resume';
     return null;
-  } 
+  }
   const location = useLocation();
   useEffect(() => {
     const currentPosition = getCurrentPositionName(location);
@@ -114,14 +119,14 @@ const Tabs: React.FC = () => {
       Object.assign({}, data.header_info, { position: currentPosition }));
 
     // 更新页面标题
-    document.title = title;  
+    document.title = title;
   }, [location]);
 
   return (
-    <TabsWrapper> 
+    <TabsWrapper isDark={isDark}>
       {
         tabs.map(([position, url], index) => (
-          <TabLink key={url} className="no-link-icon" to={url}>{position}</TabLink>
+          <TabLink key={url} className="no-link-icon" to={url} isDark={isDark}>{position}</TabLink>
         ))
       }
     </TabsWrapper>

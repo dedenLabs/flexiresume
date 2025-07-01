@@ -8,7 +8,7 @@ interface SectionProps {
   animate?: any;
 }
 const SectionWrapper = styled.section` 
-  background: #fff; 
+  // background: #fff; 
   padding-top: 1rem; 
   box-sizing: border-box;
 `;
