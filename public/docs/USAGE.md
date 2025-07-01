@@ -290,6 +290,59 @@ function MyComponent() {
 <img src="image.jpg" className="no-effect-icon" alt="描述" />
 ```
 
+### SEO 和隐私配置
+
+FlexiResume 默认配置为**保护个人隐私**，禁止搜索引擎抓取：
+
+```txt
+# public/robots.txt
+User-agent: *
+Disallow: /
+```
+
+#### 为什么默认禁止抓取？
+
+1. **个人隐私保护**: 简历包含个人敏感信息（联系方式、工作经历等）
+2. **定向投放**: 简历通常用于特定职位申请，不需要公开搜索
+3. **避免信息滥用**: 防止个人信息被恶意收集或滥用
+
+#### 修改搜索引擎策略
+
+根据您的使用场景，可以选择不同的配置：
+
+**1. 保持隐私（推荐用于求职）**
+```txt
+# 完全禁止抓取
+User-agent: *
+Disallow: /
+```
+
+**2. 部分开放（适用于作品集）**
+```txt
+# 允许抓取技能展示，禁止联系信息
+User-agent: *
+Allow: /
+Disallow: /contact
+Disallow: /personal
+```
+
+**3. 完全开放（适用于技术博客）**
+```txt
+# 允许所有内容被抓取
+User-agent: *
+Allow: /
+
+Sitemap: https://your-domain.com/sitemap.xml
+```
+
+#### 配置方法
+
+1. 编辑 `public/robots.txt` 文件
+2. 选择适合的配置内容
+3. 重新构建和部署：`npm run build`
+
+详细的SEO配置请参考 [部署指南](DEPLOYMENT.md#seo-和搜索引擎配置)
+
 ---
 
 ## ❓ 常见问题

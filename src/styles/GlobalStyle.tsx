@@ -2,6 +2,64 @@ import { createGlobalStyle } from 'styled-components';
 import { replaceCDNBaseURL } from '../utils/Tools';
 const maxWidth = `${920}px`;
 const GlobalStyle = createGlobalStyle`
+  /* CSS变量定义 - 浅色主题 */
+  :root {
+    --color-primary: #3498db;
+    --color-secondary: #2c3e50;
+    --color-accent: #e74c3c;
+
+    --color-background: #ffffff;
+    --color-surface: #f8f9fa;
+    --color-card: #ffffff;
+
+    --color-text-primary: #2c3e50;
+    --color-text-secondary: #7f8c8d;
+    --color-text-disabled: #bdc3c7;
+    --color-text-inverse: #ffffff;
+
+    --color-border-light: #ecf0f1;
+    --color-border-medium: #bdc3c7;
+    --color-border-dark: #95a5a6;
+
+    --color-status-success: #27ae60;
+    --color-status-warning: #f39c12;
+    --color-status-error: #e74c3c;
+    --color-status-info: #3498db;
+
+    --color-shadow-light: rgba(0, 0, 0, 0.05);
+    --color-shadow-medium: rgba(0, 0, 0, 0.1);
+    --color-shadow-dark: rgba(0, 0, 0, 0.2);
+  }
+
+  /* CSS变量定义 - 深色主题 */
+  [data-theme="dark"] {
+    --color-primary: #3498db;
+    --color-secondary: #ecf0f1;
+    --color-accent: #e74c3c;
+
+    --color-background: #1a1a1a;
+    --color-surface: #2c2c2c;
+    --color-card: #363636;
+
+    --color-text-primary: #ecf0f1;
+    --color-text-secondary: #bdc3c7;
+    --color-text-disabled: #7f8c8d;
+    --color-text-inverse: #2c3e50;
+
+    --color-border-light: #404040;
+    --color-border-medium: #555555;
+    --color-border-dark: #777777;
+
+    --color-status-success: #2ecc71;
+    --color-status-warning: #f1c40f;
+    --color-status-error: #e74c3c;
+    --color-status-info: #3498db;
+
+    --color-shadow-light: rgba(0, 0, 0, 0.2);
+    --color-shadow-medium: rgba(0, 0, 0, 0.4);
+    --color-shadow-dark: rgba(0, 0, 0, 0.6);
+  }
+
   /* 全局重置和移动端优化 */
   * {
     box-sizing: border-box;
@@ -21,16 +79,17 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     font-family: 'Arial', sans-serif;
-    color: #333;
+    color: var(--color-text-primary);
+    background-color: var(--color-surface);
     letter-spacing: 0.02em; /* 调整为你需要的值 */
     word-break: break-all;
+    transition: color 0.3s ease, background-color 0.3s ease;
 
     /* 修复移动端横向溢出问题 */
     overflow-x: hidden; /* 隐藏横向滚动条 */
     width: 100%;
     box-sizing: border-box;
     min-height: 100vh;
-
 
     /* 背景图 */
     background-image: url('${replaceCDNBaseURL('images/flexi-resume.jpg')}');
@@ -46,12 +105,14 @@ const GlobalStyle = createGlobalStyle`
   pre {
       white-space: pre-wrap;
       word-wrap: break-word;
-      overflow-wrap: break-word; 
-      background-color: #f8f8f8; 
+      overflow-wrap: break-word;
+      background-color: var(--color-surface);
+      color: var(--color-text-primary);
       padding: 10px;
-      border-radius: 5px; 
-      border: 1px solid #ddd;
-  } 
+      border-radius: 5px;
+      border: 1px solid var(--color-border-medium);
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
   
   .markdown-content img {
     max-width: 100%; /* 图片宽度自适应父容器 */
@@ -64,23 +125,24 @@ const GlobalStyle = createGlobalStyle`
     height: auto;
     margin: 5px 0;
     border-radius: 12px; /* 圆角 */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* 阴影 */
-    background-color: #fff; 
-    /* 视频的悬浮缩放效果 */ 
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px var(--color-shadow-medium); /* 阴影 */
+    background-color: var(--color-card);
+    /* 视频的悬浮缩放效果 */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
   }
  
   /* 悬浮效果 */
   .markdown-content video:not(.no-effect-icon):hover,
   .markdown-content img:not(.no-effect-icon):hover{
     transform: scale(1.03); /* 略微放大 */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* 增强阴影 */
-  } 
+    box-shadow: 0 6px 15px var(--color-shadow-dark); /* 增强阴影 */
+  }
 
   .video-wrapper {
     position: relative;
-    background: #f5f5f5;
+    background: var(--color-surface);
     min-height: 100px;
+    transition: background-color 0.3s ease;
   }
 
   .lazy-video {
@@ -99,8 +161,9 @@ const GlobalStyle = createGlobalStyle`
     transform: translate(-50%, -50%);
     padding: 8px 16px;
     // background: rgba(0,0,0,0.7);
-    color: #000;
+    color: var(--color-text-primary);
     border-radius: 4px;
+    transition: color 0.3s ease;
   }
   
   #root {

@@ -19,17 +19,22 @@ interface FlexiResumeProps {
 }
 
 const ResumeWrapper = styled.div`
-  max-width: 800px; // PDF 导出尺寸接近 A4 页面宽度的 800px   
-  border-top: 1px solid #aaa; /* 默认无边框 */
+  max-width: 800px; // PDF 导出尺寸接近 A4 页面宽度的 800px
+  border-top: 1px solid var(--color-border-medium); /* 使用主题边框颜色 */
   border-radius: 8px 8px 0 0;
   box-sizing: border-box;
   padding: 20px;
-  background: #fff; 
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  background: var(--color-card); /* 使用主题卡片背景色 */
+  color: var(--color-text-primary); /* 使用主题文本颜色 */
+  box-shadow: 0 0 15px var(--color-shadow-medium); /* 使用主题阴影 */
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+
   /* 在打印时隐藏 */
-  @media print { 
-    border: 0px; 
+  @media print {
+    border: 0px;
     box-shadow: 0 0 0px rgba(0, 0, 0, 0);
+    background: white !important;
+    color: black !important;
   }
 `;
 

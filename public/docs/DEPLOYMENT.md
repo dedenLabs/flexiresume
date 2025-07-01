@@ -471,6 +471,75 @@ server {
 
 ---
 
+## 🤖 SEO 和搜索引擎配置
+
+### robots.txt 配置
+
+FlexiResume 默认配置为**禁止搜索引擎抓取**，因为简历包含个人敏感信息，通常用于定向投放：
+
+```txt
+# 当前配置 - 禁止所有搜索引擎抓取
+User-agent: *
+Disallow: /
+```
+
+#### 配置选项
+
+**1. 完全禁止抓取（推荐用于个人简历）**
+
+```txt
+# 禁止所有搜索引擎抓取
+User-agent: *
+Disallow: /
+```
+
+**2. 允许部分抓取（适用于公开展示）**
+
+```txt
+# 允许抓取，但排除敏感页面
+User-agent: *
+Allow: /
+Disallow: /contact
+Disallow: /private
+
+# 指定sitemap位置
+Sitemap: https://your-domain.com/sitemap.xml
+```
+
+**3. 完全开放（适用于作品集网站）**
+
+```txt
+# 允许所有搜索引擎抓取
+User-agent: *
+Allow: /
+
+# 指定sitemap位置
+Sitemap: https://your-domain.com/sitemap.xml
+```
+
+#### 修改方法
+
+编辑 `public/robots.txt` 文件，选择适合您需求的配置：
+
+```bash
+# 编辑robots.txt
+nano public/robots.txt
+
+# 重新构建和部署
+npm run build
+```
+
+#### 使用场景建议
+
+| 场景 | 推荐配置 | 说明 |
+|------|----------|------|
+| **个人求职简历** | 完全禁止 | 保护个人隐私，定向分享 |
+| **公开作品集** | 允许部分抓取 | 展示技能，保护联系方式 |
+| **技术博客** | 完全开放 | 提高曝光度，吸引机会 |
+| **企业展示** | 完全开放 | 提升品牌知名度 |
+
+---
+
 ## 📊 监控和维护
 
 ### 性能监控

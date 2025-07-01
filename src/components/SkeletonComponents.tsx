@@ -183,7 +183,15 @@ export const SkeletonPage: React.FC = () => (
 
 // 简历骨架屏（专门为简历页面设计）
 export const SkeletonResume: React.FC = () => (
-  <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto', background: '#fff' }}>
+  <div style={{
+    padding: '20px',
+    maxWidth: '800px',
+    margin: '0 auto',
+    background: 'var(--color-card)',
+    borderRadius: '8px',
+    boxShadow: '0 0 15px var(--color-shadow-medium)',
+    transition: 'background-color 0.3s ease, box-shadow 0.3s ease'
+  }}>
     {/* 个人信息区域 */}
     <div style={{ display: 'flex', gap: '20px', marginBottom: '40px' }}>
       <SkeletonAvatar size={100} />

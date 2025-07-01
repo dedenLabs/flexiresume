@@ -419,6 +419,64 @@ const config = {
 };
 ```
 
+### SEO 和搜索引擎配置
+
+#### robots.txt 自定义
+
+根据不同的使用场景，自定义搜索引擎抓取策略：
+
+```txt
+# 个人简历 - 完全隐私保护
+User-agent: *
+Disallow: /
+
+# 作品集网站 - 部分开放
+User-agent: *
+Allow: /
+Disallow: /contact
+Disallow: /resume/personal
+
+# 技术博客 - 完全开放
+User-agent: *
+Allow: /
+Crawl-delay: 1
+
+Sitemap: https://your-domain.com/sitemap.xml
+```
+
+#### Meta 标签自定义
+
+在 `src/components/SEOHead.tsx` 中自定义SEO标签：
+
+```typescript
+const SEOHead: React.FC<SEOHeadProps> = ({
+  title,
+  description,
+  keywords,
+  robots = "noindex, nofollow" // 默认禁止索引
+}) => {
+  return (
+    <Helmet>
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      <meta name="keywords" content={keywords} />
+      <meta name="robots" content={robots} />
+
+      {/* 隐私保护 */}
+      <meta name="referrer" content="no-referrer" />
+      <meta name="format-detection" content="telephone=no" />
+    </Helmet>
+  );
+};
+```
+
+#### 隐私保护最佳实践
+
+1. **默认禁止索引**: 使用 `noindex, nofollow`
+2. **移除敏感信息**: 不在meta标签中包含个人联系方式
+3. **禁用电话检测**: 防止移动端自动识别电话号码
+4. **控制引用来源**: 使用 `no-referrer` 保护访问来源
+
 ---
 
 ## 📚 最佳实践
