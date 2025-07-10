@@ -11,13 +11,22 @@ import React from 'react';
 import styled from 'styled-components';
 import { useI18n, Language } from '../i18n';
 import { useTheme } from '../theme';
+import {
+  getCurrentLanguage,
+  setCurrentLanguage,
+  saveLanguagePreference,
+  LANGUAGE_NAMES,
+  SupportedLanguage
+} from '../data/DataLoader';
 
 const SwitcherContainer = styled.div`
   position: relative;
   display: inline-block;
 `;
 
-const SwitcherButton = styled.button<{ isDark: boolean }>`
+const SwitcherButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isDark',
+})<{ isDark: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -51,7 +60,9 @@ const LanguageText = styled.span`
   font-weight: 500;
 `;
 
-const DropdownMenu = styled.div<{ isOpen: boolean; isDark: boolean }>`
+const DropdownMenu = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isOpen' && prop !== 'isDark',
+})<{ isOpen: boolean; isDark: boolean }>`
   position: absolute;
   top: 100%;
   right: 0;
@@ -69,7 +80,9 @@ const DropdownMenu = styled.div<{ isOpen: boolean; isDark: boolean }>`
   transition: all 0.3s ease;
 `;
 
-const DropdownItem = styled.button<{ isActive: boolean; isDark: boolean }>`
+const DropdownItem = styled.button.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isActive' && prop !== 'isDark',
+})<{ isActive: boolean; isDark: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -104,7 +117,9 @@ const DropdownItem = styled.button<{ isActive: boolean; isDark: boolean }>`
   }
 `;
 
-const CheckIcon = styled.span<{ visible: boolean; isDark: boolean }>`
+const CheckIcon = styled.span.withConfig({
+  shouldForwardProp: (prop) => prop !== 'visible' && prop !== 'isDark',
+})<{ visible: boolean; isDark: boolean }>`
   opacity: ${props => props.visible ? 1 : 0};
   color: ${props => props.isDark ? '#48bb78' : '#27ae60'};
   font-weight: bold;
@@ -128,8 +143,23 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className }) => {
 
   const currentLanguage = languages.find(lang => lang.code === language);
 
+  // 初始化时同步DataLoader的语言状态
+  React.useEffect(() => {
+    const dataLanguage = getCurrentLanguage();
+    if (dataLanguage !== language) {
+      setLanguage(dataLanguage);
+    }
+  }, [language, setLanguage]);
+
   const handleLanguageChange = (newLanguage: Language) => {
+    // 更新UI语言
     setLanguage(newLanguage);
+
+    // 更新数据语言
+    const dataLanguage = newLanguage as SupportedLanguage;
+    setCurrentLanguage(dataLanguage);
+    saveLanguagePreference(dataLanguage);
+
     setIsOpen(false);
   };
 

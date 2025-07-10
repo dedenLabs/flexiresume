@@ -9,9 +9,15 @@ import BaseCard from '../components/base_card/BaseCard';
 import { getCurrentPositionNameByPath, updateCurrentResumeStore, watchMinWidth } from '../utils/Tools';
 import { IFlexiResume, IModuleInfo, ISkillLevel } from '../types/IFlexiResume';
 import flexiResumeStore from '../store/Store';
+import {
+  recordDataLoadTime,
+  recordSkeletonDisplayTime,
+  recordRouteChangeTime,
+  recordComponentMetric
+} from '../utils/PerformanceMonitor';
 import EducationHistoryCard from '../components/education_history/EducationHistoryCard';
 import TimelineContainer from '../components/timeline/TimelineContainer';
-import SkeletonLoader from '../components/SkeletonLoader';
+import { SkeletonResume } from '../components/SkeletonComponents';
 import SEOHead from '../components/SEOHead';
 
 interface FlexiResumeProps {
@@ -41,6 +47,9 @@ const ResumeWrapper = styled.div`
 /**
  * Resume组件，用于展示个人简历信息
  *
+ * 集成了性能监控功能，监控数据加载、骨架屏显示和路由切换性能
+ *
+ * @param path 当前路由路径
  * @returns 返回个人简历的React组件
  */
 const FlexiResume: React.FC<FlexiResumeProps> = ({ path }) => {
@@ -48,29 +57,71 @@ const FlexiResume: React.FC<FlexiResumeProps> = ({ path }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState(flexiResumeStore.data);
 
+  // 使用useRef来存储previousPath，避免触发重新渲染
+  const previousPathRef = React.useRef<string>('');
+
+  // 性能监控时间戳
+  const componentStartTime = React.useRef(performance.now());
+
   // 异步加载数据
   useEffect(() => {
     const loadData = async () => {
+      const dataLoadStartTime = performance.now();
+      const skeletonStart = performance.now();
+
       setIsLoading(true);
+
       try {
+        // 记录路由切换性能
+        if (previousPathRef.current && previousPathRef.current !== path) {
+          const routeChangeTime = performance.now() - dataLoadStartTime;
+          recordRouteChangeTime(previousPathRef.current, path, routeChangeTime);
+        }
+
         await updateCurrentResumeStore(postionName);
         setData(flexiResumeStore.data);
+
+        // 记录数据加载时间
+        const dataLoadTime = performance.now() - dataLoadStartTime;
+        recordDataLoadTime(`position-${postionName}`, dataLoadTime);
+
       } catch (error) {
         console.error('Failed to load position data:', error);
       } finally {
         setIsLoading(false);
+
+        // 记录骨架屏显示时间
+        const skeletonDisplayTime = performance.now() - skeletonStart;
+        recordSkeletonDisplayTime(skeletonDisplayTime);
       }
     };
 
+    // 更新路径引用（不会触发重新渲染）
+    previousPathRef.current = path;
+
     loadData();
-  }, [postionName]);
+  }, [postionName, path]); // 只依赖真正需要的值
+
+  // 组件挂载时记录性能
+  useEffect(() => {
+    const mountTime = performance.now() - componentStartTime.current;
+    recordComponentMetric('FlexiResume', 'mount', mountTime);
+  }, []); // 只在挂载时执行一次
+
+  // 记录渲染性能（只在数据加载完成后记录一次）
+  useEffect(() => {
+    if (!isLoading) {
+      const renderTime = performance.now() - componentStartTime.current;
+      recordComponentMetric('FlexiResume', 'render', renderTime);
+    }
+  }, [isLoading]);
 
   // 计算最小宽度
   const minWidth = watchMinWidth(800);
 
-  // 显示加载状态 - 使用骨架屏
+  // 显示加载状态 - 使用优化后的骨架屏
   if (isLoading) {
-    return <SkeletonLoader />;
+    return <SkeletonResume />;
   }
 
   const header_info = data.header_info;

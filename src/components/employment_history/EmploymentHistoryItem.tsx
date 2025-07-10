@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import { calculateWorkDuration } from '../../utils/Tools';
 import { EmploymentHistoryItemProps } from '../../types/IFlexiResume';
+import SkillRenderer from '../skill/SkillRenderer';
 
 
 const Card = styled.section` 
@@ -83,7 +84,9 @@ const EmploymentHistoryItem: React.FC<EmploymentHistoryItemProps> = ({
                     {/* <ReactMarkdown>
                         {description}
                     </ReactMarkdown> */}
-                    <div className='markdown-content' dangerouslySetInnerHTML={{ __html: markdownContent }} />
+                    <SkillRenderer>
+                        <div className='markdown-content' dangerouslySetInnerHTML={{ __html: markdownContent }} />
+                    </SkillRenderer>
                 </CardBody>
             )}
         </Card>

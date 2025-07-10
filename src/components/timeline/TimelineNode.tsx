@@ -8,7 +8,9 @@ import TimelineContainer from './TimelineContainer';
 import flexiResumeStore from '../../store/Store';
 import CollapseIcon from './CollapseIcon';
 import { getLogger, logCollapse } from '../../utils/Tools';
-import { Node, CategoryTitle, CategoryBody, Content } from './TimelineStyles';
+import { Node, CategoryTitle, CategoryBody, Content, ContentWithLine } from './TimelineStyles';
+import { useTheme } from '../../theme';
+import SkillRenderer from '../skill/SkillRenderer';
 
 const log = getLogger('TimelineNode');
 
@@ -16,6 +18,7 @@ interface TimelineNodeProps {
   id: string;
   name: string;
   content: string;
+  content_head?: string; // 头部内容，显示在当前级别顶部
   children?: TimelineNodeProps[];
 };
 
@@ -28,7 +31,7 @@ interface TimelineNodeProps {
  */
 const TimelineNode: React.FC<{ category: TimelineNodeProps }> = ({ id: parentId, category }) => {
   const selfId = `${parentId}.${category.name}`;
-
+  const { isDark } = useTheme();
   // 获取折叠状态，如果 Map 中没有该 id，则默认设置为 false
   let collapsedParent = false;
   const collapsedList = parentId.split('.');
@@ -65,21 +68,50 @@ const TimelineNode: React.FC<{ category: TimelineNodeProps }> = ({ id: parentId,
     setCollapsedSelf(newState); // 强制更新组件 
   };
 
+  const headHtml = checkConvertMarkdownToHtml(category.content_head || "");
   const html = checkConvertMarkdownToHtml(category.content || "");
+
+  // 调试信息 - 可以在开发时启用
+  // console.log(`TimelineNode ${category.name}:`, {
+  //   content_head: category.content_head,
+  //   content: category.content,
+  //   headHtml: headHtml,
+  //   html: html,
+  //   collapsedSelf: collapsedSelf
+  // });
   return (
-    <Node>
+    <Node isDark={isDark}>
       <Content>
-        <CategoryTitle onClick={() => toggleCollapse()}>
+        <CategoryTitle onClick={() => toggleCollapse()} isDark={isDark}>
           <CollapseIcon collapsed={collapsedSelf} />
-          {category.name}
-          {/* {collapsedMsg} */}
+          {category.name || ""}
         </CategoryTitle>
         <CategoryBody>
+          {/* 头部内容区域 - 显示在当前级别顶部 */}
           {
-            category?.children && <TimelineContainer id={selfId} categories={category?.children} />
+            !collapsedSelf && category.content_head && (
+              <ContentWithLine isDark={isDark}>
+                <SkillRenderer>
+                  <div className='markdown-content' dangerouslySetInnerHTML={{ __html: headHtml }} />
+                </SkillRenderer>
+              </ContentWithLine>
+            )
           }
+
+          {/* 子节点容器 - 已有线条样式 */}
           {
-            !collapsedSelf && <div className='markdown-content' dangerouslySetInnerHTML={{ __html: html }} />
+            category?.children && <TimelineContainer id={selfId} list={category?.children} />
+          }
+
+          {/* 底部内容区域 - 显示在当前级别底部 */}
+          {
+            !collapsedSelf && category.content && (
+              <ContentWithLine isDark={isDark}>
+                <SkillRenderer>
+                  <div className='markdown-content' dangerouslySetInnerHTML={{ __html: html }} />
+                </SkillRenderer>
+              </ContentWithLine>
+            )
           }
         </CategoryBody>
       </Content>

@@ -17,7 +17,9 @@ const SwitcherContainer = styled.div`
   display: inline-block;
 `;
 
-const SwitcherButton = styled.button<{ isDark: boolean }>`
+const SwitcherButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isDark',
+})<{ isDark: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,7 +48,9 @@ const SwitcherButton = styled.button<{ isDark: boolean }>`
   }
 `;
 
-const IconContainer = styled.div<{ isVisible: boolean }>`
+const IconContainer = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isVisible',
+})<{ isVisible: boolean }>`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -75,7 +79,9 @@ const MoonIcon = styled.div`
   }
 `;
 
-const Tooltip = styled.div<{ isDark: boolean; isVisible: boolean }>`
+const Tooltip = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isDark' && prop !== 'isVisible',
+})<{ isDark: boolean; isVisible: boolean }>`
   position: absolute;
   bottom: 100%;
   left: 50%;
@@ -106,7 +112,9 @@ const Tooltip = styled.div<{ isDark: boolean; isVisible: boolean }>`
   }
 `;
 
-const RippleEffect = styled.div<{ isActive: boolean }>`
+const RippleEffect = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isActive',
+})<{ isActive: boolean }>`
   position: absolute;
   top: 50%;
   left: 50%;

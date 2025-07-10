@@ -22,7 +22,9 @@ export default CollapseIcon;
 
 
 // 样式容器，可以设置一些基本的样式
-const IconWrapper = styled.div<{ isDark?: boolean }>` 
+const IconWrapper = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isDark',
+})<{ isDark?: boolean }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;

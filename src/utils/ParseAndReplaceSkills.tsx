@@ -3,7 +3,40 @@ import ReactDOMServer from 'react-dom/server';
 import SkillItem from '../components/skill/SkillItem'; // 根据 SkillItem 的实际路径导入
 import ReactMarkdown from 'react-markdown';
 import { remark } from 'remark';
-import html from 'remark-html';
+import html from 'remark-html'; 
+
+/**
+ * 服务器端渲染的Mermaid占位符组件
+ * 在客户端会被真正的MermaidChart组件替换
+ */
+const MermaidPlaceholder: React.FC<{ chart: string; id: string }> = ({ chart, id }) => {
+    return (
+        <div
+            className="mermaid-placeholder"
+            data-mermaid-chart={chart}
+            data-mermaid-id={id}
+            style={{
+                padding: '20px',
+                backgroundColor: '#f6f8fa',
+                border: '1px solid #d1d9e0',
+                borderRadius: '8px',
+                textAlign: 'center',
+                color: '#666',
+                margin: '16px 0',
+                minHeight: '100px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}
+        >
+            <div>
+                <div style={{ marginBottom: '8px', fontSize: '18px' }}>📊</div>
+                正在加载 Mermaid 图表...
+            </div>
+        </div>
+    );
+};
+
 // 轻量级代码高亮组件 - 不依赖react-syntax-highlighter
 const LightCodeBlock: React.FC<{ language: string; children: string }> = ({ language, children }) => {
     // 简单的语法高亮样式映射
@@ -123,11 +156,9 @@ export const parseAndReplaceSkills = (text: string, useHtml = false): string | R
         const result = text.replace(skillRegex, (part: string, index: number) => {
             const skillMatch = skillMap[part.toLocaleLowerCase()];
             if (skillMatch) {
-                const tsx = <SkillItem key={`${skillMatch[0]}-${index}`} skill={skillMatch[0]} level={skillMatch[1]} />;
-                // 仅在客户端渲染技能组件
-                if (typeof window !== "undefined") {
-                    return ReactDOMServer.renderToStaticMarkup(tsx).toString();
-                }
+                // 不使用 ReactDOMServer.renderToStaticMarkup，而是返回一个特殊的标记
+                // 这个标记将在客户端被 SkillRenderer 组件处理
+                return `<span data-skill-name="${skillMatch[0]}" data-skill-level="${skillMatch[1]}" class="skill-placeholder">${part}</span>`;
             }
             return part;
         })
@@ -403,9 +434,17 @@ export const checkConvertMarkdownToHtml = (content: string) => {
                 );
 
                 // 并行处理所有代码块
-                for (const { match, lang, code } of codeBlockMatches) {
+                for (let i = 0; i < codeBlockMatches.length; i++) {
+                    const { match, lang, code } = codeBlockMatches[i];
                     codeBlockPromises.push(
                         (async () => {
+                            // 特殊处理 Mermaid 图表
+                            if (lang === 'mermaid') {
+                                const chartId = `chart-${Date.now()}-${i}`;
+                                const tsx = <MermaidPlaceholder chart={code} id={chartId} />;
+                                return ReactDOMServer.renderToStaticMarkup(tsx);
+                            }
+
                             // 尝试加载高级语法高亮
                             const advancedHighlighter = await loadAdvancedSyntaxHighlighter(lang);
 
@@ -442,17 +481,24 @@ export const checkConvertMarkdownToHtml = (content: string) => {
                     // 降级到基础样式
                     processedContent = processedContent.replace(
                         /<pre>\s*<code\s*(?:class="language-(\w+)")?>([\s\S]*?)<\/code>\s*<\/pre>/g,
-                        (match, lang, code) => {
+                        (match, lang, code, offset) => {
+                            // 特殊处理 Mermaid 图表
+                            if (lang === 'mermaid') {
+                                const chartId = `chart-fallback-${Date.now()}-${offset}`;
+                                const tsx = <MermaidPlaceholder chart={code} id={chartId} />;
+                                return ReactDOMServer.renderToStaticMarkup(tsx);
+                            }
+
                             const tsx = <LightCodeBlock language={lang || 'text'}>{code}</LightCodeBlock>;
                             return ReactDOMServer.renderToStaticMarkup(tsx);
                         }
                     );
                 }
+            } else {
+                // parseAndReplaceSkills 将 Markdown 文本中的技能名称替换为相应的 React 组件,Html 化.
+                processedContent = parseAndReplaceSkills(processedContent, true) as string;
             }
 
-
-            // parseAndReplaceSkills 将 Markdown 文本中的技能名称替换为相应的 React 组件,Html 化.
-            processedContent = parseAndReplaceSkills(processedContent, true) as string;
             // Markdown 标签包裹，去除多余的 p 标签
             processedContent = processedContent.replace(/^<p>(.*?)<\/p>$/g, '$1');
             processedContent = replaceVariables(processedContent, flexiResumeStore.data);
@@ -465,5 +511,96 @@ export const checkConvertMarkdownToHtml = (content: string) => {
     }, [content]);
 
     return htmlContent;
+};
+
+/**
+ * Mermaid懒加载占位符组件
+ * 用于.mmd文件的懒加载渲染
+ */
+const MermaidLazyPlaceholder: React.FC<{ chart: string; id: string }> = ({ chart, id }) => {
+    return (
+        <div
+            className="mermaid-lazy-placeholder"
+            data-mermaid-chart={chart}
+            data-mermaid-id={id}
+            style={{
+                padding: '20px',
+                backgroundColor: '#f6f8fa',
+                border: '1px solid #e1e4e8',
+                borderRadius: '8px',
+                textAlign: 'center',
+                margin: '20px 0',
+                minHeight: '200px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#6b7280'
+            }}
+        >
+            <div>
+                <div style={{ fontSize: '24px', marginBottom: '8px' }}>📊</div>
+                <div>脑图懒加载中...</div>
+            </div>
+        </div>
+    );
+};
+
+/**
+ * 自定义 remark 插件来处理 .mmd 文件导入
+ * 将 .mmd 文件内容转换为懒加载的 Mermaid 图表
+ */
+function remarkMermaidLazyLoad() {
+    return (tree) => {
+        // 遍历 AST 节点，查找代码块
+        visit(tree, 'code', (node, index, parent) => {
+            // 检查是否是 mermaid 代码块
+            if (node.lang === 'mermaid' || node.value.startsWith('mindmap')) {
+                const chartContent = node.value;
+                const chartId = `lazy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+                // 替换成懒加载占位符
+                parent.children[index] = {
+                    type: 'html',
+                    value: `<div class="mermaid-lazy-placeholder"
+                        data-mermaid-chart="${encodeURIComponent(chartContent)}"
+                        data-mermaid-id="${chartId}"
+                        style="padding: 20px; background-color: #f6f8fa; border: 1px solid #e1e4e8; border-radius: 8px; text-align: center; margin: 20px 0; min-height: 200px; display: flex; align-items: center; justify-content: center; color: #6b7280;">
+                        <div>
+                            <div style="font-size: 24px; margin-bottom: 8px;">📊</div>
+                            <div>脑图懒加载中...</div>
+                        </div>
+                    </div>`
+                };
+            }
+        });
+    };
+}
+
+/**
+ * 处理包含 .mmd 文件导入的 Markdown 内容
+ * 支持懒加载渲染
+ */
+export const parseMarkdownWithMmdLazyLoad = (content: string): string => {
+    if (!content) return '';
+
+    try {
+        // 使用 remark 处理 Markdown
+        const result = remark()
+            .use(remarkMermaidLazyLoad) // 处理 mermaid 代码块
+            .use(remarkVideoLazyLoad) // 处理视频
+            .use(remarkImagesLazyLoad) // 处理图片
+            .use(html, { sanitize: false }) // 转换为 HTML
+            .processSync(content);
+
+        let processedContent = String(result);
+
+        // 替换变量
+        processedContent = replaceVariables(processedContent, flexiResumeStore.data);
+
+        return processedContent;
+    } catch (error) {
+        console.error('❌ parseMarkdownWithMmdLazyLoad 处理失败:', error);
+        return content;
+    }
 };
 

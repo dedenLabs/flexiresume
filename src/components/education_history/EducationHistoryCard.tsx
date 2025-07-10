@@ -19,12 +19,14 @@ const CardWrapper = styled.div`
  * @returns 返回渲染后的就业历史卡片组件
  */
 const EducationHistoryCard: React.FC<EducationHistoryCardProps> = ({ id, name, data: { list } }) => {
-    // const list = flexiResumeStore.data[id]?.list; 
-    // 定义折叠状态，组别折叠状态默认全部展开 
-    const { collapsedItems } = useCollapser(name, list.length);
+    // 安全检查：确保 list 存在且是数组
+    const safeList = Array.isArray(list) ? list : [];
+
+    // 定义折叠状态，组别折叠状态默认全部展开
+    const { collapsedItems } = useCollapser(name, safeList.length);
     return (
         <>
-            {!flexiResumeStore.collapsedMap.get(name) && list.map((history, index) => {
+            {!flexiResumeStore.collapsedMap.get(name) && safeList.map((history, index) => {
                 return <EducationHistoryItem key={index} index={index} {...history} />;
             })}
         </>

@@ -1,9 +1,67 @@
 import { Location } from 'react-router-dom';
 import flexiResumeStore from '../store/Store';
-import originData from '../data/Data';
 import React, { useState, useEffect } from 'react';
 import { reaction, set } from 'mobx';
 import debug from 'debug';
+import { getCurrentLanguageData } from '../data/DataLoader';
+import { IFlexiResume } from '../types/IFlexiResume';
+
+// 全局数据缓存，用于同步函数访问
+let cachedOriginData: IFlexiResume | null = null;
+let isInitializing = false;
+let initPromise: Promise<void> | null = null;
+
+// 初始化数据缓存
+const initializeDataCache = async () => {
+  if (isInitializing || cachedOriginData) {
+    return initPromise;
+  }
+
+  isInitializing = true;
+  initPromise = (async () => {
+    try {
+      cachedOriginData = await getCurrentLanguageData();
+      console.log('Data cache initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize data cache:', error);
+    } finally {
+      isInitializing = false;
+    }
+  })();
+
+  return initPromise;
+};
+
+// 立即初始化缓存
+initializeDataCache();
+
+// 获取缓存的数据，如果没有则返回默认值
+const getCachedData = (): IFlexiResume => {
+  if (!cachedOriginData) {
+    // 如果数据还在初始化中，不显示警告
+    if (!isInitializing) {
+      console.warn('Data cache not initialized, using fallback');
+    }
+    // 返回一个基本的默认配置
+    return {
+      header_info: {
+        use_static_assets_from_cdn: false,
+        cdn_static_assets_dirs: ['images'],
+        static_assets_cdn_base_urls: []
+      }
+    } as IFlexiResume;
+  }
+  return cachedOriginData;
+};
+
+// 更新数据缓存（当语言切换时调用）
+export const updateDataCache = async (): Promise<void> => {
+  try {
+    cachedOriginData = await getCurrentLanguageData();
+  } catch (error) {
+    console.error('Failed to update data cache:', error);
+  }
+};
 
 /** 获取日志 */
 export function getLogger(moduleName: string) {
@@ -17,14 +75,26 @@ window.stopOtherVideos = function (e) {
 }
 /**
  * 格式化简历title名称,同时也是保存网页时的名称
- * @param template 
- * @param values 
- * @returns 
+ * @param template
+ * @param values
+ * @returns
  */
 export function formatResumeFilename(template: string, values: any) {
-    return template.replace(/{(position|name|age|location)}/g, (_: string, p1: string) => {
+    if (!template || !values) {
+        return values?.position || 'My Resume';
+    }
+
+    const result = template.replace(/{(position|name|age|location)}/g, (_: string, p1: string) => {
         return values[p1] || ''; // 返回对应的值，或空字符串
     });
+
+    // 如果格式化后的结果为空或只包含分隔符，返回默认标题
+    const cleanResult = result.replace(/[-\s]+/g, ' ').trim();
+    if (!cleanResult || cleanResult === '-' || cleanResult === '--' || cleanResult === '---') {
+        return values?.position || values?.name || 'My Resume';
+    }
+
+    return result;
 }
 
 export function assignDeep(target, ...sources) {
@@ -94,6 +164,9 @@ export function getCurrentPositionNameByPath(path: string): string {
 export async function updateCurrentResumeStore(postion: string): Promise<void> {
     // 更新当前位置
     flexiResumeStore.collapsedMap.clear();// 清空折叠信息
+
+    // 动态获取当前语言的数据
+    const originData = await getCurrentLanguageData();
 
     // 异步加载职位数据和完整技能数据
     const [positionData, skillsData] = await Promise.all([
@@ -329,6 +402,9 @@ export function useLazyVideo() {
  * @returns 替换后的URL或原始URL
  */
 export function replaceCDNBaseURL(url: string, sourceIndex = 0) {
+    // 获取缓存的数据
+    const originData = getCachedData();
+
     // 静态资源目录白名单
     const staticResourceDirs = originData.header_info.cdn_static_assets_dirs;
 

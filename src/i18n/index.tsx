@@ -8,6 +8,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { recordLanguageChangeTime } from '../utils/PerformanceMonitor';
 
 // 支持的语言类型
 export type Language = 'zh' | 'en';
@@ -23,7 +24,7 @@ export interface I18nTexts {
     agent: string;
     gamedev: string;
   };
-  
+
   // 通用文本
   common: {
     loading: string;
@@ -77,15 +78,7 @@ export interface I18nTexts {
 
 // 中文文本
 const zhTexts: I18nTexts = {
-  nav: {
-    frontend: 'NodeJs开发',
-    backend: '后端工程师',
-    cto: '技术管理',
-    contract: '技术顾问/游戏资源优化/外包',
-    agent: 'AI Agent工程师',
-    gamedev: '游戏开发'
-  },
-  
+
   common: {
     loading: '加载中...',
     error: '加载失败',
@@ -135,15 +128,6 @@ const zhTexts: I18nTexts = {
 
 // 英文文本
 const enTexts: I18nTexts = {
-  nav: {
-    frontend: 'NodeJs Developer',
-    backend: 'Backend Engineer',
-    cto: 'Technical Management',
-    contract: 'Technical Consultant/Game Optimization/Outsourcing',
-    agent: 'AI Agent Engineer',
-    gamedev: 'Game Developer'
-  },
-  
   common: {
     loading: 'Loading...',
     error: 'Load Failed',
@@ -204,6 +188,23 @@ interface I18nContextType {
   t: I18nTexts;
 }
 
+// 增强的语言切换函数，包含性能监控
+const createLanguageSetter = (setLanguage: React.Dispatch<React.SetStateAction<Language>>) => {
+  return (newLang: Language) => {
+    const startTime = performance.now();
+
+    setLanguage(prevLang => {
+      // 记录语言切换性能
+      setTimeout(() => {
+        const changeTime = performance.now() - startTime;
+        recordLanguageChangeTime(prevLang, newLang, changeTime);
+      }, 0);
+
+      return newLang;
+    });
+  };
+};
+
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 // 国际化Provider
@@ -214,7 +215,7 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (saved && (saved === 'zh' || saved === 'en')) {
       return saved;
     }
-    
+
     // 根据浏览器语言自动选择
     const browserLang = navigator.language.toLowerCase();
     return browserLang.startsWith('zh') ? 'zh' : 'en';
@@ -225,9 +226,12 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('language', language);
   }, [language]);
 
+  // 创建带性能监控的语言切换函数
+  const enhancedSetLanguage = createLanguageSetter(setLanguage);
+
   const value: I18nContextType = {
     language,
-    setLanguage,
+    setLanguage: enhancedSetLanguage,
     t: texts[language]
   };
 

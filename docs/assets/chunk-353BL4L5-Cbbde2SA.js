@@ -1,0 +1,1 @@
+import{_ as e}from"./FlexiResume-DY438Mxe.js";function c(e,c){e.accDescr&&c.setAccDescription?.(e.accDescr),e.accTitle&&c.setAccTitle?.(e.accTitle),e.title&&c.setDiagramTitle?.(e.title)}e(c,"populateCommonDb");export{c as p};

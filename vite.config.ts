@@ -5,6 +5,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { globSync } from 'glob';
 
+// 如果要完全支持静态 CDN 地址环境，需要配置静态页签名称，这样用户访问时就能找到入口文件。
+// To fully support a static CDN address environment, you need to configure the static tab name so that users can find the entry file when they visit.
+const staticRoutePageNames = ["game", "frontend", "backend", "cto", "agent", "contracttask", "fullstack"];
+
 /**
  * 自定义 Rollup 插件 - 生成静态服务器路由入口文件
  *
@@ -17,12 +21,11 @@ const customEntry = () => ({
   name: 'customEntry',
   writeBundle() {
     // 所有需要生成入口文件的路由名称
-    const routeNames = ["game", "frontend", "backend", "cto", "agent", "contracttask"];
 
     try {
       // 读取已生成的 index.html
       const indexContent = fs.readFileSync('docs/index.html', 'utf-8');
-      routeNames.forEach(name => {
+      staticRoutePageNames.forEach(name => {
         const outputPath = path.join('docs', `${name}.html`);
 
         // 直接写入文件系统
@@ -89,10 +92,24 @@ const customEntry = () => ({
 //   }
 // })
 
+/**
+ * 自定义插件 - 支持 .mmd 文件导入
+ * 将 .mmd 文件作为文本字符串导入
+ */
+const mmdPlugin = () => ({
+  name: 'mmd-loader',
+  load(id: string) {
+    if (id.endsWith('.mmd')) {
+      const content = fs.readFileSync(id, 'utf-8');
+      return `export default ${JSON.stringify(content)};`;
+    }
+  }
+});
+
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => ({
   base: command === 'serve' ? '/' : './',
-  plugins: [react()],
+  plugins: [react(), mmdPlugin()],
   publicDir: command === 'serve' ? 'public' : false, // 🔥 必须关闭默认 public 复制
 
   // 开发服务器优化
@@ -108,38 +125,20 @@ export default defineConfig(({ command }) => ({
     outDir: 'docs',  // 👈 修改输出目录为 docs
     emptyOutDir: true,     // 构建前清空目标目录
 
-    // 代码分割优化 - 更细粒度的分包策略
+    // 简化的代码分割策略
     rollupOptions: {
       output: {
         manualChunks: {
           // React 核心库
-          'react-vendor': ['react', 'react-dom', 'react-dom/client'],
+          'react-vendor': ['react', 'react-dom'],
 
-          // 路由库
-          'router-vendor': ['react-router-dom', '@remix-run/router'],
+          // 大型第三方库
+          'framer-motion': ['framer-motion'],
+          'react-markdown': ['react-markdown'],
+          'react-icons': ['react-icons'],
 
-          // UI 和动画库
-          'ui-vendor': ['styled-components', 'framer-motion'],
-
-          // Markdown 相关库（最大的包，需要分离）
-          'markdown-vendor': [
-            'react-markdown',
-            'remark',
-            'remark-html',
-            'unified',
-            'micromark',
-            'mdast-util-to-hast',
-            'hast-util-sanitize'
-          ],
-
-          // 语法高亮库（按需加载，不预打包）
-          // 注释掉以实现真正的按需加载
-
-          // 工具库
-          'utils-vendor': ['mobx', 'debug'],
-
-          // 图标库
-          'icons-vendor': ['react-icons']
+          // 其他工具库
+          'vendor': ['styled-components', 'react-router-dom', 'mobx', 'debug']
         }
       },
       plugins: [
@@ -183,7 +182,15 @@ export default defineConfig(({ command }) => ({
     cssCodeSplit: true,
 
     // 设置chunk大小警告阈值
-    chunkSizeWarningLimit: 600, // 600kb警告阈值
+    chunkSizeWarningLimit: 500, // 500kb警告阈值，更严格的控制
+
+    // 实验性功能：启用更好的tree shaking
+    target: 'esnext',
+
+    // 更激进的优化选项
+    reportCompressedSize: false, // 禁用压缩大小报告以加快构建
+
+
   },
 
   // 依赖预构建优化 - 更全面的预构建配置
@@ -212,16 +219,37 @@ export default defineConfig(({ command }) => ({
       'mobx',
 
       // 工具库
-      'debug'
+      'debug',
+      'qrcode.react'
     ],
     exclude: [
       '@vite/client',
       '@vite/env',
       // 排除大型可选依赖
       'react-syntax-highlighter',
-      'highlight.js'
+      'highlight.js',
+      // 排除虚拟化组件（按需加载）
+      'react-virtualized-auto-sizer',
+      'react-window',
+      // 排除react-icons的大包，使用按需加载
+      'react-icons/lib',
+      'react-icons/all'
     ],
     // 强制预构建某些依赖
-    force: true
+    force: false, // 改为false，避免不必要的重新构建
+
+    // 设置预构建的入口
+    entries: ['src/main.tsx', 'src/App.tsx']
+  },
+
+  // 新增：定义别名以减少路径解析时间
+  resolve: {
+    alias: {
+      '@': '/src',
+      '@components': '/src/components',
+      '@utils': '/src/utils',
+      '@data': '/src/data',
+      '@styles': '/src/styles'
+    }
   }
 }))

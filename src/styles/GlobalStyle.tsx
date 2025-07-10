@@ -26,6 +26,10 @@ const GlobalStyle = createGlobalStyle`
     --color-status-error: #e74c3c;
     --color-status-info: #3498db;
 
+    /* 状态背景色 - 浅色模式 */
+    --color-status-worse: #fff0f0;    /* 较差的状态背景色 */
+    --color-status-better: #f0fff0;   /* 更好的状态背景色 */
+
     --color-shadow-light: rgba(0, 0, 0, 0.05);
     --color-shadow-medium: rgba(0, 0, 0, 0.1);
     --color-shadow-dark: rgba(0, 0, 0, 0.2);
@@ -33,17 +37,17 @@ const GlobalStyle = createGlobalStyle`
 
   /* CSS变量定义 - 深色主题 - 护眼优化版本 */
   [data-theme="dark"] {
-    --color-primary: #4a9eff;
-    --color-secondary: #e2e8f0;
-    --color-accent: #ff6b6b;
+    --color-primary: #74b9ff;
+    --color-secondary: #f1f3f4;
+    --color-accent: #fd79a8;
 
     --color-background: #0f1419;
     --color-surface: #1a202c;
     --color-card: #2d3748;
 
-    --color-text-primary: #e2e8f0;
-    --color-text-secondary: #a0aec0;
-    --color-text-disabled: #718096;
+    --color-text-primary: #f1f3f4; /* 提高文本对比度 */
+    --color-text-secondary: #b2bec3; /* 提高次要文本对比度 */
+    --color-text-disabled: #81ecec; /* 提高禁用文本对比度 */
     --color-text-inverse: #1a202c;
 
     --color-border-light: #2d3748;
@@ -54,6 +58,10 @@ const GlobalStyle = createGlobalStyle`
     --color-status-warning: #ed8936;
     --color-status-error: #f56565;
     --color-status-info: #4299e1;
+
+    /* 状态背景色 - 深色模式 */
+    --color-status-worse: #4a1a1a;    /* 较差的状态背景色 - 深红色调 */
+    --color-status-better: #1a4a1a;   /* 更好的状态背景色 - 深绿色调 */
 
     --color-shadow-light: rgba(0, 0, 0, 0.1);
     --color-shadow-medium: rgba(0, 0, 0, 0.25);
@@ -83,7 +91,7 @@ const GlobalStyle = createGlobalStyle`
     background-color: var(--color-surface);
     letter-spacing: 0.02em; /* 调整为你需要的值 */
     word-break: break-all;
-    transition: color 0.3s ease, background-color 0.3s ease;
+    transition: color 0.3s ease, background-color 0.3s ease, filter 0.3s ease;
 
     /* 修复移动端横向溢出问题 */
     overflow-x: hidden; /* 隐藏横向滚动条 */
@@ -97,6 +105,32 @@ const GlobalStyle = createGlobalStyle`
     /* 背景图平铺 */
     background-repeat: repeat;
     background-size: 180px;
+  }
+
+  /* 深色模式下的背景图优化 - 仅对背景图使用滤镜反转 */
+  [data-theme="dark"] body {
+    /* 使用滤镜反转背景图，让其适配深色主题 */
+    background-image: url('${replaceCDNBaseURL('images/flexi-resume.jpg')}');
+
+    /* 仅对背景图应用滤镜，不影响其他内容 */
+    &::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('${replaceCDNBaseURL('images/flexi-resume.jpg')}');
+      background-repeat: repeat;
+      background-size: 180px;
+      /* 反转背景图颜色，让其适配深色主题 */
+      filter: invert(1) hue-rotate(180deg) brightness(0.8) contrast(1.2);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* 隐藏原始背景图，使用伪元素的反转版本 */
+    background-image: none;
   }
   
   
@@ -184,14 +218,36 @@ const GlobalStyle = createGlobalStyle`
       transition: background-color 0.3s ease;
     }
   }
-  
+
+  /* 状态背景色全局类 */
+  .status-worse {
+    background-color: var(--color-status-worse) !important;
+    transition: background-color 0.3s ease;
+  }
+
+  .status-better {
+    background-color: var(--color-status-better) !important;
+    transition: background-color 0.3s ease;
+  }
+
+  /* 兼容原有的硬编码颜色 */
+  [style*="background-color:#fff0f0"],
+  [style*="background-color: #fff0f0"] {
+    background-color: var(--color-status-worse) !important;
+  }
+
+  [style*="background-color:#f0fff0"],
+  [style*="background-color: #f0fff0"] {
+    background-color: var(--color-status-better) !important;
+  }
+
   #root {
-    display: flex;  
+    display: flex;
     justify-content: center; /* 水平居中 */
     @media (max-width: ${maxWidth}) {
-      flex-direction: column;  
-      align-items: center 
-    }  
+      flex-direction: column;
+      align-items: center
+    }
   }
   h1, h2, h3, h4 {
     margin: 0;
@@ -202,6 +258,8 @@ const GlobalStyle = createGlobalStyle`
     text-decoration: none;
     color: inherit;
     position: relative;
+    transition: color 0.3s ease;
+
     &::before {
       content: '';
       display: inline-block;
@@ -211,6 +269,68 @@ const GlobalStyle = createGlobalStyle`
       margin-right: 0.4rem; /* 图标和文本的间距 */
       background: url(${replaceCDNBaseURL("images/url.svg")}) no-repeat center;
       background-size: contain; /* 保证图标自适应 */
+      /* 深色模式下的图标颜色调整 */
+      filter: brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(95%) contrast(85%);
+      transition: filter 0.3s ease;
+    }
+
+    /* 链接访问状态颜色 */
+    &:link {
+      color: var(--color-primary);
+    }
+
+    &:visited {
+      color: var(--color-text-secondary);
+    }
+
+    &:hover {
+      color: var(--color-accent);
+    }
+
+    &:active {
+      color: var(--color-primary);
+    }
+  }
+
+  /* 深色模式下的链接图标和颜色优化 */
+  [data-theme="dark"] a:not(.no-link-icon) {
+    &::before {
+      filter: brightness(0) saturate(100%) invert(65%) sepia(11%) saturate(297%) hue-rotate(181deg) brightness(93%) contrast(87%);
+    }
+
+    &:link {
+      color: #74b9ff !important; /* 深色模式下更亮的蓝色 - 提高对比度 */
+    }
+
+    &:visited {
+      color: #b2bec3 !important; /* 深色模式下更明显的灰色 - 提高对比度 */
+    }
+
+    &:hover {
+      color: #fd79a8 !important; /* 深色模式下更亮的粉红色 - 提高对比度 */
+    }
+
+    &:active {
+      color: #74b9ff !important;
+    }
+  }
+
+  /* 深色模式下的普通链接颜色优化 */
+  [data-theme="dark"] a.no-link-icon {
+    &:link {
+      color: #74b9ff !important; /* 深色模式下更亮的蓝色 */
+    }
+
+    &:visited {
+      color: #b2bec3 !important; /* 深色模式下更明显的灰色 */
+    }
+
+    &:hover {
+      color: #fd79a8 !important; /* 深色模式下更亮的粉红色 */
+    }
+
+    &:active {
+      color: #74b9ff !important;
     }
   }
   @media (max-width: ${maxWidth}) {

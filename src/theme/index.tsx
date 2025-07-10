@@ -8,6 +8,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { recordThemeChangeTime } from '../utils/PerformanceMonitor';
 
 // 主题类型
 export type ThemeMode = 'light' | 'dark';
@@ -165,7 +166,20 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   });
 
   const toggleMode = () => {
-    setMode(prevMode => prevMode === 'light' ? 'dark' : 'light');
+    const startTime = performance.now();
+    const currentMode = mode;
+
+    setMode(prevMode => {
+      const newMode = prevMode === 'light' ? 'dark' : 'light';
+
+      // 记录主题切换性能
+      setTimeout(() => {
+        const changeTime = performance.now() - startTime;
+        recordThemeChangeTime(currentMode, newMode, changeTime);
+      }, 0);
+
+      return newMode;
+    });
   };
 
   useEffect(() => {

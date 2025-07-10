@@ -15,14 +15,20 @@ const SEOHead: React.FC<SEOHeadProps> = ({ position }) => {
     if (!headerInfo) return;
 
     // 动态更新页面标题
-    const title = headerInfo.resume_name_format
+    let title = headerInfo.resume_name_format
       ? headerInfo.resume_name_format
           .replace('{position}', headerInfo.position || '')
           .replace('{name}', headerInfo.name || '')
           .replace('{age}', headerInfo.age || '')
           .replace('{location}', headerInfo.location || '')
       : `${headerInfo.position} - ${headerInfo.name}`;
-    
+
+    // 清理标题，避免显示 "---" 等无意义内容
+    const cleanTitle = title.replace(/[-\s]+/g, ' ').trim();
+    if (!cleanTitle || cleanTitle === '-' || cleanTitle === '--' || cleanTitle === '---') {
+      title = headerInfo.position || headerInfo.name || 'My Resume';
+    }
+
     document.title = title;
 
     // 更新meta描述

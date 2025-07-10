@@ -1,0 +1,82 @@
+flowchart TD
+    %% Technical Field Classification
+    A[Technical Stack Distribution] --> B[AI Technology]
+    A --> C[Frontend Technology]
+    A --> D[Game Development]
+    A --> E[Backend Technology]
+    A --> F[DevOps]
+
+    %% AI Technology Branch
+    B --> B1[AI Agent Development]
+    B --> B2[LangChain]
+    B --> B3[OpenAI API]
+    B --> B4[RAG Retrieval Augmentation]
+    B --> B5[Prompt Engineering]
+
+    %% Frontend Technology Branch
+    C --> C1[JavaScript]
+    C --> C2[TypeScript]
+    C --> C3[React]
+    C --> C4[Vue]
+    C --> C5[HTML5/CSS]
+
+    %% Game Development Branch
+    D --> D1[Unity]
+    D --> D2[Cocos Creator]
+    D --> D3[Flash/AS3]
+    D --> D4[WebGL]
+
+    %% Backend Technology Branch
+    E --> E1[Node.js]
+    E --> E2[Express]
+    E --> E3[Database Design]
+    E --> E4[API Development]
+
+    %% DevOps Branch
+    F --> F1[Docker]
+    F --> F2[CI/CD]
+    F --> F3[Automated Deployment]
+
+    %% Proficiency Level
+    C1 --> G1[Expert Level]
+    C2 --> G1
+    C3 --> G1
+    D1 --> G1
+
+    B1 --> G2[Proficient Level]
+    B2 --> G2
+    C4 --> G2
+    D2 --> G2
+
+    B4 --> G3[Basic Understanding]
+    B5 --> G3
+    D4 --> G3
+
+    %% Experience Direction
+    G1 --> H1[Game Development Direction]
+    G1 --> H2[Frontend Development Direction]
+    G1 --> H3[Full-Stack Development Direction]
+
+    G2 --> H4[AI Technology Direction]
+    G2 --> H5[Backend Development Direction]
+
+    G3 --> H6[Emerging Technology Exploration]
+
+    %% Styling
+    classDef aiTech fill:#e1f5fe
+    classDef frontendTech fill:#f3e5f5
+    classDef gameDev fill:#e8f5e8
+    classDef backendTech fill:#fff3e0
+    classDef devops fill:#fce4ec
+    classDef expert fill:#c8e6c9
+    classDef skilled fill:#fff9c4
+    classDef learning fill:#ffcdd2
+
+    class B,B1,B2,B3,B4,B5 aiTech
+    class C,C1,C2,C3,C4,C5 frontendTech
+    class D,D1,D2,D3,D4 gameDev
+    class E,E1,E2,E3,E4 backendTech
+    class F,F1,F2,F3 devops
+    class G1 expert
+    class G2 skilled
+    class G3 learning

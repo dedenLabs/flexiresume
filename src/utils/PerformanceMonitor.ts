@@ -1,16 +1,21 @@
 /**
  * 性能监控工具
- * 
+ *
  * 提供Web性能指标监控，包括：
  * - Core Web Vitals (LCP, FID, CLS)
  * - 自定义性能指标
  * - 资源加载时间
  * - 用户交互延迟
- * 
+ * - 组件渲染性能
+ * - 数据加载性能
+ * - 内存使用监控
+ *
  * @author 陈剑
  * @date 2024-12-27
+ * @updated 2024-12-27 - 增强性能监控功能
  */
 
+import React from 'react';
 import { getLogger } from './Tools';
 
 const logger = getLogger('PerformanceMonitor');
@@ -21,18 +26,36 @@ const logger = getLogger('PerformanceMonitor');
 interface PerformanceMetrics {
   // Core Web Vitals
   LCP?: number; // Largest Contentful Paint
-  FID?: number; // First Input Delay  
+  FID?: number; // First Input Delay
   CLS?: number; // Cumulative Layout Shift
-  
+
   // 其他重要指标
   FCP?: number; // First Contentful Paint
   TTFB?: number; // Time to First Byte
   TTI?: number; // Time to Interactive
-  
+
   // 自定义指标
   pageLoadTime?: number;
   resourceLoadTime?: number;
   componentRenderTime?: number;
+
+  // 新增指标
+  dataLoadTime?: number; // 数据加载时间
+  skeletonDisplayTime?: number; // 骨架屏显示时间
+  routeChangeTime?: number; // 路由切换时间
+  themeChangeTime?: number; // 主题切换时间
+  languageChangeTime?: number; // 语言切换时间
+  memoryUsage?: number; // 内存使用量
+  bundleSize?: number; // 包大小
+
+  // 组件级别指标
+  componentMetrics?: {
+    [componentName: string]: {
+      renderTime: number;
+      mountTime: number;
+      updateTime: number;
+    };
+  };
 }
 
 /**
@@ -259,10 +282,159 @@ class PerformanceMonitor {
   }
 
   /**
+   * 记录组件渲染性能
+   */
+  public recordComponentMetric(componentName: string, metricType: 'render' | 'mount' | 'update', value: number) {
+    if (!this.metrics.componentMetrics) {
+      this.metrics.componentMetrics = {};
+    }
+
+    if (!this.metrics.componentMetrics[componentName]) {
+      this.metrics.componentMetrics[componentName] = {
+        renderTime: 0,
+        mountTime: 0,
+        updateTime: 0
+      };
+    }
+
+    switch (metricType) {
+      case 'render':
+        this.metrics.componentMetrics[componentName].renderTime = value;
+        break;
+      case 'mount':
+        this.metrics.componentMetrics[componentName].mountTime = value;
+        break;
+      case 'update':
+        this.metrics.componentMetrics[componentName].updateTime = value;
+        break;
+    }
+
+    logger(`Component ${componentName} ${metricType} time:`, value);
+  }
+
+  /**
+   * 记录数据加载性能
+   */
+  public recordDataLoadTime(dataType: string, loadTime: number) {
+    this.metrics.dataLoadTime = loadTime;
+    logger(`Data load time for ${dataType}:`, loadTime);
+  }
+
+  /**
+   * 记录骨架屏显示时间
+   */
+  public recordSkeletonDisplayTime(displayTime: number) {
+    this.metrics.skeletonDisplayTime = displayTime;
+    logger('Skeleton display time:', displayTime);
+  }
+
+  /**
+   * 记录路由切换性能
+   */
+  public recordRouteChangeTime(fromRoute: string, toRoute: string, changeTime: number) {
+    this.metrics.routeChangeTime = changeTime;
+    logger(`Route change from ${fromRoute} to ${toRoute}:`, changeTime);
+  }
+
+  /**
+   * 记录主题切换性能
+   */
+  public recordThemeChangeTime(fromTheme: string, toTheme: string, changeTime: number) {
+    this.metrics.themeChangeTime = changeTime;
+    logger(`Theme change from ${fromTheme} to ${toTheme}:`, changeTime);
+  }
+
+  /**
+   * 记录语言切换性能
+   */
+  public recordLanguageChangeTime(fromLang: string, toLang: string, changeTime: number) {
+    this.metrics.languageChangeTime = changeTime;
+    logger(`Language change from ${fromLang} to ${toLang}:`, changeTime);
+  }
+
+  /**
+   * 监控内存使用
+   */
+  public recordMemoryUsage() {
+    if ('memory' in performance) {
+      const memInfo = (performance as any).memory;
+      this.metrics.memoryUsage = memInfo.usedJSHeapSize;
+      logger('Memory usage:', {
+        used: memInfo.usedJSHeapSize,
+        total: memInfo.totalJSHeapSize,
+        limit: memInfo.jsHeapSizeLimit
+      });
+    }
+  }
+
+  /**
    * 获取当前性能指标
    */
   public getMetrics(): PerformanceMetrics {
     return { ...this.metrics };
+  }
+
+  /**
+   * 获取性能评分
+   */
+  public getPerformanceScore(): { score: number; details: any } {
+    const metrics = this.getMetrics();
+    let score = 100;
+    const details: any = {};
+
+    // LCP评分 (理想 < 2.5s, 需要改进 < 4s)
+    if (metrics.LCP) {
+      if (metrics.LCP > 4000) {
+        score -= 30;
+        details.LCP = 'Poor';
+      } else if (metrics.LCP > 2500) {
+        score -= 15;
+        details.LCP = 'Needs Improvement';
+      } else {
+        details.LCP = 'Good';
+      }
+    }
+
+    // FID评分 (理想 < 100ms, 需要改进 < 300ms)
+    if (metrics.FID) {
+      if (metrics.FID > 300) {
+        score -= 25;
+        details.FID = 'Poor';
+      } else if (metrics.FID > 100) {
+        score -= 10;
+        details.FID = 'Needs Improvement';
+      } else {
+        details.FID = 'Good';
+      }
+    }
+
+    // CLS评分 (理想 < 0.1, 需要改进 < 0.25)
+    if (metrics.CLS) {
+      if (metrics.CLS > 0.25) {
+        score -= 20;
+        details.CLS = 'Poor';
+      } else if (metrics.CLS > 0.1) {
+        score -= 10;
+        details.CLS = 'Needs Improvement';
+      } else {
+        details.CLS = 'Good';
+      }
+    }
+
+    // 数据加载时间评分
+    if (metrics.dataLoadTime) {
+      if (metrics.dataLoadTime > 2000) {
+        score -= 15;
+        details.dataLoad = 'Slow';
+      } else if (metrics.dataLoadTime > 1000) {
+        score -= 5;
+        details.dataLoad = 'Moderate';
+      } else {
+        details.dataLoad = 'Fast';
+      }
+    }
+
+    return { score: Math.max(0, score), details };
   }
 
   /**
@@ -282,8 +454,106 @@ export const recordMetric = (name: string, value: number) => {
   performanceMonitor.recordCustomMetric(name, value);
 };
 
+export const recordComponentMetric = (componentName: string, metricType: 'render' | 'mount' | 'update', value: number) => {
+  performanceMonitor.recordComponentMetric(componentName, metricType, value);
+};
+
+export const recordDataLoadTime = (dataType: string, loadTime: number) => {
+  performanceMonitor.recordDataLoadTime(dataType, loadTime);
+};
+
+export const recordSkeletonDisplayTime = (displayTime: number) => {
+  performanceMonitor.recordSkeletonDisplayTime(displayTime);
+};
+
+export const recordRouteChangeTime = (fromRoute: string, toRoute: string, changeTime: number) => {
+  performanceMonitor.recordRouteChangeTime(fromRoute, toRoute, changeTime);
+};
+
+export const recordThemeChangeTime = (fromTheme: string, toTheme: string, changeTime: number) => {
+  performanceMonitor.recordThemeChangeTime(fromTheme, toTheme, changeTime);
+};
+
+export const recordLanguageChangeTime = (fromLang: string, toLang: string, changeTime: number) => {
+  performanceMonitor.recordLanguageChangeTime(fromLang, toLang, changeTime);
+};
+
+export const recordMemoryUsage = () => {
+  performanceMonitor.recordMemoryUsage();
+};
+
 export const getPerformanceMetrics = () => {
   return performanceMonitor.getMetrics();
+};
+
+export const getPerformanceScore = () => {
+  return performanceMonitor.getPerformanceScore();
+};
+
+/**
+ * React Hook for component performance monitoring
+ */
+export const usePerformanceMonitor = (componentName: string) => {
+  const startTimeRef = React.useRef(performance.now());
+
+  // 使用useCallback确保函数引用稳定
+  const recordRender = React.useCallback(() => {
+    const renderTime = performance.now() - startTimeRef.current;
+    recordComponentMetric(componentName, 'render', renderTime);
+  }, [componentName]);
+
+  const recordMount = React.useCallback(() => {
+    const mountTime = performance.now() - startTimeRef.current;
+    recordComponentMetric(componentName, 'mount', mountTime);
+  }, [componentName]);
+
+  const recordUpdate = React.useCallback(() => {
+    const updateTime = performance.now() - startTimeRef.current;
+    recordComponentMetric(componentName, 'update', updateTime);
+  }, [componentName]);
+
+  return {
+    recordRender,
+    recordMount,
+    recordUpdate
+  };
+};
+
+/**
+ * 高阶组件：为组件添加性能监控
+ */
+export const withPerformanceMonitor = <P extends object>(
+  WrappedComponent: React.ComponentType<P>,
+  componentName?: string
+) => {
+  const displayName = componentName || WrappedComponent.displayName || WrappedComponent.name || 'Component';
+
+  const MonitoredComponent: React.FC<P> = (props) => {
+    const startTime = performance.now();
+
+    React.useEffect(() => {
+      // 记录组件挂载时间
+      const mountTime = performance.now() - startTime;
+      recordComponentMetric(displayName, 'mount', mountTime);
+    }, []);
+
+    React.useEffect(() => {
+      // 记录组件更新时间
+      const updateTime = performance.now() - startTime;
+      recordComponentMetric(displayName, 'update', updateTime);
+    });
+
+    // 记录渲染时间
+    const renderStartTime = performance.now();
+    const result = React.createElement(WrappedComponent, props);
+    const renderTime = performance.now() - renderStartTime;
+    recordComponentMetric(displayName, 'render', renderTime);
+
+    return result;
+  };
+
+  MonitoredComponent.displayName = `withPerformanceMonitor(${displayName})`;
+  return MonitoredComponent;
 };
 
 export default performanceMonitor;

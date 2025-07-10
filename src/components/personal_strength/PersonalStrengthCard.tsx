@@ -6,12 +6,15 @@ import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import flexiResumeStore from '../../store/Store';
 import { useCollapser } from '../../utils/Tools';
 import { useTheme } from '../../theme';
+import SkillRenderer from '../skill/SkillRenderer';
 
 interface EmploymentHistoryCardProps {
 	id: string;
 }
 
-const CardWrapper = styled.div<{ isDark?: boolean }>`
+const CardWrapper = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isDark',
+})<{ isDark?: boolean }>`
 	display: block;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
@@ -34,7 +37,9 @@ const PersonalStrengthCard: React.FC<PersonalStrengthCardProps> = ({ id, name, d
 		return (
 			<CardWrapper isDark={isDark}>
 				{/* {markdownContent} */}
-				<div className='markdown-content' dangerouslySetInnerHTML={{ __html: markdownContent }} />
+				<SkillRenderer>
+					<div className='markdown-content' dangerouslySetInnerHTML={{ __html: markdownContent }} />
+				</SkillRenderer>
 			</CardWrapper>
 		);
 	}

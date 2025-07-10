@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 
 import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import { useCollapser } from '../../utils/Tools';
+import SkillRenderer from '../skill/SkillRenderer';
 
 interface BaseCardProps {
 	id: string;
@@ -33,7 +34,9 @@ const BaseCard: React.FC<BaseCardProps> = ({ id, name, hidden, data: { content }
 	if (!collapsedItems[0]) {
 		return (
 			<BaseCardWrapper>
-				<div className='markdown-content' dangerouslySetInnerHTML={{ __html: markdownContent }} />
+				<SkillRenderer>
+					<div className='markdown-content' dangerouslySetInnerHTML={{ __html: markdownContent }} />
+				</SkillRenderer>
 			</BaseCardWrapper>
 		);
 	}

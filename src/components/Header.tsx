@@ -77,7 +77,9 @@ const Avatar = styled.img`
     float: right
   `}
 `;
-const QRCodeContener = styled.div<{ isDark?: boolean }>`
+const QRCodeContener = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isDark',
+})<{ isDark?: boolean }>`
     // margin: 0 0.4rem;
     width: 6.5rem;
     height: 6.5rem;
@@ -110,10 +112,26 @@ const Vline = styled.em`
     vertical-align: middle;
     background: #aaa;
 `;
-const Icon = styled.img`
+const Icon = styled.img.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isDark',
+})<{ isDark?: boolean }>`
     margin: 0 0.4rem;
     width: 1rem;
-    height: 1rem; 
+    height: 1rem;
+    /* 使用filter来改变SVG颜色 */
+    filter: ${props => props.isDark
+        ? 'brightness(0) saturate(100%) invert(65%) sepia(11%) saturate(297%) hue-rotate(181deg) brightness(93%) contrast(87%)' // 浅灰色 #a0aec0
+        : 'brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(95%) contrast(85%)'   // 深灰色 #888
+    };
+    transition: filter 0.3s ease;
+
+    /* 悬停效果 */
+    &:hover {
+        filter: ${props => props.isDark
+            ? 'brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(187deg) brightness(119%) contrast(86%)' // 蓝色 #4a9eff
+            : 'brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(187deg) brightness(119%) contrast(86%)'  // 蓝色 #3498db
+        };
+    }
 `;
 
 const GenderIcon = styled.img.withConfig({
@@ -172,7 +190,7 @@ const Header: React.FC<HeaderProps> = ({ name, qrcode, qrcode_msg, home_page, av
           <Position>{position}-{location} {expected_salary}</Position>
 
           <Details>
-            <Icon src={icon_experience} />{work_experience_num}<Vline />
+            <Icon src={icon_experience} isDark={isDark} />{work_experience_num}<Vline />
             {age}<Vline /> {gender}<Vline />
             {education} <Vline />
             {status}
@@ -182,10 +200,10 @@ const Header: React.FC<HeaderProps> = ({ name, qrcode, qrcode_msg, home_page, av
           <Details>
             {/* <MdPhoneAndroid style={IconStyle} />{phone}<Vline /> */}
             {/* <SiWechat style={IconStyle} />{wechat}<Vline /> */}
-            <Icon src={icon_email} /><a href={"mailto:" + email} className="no-link-icon">{email}</a>
+            <Icon src={icon_email} isDark={isDark} /><a href={"mailto:" + email} className="no-link-icon">{email}</a>
             <Vline />
-            <Icon src={icon_phone} />{phone}<Vline />
-            <Icon src={icon_wx} />{wechat}
+            <Icon src={icon_phone} isDark={isDark} />{phone}<Vline />
+            <Icon src={icon_wx} isDark={isDark} />{wechat}
 
             {/* <Icon src={icon_email} />{home_page} */}
           </Details>
