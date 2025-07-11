@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --mode production && echo '构建完成，输出到 docs 目录'",
+    "build": "vite build --mode production && npm run cdn && echo '构建完成，输出到 docs 目录'",
+    "cdn": "node copy-public-to-docs.js && echo '💡 提示: 硬链接映射后，public 和 docs 目录将同步更新'",
     "lint": "eslint .",
     "analyze": "source-map-explorer 'docs/**/*.js'",
     "preview": "vite preview"

@@ -288,60 +288,9 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
                 // 存储observer以便清理
                 (mermaidContainer as any)._observer = observer;
 
-                // 添加定时检查机制，确保图表正确渲染
-                const intervalCheck = setInterval(() => {
-                    if (mermaidContainer.offsetParent !== null) { // 容器可见
-                        const svgElement = mermaidContainer.querySelector('svg');
-                        const needsRerender = !svgElement ||
-                                            svgElement.innerHTML.length < 100 ||
-                                            !svgElement.innerHTML.includes('<g') ||
-                                            svgElement.getBoundingClientRect().width === 0;
-
-                        if (needsRerender) {
-                            logMermaid('🔄 SkillRenderer定时检查发现需要重新渲染', {
-                                chartId,
-                                hasSvg: !!svgElement,
-                                contentLength: svgElement?.innerHTML.length || 0,
-                                containerVisible: mermaidContainer.offsetParent !== null
-                            });
-
-                            // 异步重新渲染，避免在渲染周期中同步操作
-                            queueMicrotask(() => {
-                                try {
-                                    // 清理旧的根节点
-                                    const oldRoot = rootsRef.current.get(id);
-                                    if (oldRoot) {
-                                        oldRoot.unmount();
-                                        rootsRef.current.delete(id);
-                                    }
-
-                                    // 清空容器内容
-                                    mermaidContainer.innerHTML = '';
-
-                                    // 创建新的根节点
-                                    const newRoot = createRoot(mermaidContainer);
-                                    rootsRef.current.set(id, newRoot);
-
-                                    const newId = `${chartId}-timer-${Date.now()}`;
-                                    logMermaid('🔄 定时检查开始重新渲染，新ID:', newId);
-
-                                    newRoot.render(
-                                        <MermaidLazyChart
-                                            chart={chart}
-                                            id={newId}
-                                            enableZoom={true}
-                                        />
-                                    );
-                                } catch (error) {
-                                    console.warn('Mermaid定时重新渲染失败:', error);
-                                }
-                            });
-                        }
-                    }
-                }, 3000); // 每3秒检查一次
-
-                // 存储定时器以便清理
-                (mermaidContainer as any)._intervalCheck = intervalCheck;
+                // 暂时禁用定时检查机制，避免循环渲染问题
+                // TODO: 如果需要定时检查，可以考虑更安全的实现方式
+                logMermaid('� SkillRenderer跳过定时检查机制，避免循环渲染', { chartId });
             }
         });
 

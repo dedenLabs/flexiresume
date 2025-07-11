@@ -303,7 +303,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
 
                 // 如果还没有加载过，或者需要重新渲染
                 if (!isLoaded || !svg) {
-                    console.log('🔄 MermaidLazyChart进入可视区域，开始渲染:', { id, isLoaded, hasSvg: !!svg });
+                    logMermaid('🔄 MermaidLazyChart进入可视区域，开始渲染:', { id, isLoaded, hasSvg: !!svg });
                     // 通过状态更新触发重新渲染
                     setRenderKey(prev => prev + 1);
                 }
@@ -312,7 +312,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                 // 不停止观察，这样可以处理重复的可见性变化
             } else {
                 // 离开可视区域时，可以选择性地清理资源
-                console.log('👁️ MermaidLazyChart离开可视区域:', { id });
+                logMermaid('👁️ MermaidLazyChart离开可视区域:', { id });
             }
         });
     }, [id, isLoaded, svg]);
@@ -333,13 +333,13 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
         // 开始观察
         observerRef.current.observe(containerRef.current);
 
-        console.log('👁️ MermaidLazyChart初始化观察器:', { id });
+        logMermaid('👁️ MermaidLazyChart初始化观察器:', { id });
 
         // 清理函数
         return () => {
             if (observerRef.current) {
                 observerRef.current.disconnect();
-                console.log('🧹 MermaidLazyChart清理观察器:', { id });
+                logMermaid('🧹 MermaidLazyChart清理观察器:', { id });
             }
         };
     }, [handleVisibilityChange, id]);
@@ -359,7 +359,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                     const isNowVisible = target.offsetParent !== null;
 
                     if (isNowVisible && !isVisible && (!isLoaded || !svg)) {
-                        console.log('🔄 MutationObserver检测到容器重新可见，触发渲染:', { id });
+                        logMermaid('🔄 MutationObserver检测到容器重新可见，触发渲染:', { id });
                         setIsVisible(true);
                         // 通过状态更新触发重新渲染，而不是直接调用
                         setRenderKey(prev => prev + 1);
@@ -381,12 +381,12 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
             if (currentElement && currentElement.tagName === 'BODY') break;
         }
 
-        console.log('👁️ MermaidLazyChart初始化MutationObserver:', { id });
+        logMermaid('👁️ MermaidLazyChart初始化MutationObserver:', { id });
 
         return () => {
             if (mutationObserverRef.current) {
                 mutationObserverRef.current.disconnect();
-                console.log('🧹 MermaidLazyChart清理MutationObserver:', { id });
+                logMermaid('🧹 MermaidLazyChart清理MutationObserver:', { id });
             }
         };
     }, [id, isVisible, isLoaded, svg]);
@@ -394,7 +394,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
     // 监听renderKey变化，触发重新渲染
     useEffect(() => {
         if (renderKey > 0 && isVisible && (!isLoaded || !svg)) {
-            console.log('🔄 renderKey变化，触发重新渲染:', { id, renderKey });
+            logMermaid('🔄 renderKey变化，触发重新渲染:', { id, renderKey });
             renderMermaid();
         }
     }, [renderKey, isVisible, isLoaded, svg]);
@@ -432,7 +432,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
     useEffect(() => {
         // 只有在已经渲染过的情况下才重新渲染
         if (isVisible && isLoaded && svg && !isLoading) {
-            console.log('🎨 主题变化，重新渲染Mermaid图表:', { id, isDark });
+            logMermaid('🎨 主题变化，重新渲染Mermaid图表:', { id, isDark });
             // 增加渲染键值，触发重新渲染
             setRenderKey(prev => prev + 1);
             // 重置状态
@@ -446,7 +446,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
      * 强制重新渲染
      */
     const forceRerender = useCallback(() => {
-        console.log('🔄 强制重新渲染MermaidLazyChart:', id);
+        logMermaid('🔄 强制重新渲染MermaidLazyChart:', id);
         setIsLoaded(false);
         setSvg('');
         setError('');
@@ -479,7 +479,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
             if (containerRef.current && containerRef.current.offsetParent !== null) {
                 // 容器可见但图表未加载
                 if (!isLoaded || !svg) {
-                    console.log('⏰ 定时检查发现需要渲染:', { id, isLoaded, hasSvg: !!svg });
+                    logMermaid('⏰ 定时检查发现需要渲染:', { id, isLoaded, hasSvg: !!svg });
                     // 通过状态更新触发重新渲染
                     setRenderKey(prev => prev + 1);
                 }

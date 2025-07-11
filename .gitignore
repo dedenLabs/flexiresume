@@ -7,6 +7,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log* 
 ssl/*
+tests/reports
+tests/screenshots
+tests/test-results
 scp-commit.sh
 
 node_modules
