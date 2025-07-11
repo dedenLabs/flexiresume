@@ -13,6 +13,16 @@ import icon_location from '../assets/location.svg';
 // import { MdPhoneAndroid } from "react-icons/md";
 // import { SiWechat } from "react-icons/si";
 import { IoHome } from "react-icons/io5";
+// 主流通讯方式图标 - 国际化支持
+import {
+  FaTelegram,
+  FaWhatsapp,
+  FaSkype,
+  FaLinkedin,
+  FaDiscord,
+  FaSlack
+} from "react-icons/fa";
+import { SiLine, SiKakao } from "react-icons/si";
 import { QRCodeSVG } from 'qrcode.react';
 import { replaceCDNBaseURL } from '../utils/Tools';
 import { useTheme } from '../theme';
@@ -34,6 +44,15 @@ interface HeaderProps {
   home_page: string;
   qrcode: boolean | string;
   qrcode_msg: string;
+  // 主流通讯方式 - 国际化支持（可选字段）
+  telegram?: string;
+  whatsapp?: string;
+  skype?: string;
+  linkedin?: string;
+  discord?: string;
+  slack?: string;
+  line?: string;
+  kakao?: string;
 }
 const HeaderWrapper = styled.header`
   // display: flex;
@@ -149,10 +168,63 @@ const GenderIcon = styled.img.withConfig({
  `}
 `;
 const IconStyle = { fontSize: "1rem", margin: '0 0.4rem' };
+ 
 
+/**
+ * 渲染通讯方式组件
+ */
+const CommunicationMethods: React.FC<{
+  telegram?: string;
+  whatsapp?: string;
+  skype?: string;
+  linkedin?: string;
+  discord?: string;
+  slack?: string;
+  line?: string;
+  kakao?: string;
+}> = ({ telegram, whatsapp, skype, linkedin, discord, slack, line, kakao }) => {
+  const methods = [
+    { value: telegram, icon: FaTelegram, label: 'Telegram', color: '#0088cc' },
+    { value: whatsapp, icon: FaWhatsapp, label: 'WhatsApp', color: '#25d366' },
+    { value: skype, icon: FaSkype, label: 'Skype', color: '#00aff0' },
+    { value: linkedin, icon: FaLinkedin, label: 'LinkedIn', color: '#0077b5' },
+    { value: discord, icon: FaDiscord, label: 'Discord', color: '#7289da' },
+    { value: slack, icon: FaSlack, label: 'Slack', color: '#4a154b' },
+    { value: line, icon: SiLine, label: 'Line', color: '#00c300' },
+    { value: kakao, icon: SiKakao, label: 'KakaoTalk', color: '#ffcd00' },
+  ];
 
+  const activeMethods = methods.filter(method => method.value);
 
-const Header: React.FC<HeaderProps> = ({ name, qrcode, qrcode_msg, home_page, avatar, gender, position, expected_salary, location, is_male, email, phone, wechat, status, age, education, work_experience_num, work_experience }) => {
+  if (activeMethods.length === 0) return null;
+
+  return (
+    <>
+      {activeMethods.map((method, index) => (
+        <React.Fragment key={method.label}>
+          <Vline />
+          <method.icon
+            style={{
+              ...IconStyle,
+              color: method.color,
+              cursor: 'pointer'
+            }}
+            title={`${method.label}: ${method.value}`}
+          />
+          <span style={{ fontSize: '0.75rem' }}>{method.value}</span>
+        </React.Fragment>
+      ))}
+    </>
+  );
+};
+
+const Header: React.FC<HeaderProps> = ({
+  name, qrcode, qrcode_msg, home_page, avatar, gender, position, expected_salary,
+  location, is_male, email, phone, wechat, status, age, education,
+  work_experience_num, work_experience,
+  // 主流通讯方式
+  telegram, whatsapp, skype, linkedin, discord, slack, line, kakao
+}) => {
   const { isDark } = useTheme();
 
   return (
@@ -198,14 +270,23 @@ const Header: React.FC<HeaderProps> = ({ name, qrcode, qrcode_msg, home_page, av
 
 
           <Details>
-            {/* <MdPhoneAndroid style={IconStyle} />{phone}<Vline /> */}
-            {/* <SiWechat style={IconStyle} />{wechat}<Vline /> */}
+            {/* 基础联系方式 */}
             <Icon src={icon_email} isDark={isDark} /><a href={"mailto:" + email} className="no-link-icon">{email}</a>
             <Vline />
             <Icon src={icon_phone} isDark={isDark} />{phone}<Vline />
             <Icon src={icon_wx} isDark={isDark} />{wechat}
 
-            {/* <Icon src={icon_email} />{home_page} */}
+            {/* 主流通讯方式 - 国际化支持 */}
+            <CommunicationMethods
+              telegram={telegram}
+              whatsapp={whatsapp}
+              skype={skype}
+              linkedin={linkedin}
+              discord={discord}
+              slack={slack}
+              line={line}
+              kakao={kakao}
+            />
           </Details>
         </motion.div>
       </InfoWrapper>

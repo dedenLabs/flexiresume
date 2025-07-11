@@ -1,0 +1,30 @@
+<testsuites id="" name="" tests="2" failures="0" skipped="0" errors="0" time="22.400037">
+<testsuite name="console-check.spec.ts" timestamp="2025-07-11T10:13:44.546Z" hostname="chromium-desktop" tests="2" failures="0" skipped="0" time="38.544" errors="0">
+<testcase name="控制台错误检查 › 应用启动时控制台不应该有严重错误" classname="console-check.spec.ts" time="17.8">
+<system-out>
+<![CDATA[收集到的错误: [
+  [32m"Access to fetch at 'https://flexi-77796.web.app/favicon.ico' from origin 'http://localhost:5174' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."[39m,
+  [32m'Failed to load resource: net::ERR_FAILED'[39m,
+  [32m'Failed to load resource: net::ERR_CONNECTION_RESET'[39m,
+  [32m'Failed to load resource: net::ERR_CONNECTION_RESET'[39m
+]
+收集到的警告: [
+  [32m'⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.'[39m,
+  [32m'⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.'[39m,
+  [32m'styled-components: it looks like an unknown prop "qrcode" is being sent through to the DOM, which will likely trigger a React console error. If you would like automatic filtering of unknown props, you can opt-into that behavior via `<StyleSheetManager shouldForwardProp={...}>` (connect an API like `@emotion/is-prop-valid`) or consider using transient props (`$` prefix for automatic filtering.)'[39m,
+  [32m"The resource https://dedenlabs.github.io/flexiresume-static/images/background.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."[39m
+]
+]]>
+</system-out>
+</testcase>
+<testcase name="控制台错误检查 › CDN检测功能应该正常工作" classname="console-check.spec.ts" time="20.744">
+<system-out>
+<![CDATA[CDN相关日志: [
+  [32m'[App] Initializing CDN health check...'[39m,
+  [32m'[App] Initializing CDN health check...'[39m
+]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

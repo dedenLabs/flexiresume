@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import mermaid from 'mermaid';
-import svgPanZoom from 'svg-pan-zoom';
 import { getLogger } from '../../utils/Tools';
+import { libraryPreloader } from '../../utils/LibraryPreloader';
 const logMermaid = getLogger(`Mermaid`);
 interface MermaidChartProps {
     chart: string;
@@ -117,6 +116,10 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chart, id }) => {
     const svgPanZoomInstance = useRef<any>(null);
     const enlargedSvgPanZoomInstance = useRef<any>(null);
 
+    // 动态加载的库引用
+    const mermaidRef = useRef<any>(null);
+    const svgPanZoomRef = useRef<any>(null);
+
     // 处理单击放大功能
     const handleClick = (event: React.MouseEvent) => {
         logMermaid('🖱️ Mermaid图表被点击');
@@ -145,12 +148,16 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chart, id }) => {
     };
 
     // 初始化放大视图的svg-pan-zoom
-    const initializeEnlargedSvgPanZoom = () => {
+    const initializeEnlargedSvgPanZoom = async () => {
         if (!overlayRef.current) return;
 
         const svgElement = overlayRef.current.querySelector('svg');
         if (svgElement && !enlargedSvgPanZoomInstance.current) {
             try {
+                // 动态加载svg-pan-zoom库
+                const svgPanZoomModule = await libraryPreloader.getLibrary('svgPanZoom');
+                const svgPanZoom = svgPanZoomModule.default || svgPanZoomModule;
+
                 enlargedSvgPanZoomInstance.current = svgPanZoom(svgElement, {
                     zoomEnabled: true,
                     panEnabled: true,
@@ -230,12 +237,16 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chart, id }) => {
     }, [isZoomed, svg]);
 
     // 初始化svg-pan-zoom功能
-    const initializeSvgPanZoom = () => {
+    const initializeSvgPanZoom = async () => {
         if (!containerRef.current) return;
 
         const svgElement = containerRef.current.querySelector('svg');
         if (svgElement && !svgPanZoomInstance.current) {
             try {
+                // 动态加载svg-pan-zoom库
+                const svgPanZoomModule = await libraryPreloader.getLibrary('svgPanZoom');
+                const svgPanZoom = svgPanZoomModule.default || svgPanZoomModule;
+
                 svgPanZoomInstance.current = svgPanZoom(svgElement, {
                     zoomEnabled: true,
                     panEnabled: true,
@@ -422,6 +433,10 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chart, id }) => {
         try {
             setIsLoading(true);
             setError('');
+
+            // 动态加载Mermaid库
+            const mermaidModule = await libraryPreloader.getLibrary('mermaid');
+            const mermaid = mermaidModule.default || mermaidModule;
 
             // 清理旧的SVG内容和事件监听器
             if (containerRef.current) {

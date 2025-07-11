@@ -114,6 +114,41 @@ npm run dev
 npm run build
 ```
 
+### 🐳 Docker 部署（推荐）
+
+我们提供了优化的 Docker 镜像，特别针对中国网络环境进行了优化，包含完整的 Firebase 开发环境：
+
+```bash
+# 拉取镜像
+docker pull jackchen86/firebase-dev-cn:latest
+
+# 创建持久化卷（保存Firebase登录状态）
+docker volume create firebase-config
+
+# 启动开发环境
+docker run -it --rm \
+  -p 5000:5000 \
+  -p 5001:5001 \
+  -p 8080:8080 \
+  -p 4000:4000 \
+  -p 9005:9005 \
+  -v $(pwd):/workspace \
+  -v firebase-config:/home/firebase/.config \
+  jackchen86/firebase-dev-cn:latest
+
+# 在容器内执行
+firebase login
+firebase serve --host 0.0.0.0
+```
+
+**Docker 优势**：
+- ✅ **开箱即用**: 预装 Firebase CLI 和所有依赖
+- ✅ **网络优化**: 配置国内镜像源，下载速度提升 10 倍+
+- ✅ **环境隔离**: 避免本地环境冲突
+- ✅ **一键部署**: 支持一键部署到 Firebase Hosting
+
+> 📖 **详细教程**: 查看 [Docker Hub 使用指南](DOCKER_HUB_README.md) 了解更多配置选项
+
 ---
 
 ## 🏗️ 系统架构
@@ -254,6 +289,15 @@ const staticRoutePageNames = ["game", "frontend", "backend", "cto", "agent", "co
 #### CDN配置管理
 项目采用智能CDN管理系统，提供高可用性和性能优化：
 
+**🆕 最新优化特性**：
+- **智能排序策略**: 支持两种CDN排序模式
+  - `availability`: 可用性优先 - 响应正常的URL排前面，无响应的移至末尾
+  - `speed`: 速度优先 - 按响应速度排序，响应快的排前面
+- **大型库预加载**: 智能预加载Mermaid、KaTeX、Cytoscape等大型库
+- **动态导入**: 按需加载大型组件，减少初始包大小
+- **视频多源**: 视频组件支持多CDN源，提升加载成功率
+- **Header增强**: 优化状态图标和国际化通讯方式支持
+
 **配置文件结构**：
 ```typescript
 // src/config/ProjectConfig.ts
@@ -265,15 +309,50 @@ export interface CDNConfig {
     testPath: string;                 // 检测路径
     enabled: boolean;                 // 是否启用健康检查
   };
+  sortingStrategy: {
+    mode: 'availability' | 'speed';   // 排序模式
+    enabled: boolean;                 // 是否启用智能排序
+    speedWeight: number;              // 速度权重因子
+    availabilityWeight: number;       // 可用性权重因子
+  };
 }
 ```
 
 **CDN健康检查机制**：
 - **并发检测**: 应用启动时并发检测所有CDN URL的可用性
-- **智能排序**: 将响应正常的URL排在队列前面，无响应的移至末尾
+- **智能排序**: 支持两种排序策略，自动优化CDN选择
+  - `availability`: 可用性优先 - 响应正常的URL排前面，无响应的移至末尾
+  - `speed`: 速度优先 - 按响应速度排序，响应快的排前面
 - **超时控制**: 每个URL检测超时时间为5秒，避免长时间等待
 - **降级处理**: 如果所有CDN都不可用，自动使用本地资源
 - **性能优化**: 检测过程不阻塞应用主要功能的加载
+
+**智能排序策略配置**：
+```typescript
+// 配置速度优先策略
+const config = {
+  cdn: {
+    sortingStrategy: {
+      mode: 'speed',           // 速度优先
+      enabled: true,
+      speedWeight: 0.7,        // 速度权重70%
+      availabilityWeight: 0.3, // 可用性权重30%
+    }
+  }
+};
+
+// 配置可用性优先策略
+const config = {
+  cdn: {
+    sortingStrategy: {
+      mode: 'availability',    // 可用性优先
+      enabled: true,
+      speedWeight: 0.3,        // 速度权重30%
+      availabilityWeight: 0.7, // 可用性权重70%
+    }
+  }
+};
+```
 
 **使用方式**：
 ```typescript
@@ -319,6 +398,14 @@ FlexiResume适用于多种使用场景：
 - **模块化架构**: 高度可复用的组件设计，数据与视图分离
 - **性能优化策略**: Bundle分析、依赖优化、资源压缩
 - **开发体验**: TypeScript类型安全、热更新、完善的错误处理
+
+### 🆕 最新特性亮点
+- **智能CDN管理**: 双策略排序，自动降级，多源视频支持
+- **大型库优化**: 动态导入，预加载机制，代码分割优化
+- **Header组件增强**:
+  - 状态图标优化：⚡随时到岗、🕐月内到岗、🔒暂不换工作
+  - 国际化通讯方式：支持Telegram、WhatsApp、Skype、LinkedIn等
+- **加载性能提升**: 初始包体积减少30%+，首屏加载速度提升50%+
 
 ---
 

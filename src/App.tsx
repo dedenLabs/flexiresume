@@ -19,6 +19,7 @@ import { IFlexiResume } from './data/types/IFlexiResume';
 // import useCDNInterceptor from './hooks/useCDNInterceptor';
 import { useLazyVideo, updateDataCache } from './utils/Tools';
 import { cdnManager } from './utils/CDNManager';
+import { libraryPreloader } from './utils/LibraryPreloader';
 import { getProjectConfig } from './config/ProjectConfig';
 import './utils/PerformanceMonitor'; // 初始化性能监控
 
@@ -69,21 +70,35 @@ const App: React.FC = () => {
   const [cdnStatus, setCdnStatus] = useState<'checking' | 'ready' | 'error'>('checking');
 
   /**
-   * 初始化CDN管理器
+   * 初始化CDN管理器和库预加载
    */
   const initializeCDN = async () => {
     try {
       setCdnStatus('checking');
       const config = getProjectConfig();
 
+      // 并行初始化CDN和库预加载
+      const initTasks: Promise<any>[] = [];
+
+      // CDN健康检查
       if (config.cdn.enabled && config.cdn.healthCheck.enabled) {
         console.log('[App] Initializing CDN health check...');
-        await cdnManager.initialize();
+        initTasks.push(cdnManager.initialize());
+      }
 
-        // 预加载性能配置中的资源
-        if (config.performance.enablePreloading && config.performance.preloadResources.length > 0) {
-          await cdnManager.preloadResources(config.performance.preloadResources);
-        }
+      // 库预加载
+      console.log('[App] Starting library preloading...');
+      initTasks.push(libraryPreloader.startPreloading());
+
+      // 等待CDN初始化完成（不等待库预加载完成）
+      await Promise.allSettled(initTasks);
+
+      // 预加载性能配置中的资源
+      if (config.performance.enablePreloading && config.performance.preloadResources.length > 0) {
+        // 不等待预加载完成，避免阻塞应用启动
+        cdnManager.preloadResources(config.performance.preloadResources).catch(error => {
+          console.warn('[App] Resource preloading failed:', error);
+        });
       }
 
       setCdnStatus('ready');

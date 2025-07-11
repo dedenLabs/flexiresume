@@ -125,20 +125,27 @@ export default defineConfig(({ command }) => ({
     outDir: 'docs',  // 👈 修改输出目录为 docs
     emptyOutDir: true,     // 构建前清空目标目录
 
-    // 简化的代码分割策略
+    // 优化的代码分割策略 - 针对大型库进行细分
     rollupOptions: {
       output: {
         manualChunks: {
           // React 核心库
           'react-vendor': ['react', 'react-dom'],
 
-          // 大型第三方库
+          // 大型第三方库分离
           'framer-motion': ['framer-motion'],
           'react-markdown': ['react-markdown'],
           'react-icons': ['react-icons'],
 
+          // Mermaid相关库分离（最大的包）
+          'mermaid-core': ['mermaid'],
+          'katex': ['katex'], // 数学公式渲染库
+          'cytoscape': ['cytoscape', 'cytoscape-cose-bilkent', 'cytoscape-fcose'], // 图形布局库
+          'd3-charts': ['d3', 'd3-sankey'], // D3图表库
+
           // 其他工具库
-          'vendor': ['styled-components', 'react-router-dom', 'mobx', 'debug']
+          'vendor': ['styled-components', 'react-router-dom', 'mobx', 'debug'],
+          'utils': ['svg-pan-zoom', 'qrcode.react', 'unist-util-visit']
         }
       },
       plugins: [

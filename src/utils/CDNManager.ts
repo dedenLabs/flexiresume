@@ -133,7 +133,7 @@ export class CDNManager {
 
     // 获取最佳CDN URL
     const bestCDN = cdnHealthChecker.getBestCDN();
-    
+
     if (bestCDN) {
       const cdnUrl = this.buildCDNUrl(bestCDN, resourcePath);
       if (cacheUrls) {
@@ -142,19 +142,37 @@ export class CDNManager {
       return cdnUrl;
     }
 
-    // 如果没有可用的CDN，尝试使用第一个配置的CDN
-    if (cdnConfig.baseUrls.length > 0) {
-      const fallbackCDN = cdnConfig.baseUrls[0];
-      const cdnUrl = this.buildCDNUrl(fallbackCDN, resourcePath);
-      
-      if (isDebugEnabled()) {
-        console.warn(`[CDN Manager] No healthy CDN found, using fallback: ${fallbackCDN}`);
+    // 检查健康检查是否已完成
+    const allResults = cdnHealthChecker.getAllResults();
+    const hasCompletedCheck = allResults.length === cdnConfig.baseUrls.length;
+
+    if (hasCompletedCheck) {
+      // 健康检查已完成，所有CDN都不可用，直接降级到本地
+      if (enableFallback) {
+        const localUrl = this.buildLocalUrl(resourcePath, localBasePath);
+
+        if (isDebugEnabled()) {
+          console.warn(`[CDN Manager] All CDNs failed health check, falling back to local: ${localUrl}`);
+        }
+
+        if (cacheUrls) {
+          this.urlCache.set(resourcePath, localUrl);
+        }
+        return localUrl;
       }
-      
-      if (cacheUrls) {
-        this.urlCache.set(resourcePath, cdnUrl);
+    } else {
+      // 健康检查还未完成，使用第一个配置的CDN作为临时方案
+      if (cdnConfig.baseUrls.length > 0) {
+        const fallbackCDN = cdnConfig.baseUrls[0];
+        const cdnUrl = this.buildCDNUrl(fallbackCDN, resourcePath);
+
+        if (isDebugEnabled()) {
+          console.warn(`[CDN Manager] Health check in progress, using first CDN: ${fallbackCDN}`);
+        }
+
+        // 不缓存这个临时URL，等健康检查完成后重新获取
+        return cdnUrl;
       }
-      return cdnUrl;
     }
 
     // 最后降级到本地资源
@@ -195,8 +213,48 @@ export class CDNManager {
       const cleanResourcePath = resourcePath.startsWith('/') ? resourcePath.slice(1) : resourcePath;
       return `${cleanBasePath}/${cleanResourcePath}`;
     }
-    
-    return resourcePath.startsWith('/') ? resourcePath : `/${resourcePath}`;
+
+    // 获取项目的基础路径配置
+    let projectBasePath = '';
+    if (typeof window !== 'undefined') {
+      try {
+        // 从当前URL获取项目基础路径
+        const currentPath = window.location.pathname;
+        const pathSegments = currentPath.split('/').filter(segment => segment);
+
+        // 如果路径包含项目目录（如 my-resume/docs），保留这些段
+        if (pathSegments.length > 0) {
+          // 检查是否是开发环境（通常只有一个段或没有段）
+          const isDev = window.location.port && (window.location.port === '5173' || window.location.port === '5174' || window.location.port === '3000');
+
+          if (!isDev && pathSegments.length >= 1) {
+            // 生产环境，保留路径段作为基础路径
+            // 例如：/my-resume/docs/fullstack -> /my-resume/docs/
+            const baseSegments = pathSegments.slice(0, -1); // 移除最后一个段（页面名）
+            if (baseSegments.length > 0) {
+              projectBasePath = '/' + baseSegments.join('/') + '/';
+            }
+          }
+        }
+      } catch (error) {
+        if (isDebugEnabled()) {
+          console.warn('[CDN Manager] Failed to determine project base path:', error);
+        }
+      }
+    }
+
+    // 确保资源路径格式正确
+    const cleanResourcePath = resourcePath.startsWith('/') ? resourcePath.slice(1) : resourcePath;
+    const fullResourcePath = projectBasePath + cleanResourcePath;
+
+    // 如果是开发环境，使用当前域 + 端口
+    if (typeof window !== 'undefined') {
+      const { protocol, hostname, port } = window.location;
+      const portSuffix = port && port !== '80' && port !== '443' ? `:${port}` : '';
+      return `${protocol}//${hostname}${portSuffix}${fullResourcePath}`;
+    }
+
+    return fullResourcePath;
   }
 
   /**

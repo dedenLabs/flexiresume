@@ -6,6 +6,7 @@ import debug from 'debug';
 import { getCurrentLanguageData } from '../data/DataLoader';
 import { IFlexiResume } from '../types/IFlexiResume';
 import { cdnManager } from './CDNManager';
+import { getCDNConfig } from '../config/ProjectConfig';
 
 // 全局数据缓存，用于同步函数访问
 let cachedOriginData: IFlexiResume | null = null;
@@ -360,16 +361,46 @@ export function useCollapser(id: string, count: number) {
 export function useLazyVideo() {
     const loadVideo = (videoEl) => {
         const sources = JSON.parse(videoEl.dataset.sources);
-        //     videoEl.innerHTML = `
-        //     <source src="${sources.hevc}" type="video/mp4; codecs=hevc">
-        //     <source src="${sources.vp9}" type="video/webm; codecs=vp9, opus">
-        //     <source src="${sources.h264}" type="video/mp4; codecs=avc1.42E01E, mp4a.40.2">
-        //     <source src="${sources.original}" type="video/${sources.original.split('.').pop()}">
-        //   `;
-        videoEl.innerHTML = ` 
-        <source src="${replaceCDNBaseURL(sources.original)}" type="video/mp4">
-        <source src="${replaceCDNBaseURL(sources.original, 1)}" type="video/mp4">
-      `;
+
+        // 获取CDN配置中的前3个baseUrls
+        const cdnConfig = getCDNConfig();
+        const baseUrls = cdnConfig.baseUrls.slice(0, 3); // 取前3个CDN
+
+        // 为每个CDN生成source标签
+        let sourceTags = '';
+        baseUrls.forEach((baseUrl, index) => {
+            // 构建完整的视频URL
+            const videoUrl = sources.original.startsWith('/')
+                ? `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}${sources.original}`
+                : `${baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'}${sources.original}`;
+
+            sourceTags += `<source src="${videoUrl}" type="video/mp4">\n        `;
+        });
+
+        // 添加本地回退URL作为最后的fallback
+        // 构建本地回退URL，考虑项目基础路径
+        let localFallbackUrl = sources.original;
+        if (typeof window !== 'undefined') {
+            try {
+                const currentPath = window.location.pathname;
+                const pathSegments = currentPath.split('/').filter(segment => segment);
+                const isDev = window.location.port && (window.location.port === '5173' || window.location.port === '5174' || window.location.port === '3000');
+
+                if (!isDev && pathSegments.length >= 1) {
+                    const baseSegments = pathSegments.slice(0, -1);
+                    if (baseSegments.length > 0) {
+                        const projectBasePath = '/' + baseSegments.join('/') + '/';
+                        const cleanResourcePath = sources.original.startsWith('/') ? sources.original.slice(1) : sources.original;
+                        localFallbackUrl = projectBasePath + cleanResourcePath;
+                    }
+                }
+            } catch (error) {
+                console.warn('[Video Loader] Failed to determine local fallback path:', error);
+            }
+        }
+        sourceTags += `<source src="${localFallbackUrl}" type="video/mp4">`;
+
+        videoEl.innerHTML = sourceTags;
         videoEl.classList.remove('lazy-video');
         videoEl.removeAttribute('data-sources');
         const loadingIndicator = videoEl.parentNode.querySelector('.loading-indicator');

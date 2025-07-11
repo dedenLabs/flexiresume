@@ -233,18 +233,70 @@ export class CDNHealthChecker {
    * Reorder CDN URLs based on health check results
    */
   private reorderCDNUrls(results: CDNHealthResult[]): void {
-    // 将可用的CDN按响应时间排序，不可用的放在最后
-    const availableCDNs = results
-      .filter(result => result.available)
-      .sort((a, b) => a.responseTime - b.responseTime);
-    
-    const unavailableCDNs = results
-      .filter(result => !result.available);
+    const cdnConfig = getCDNConfig();
+    const strategy = cdnConfig.sortingStrategy;
 
-    const reorderedUrls = [
-      ...availableCDNs.map(result => result.url),
-      ...unavailableCDNs.map(result => result.url),
-    ];
+    if (!strategy.enabled) {
+      if (isDebugEnabled()) {
+        console.log('[CDN Health Check] Sorting strategy disabled, keeping original order');
+      }
+      return;
+    }
+
+    let reorderedUrls: string[];
+
+    if (strategy.mode === 'availability') {
+      // 可用性优先策略：响应正常的URL排前面，无响应的移至末尾
+      const availableCDNs = results
+        .filter(result => result.available)
+        .sort((a, b) => a.responseTime - b.responseTime);
+
+      const unavailableCDNs = results
+        .filter(result => !result.available);
+
+      reorderedUrls = [
+        ...availableCDNs.map(result => result.url),
+        ...unavailableCDNs.map(result => result.url),
+      ];
+
+      if (isDebugEnabled()) {
+        console.log('[CDN Health Check] Using availability-first strategy');
+        console.log('[CDN Health Check] Available CDNs:', availableCDNs.length);
+        console.log('[CDN Health Check] Unavailable CDNs:', unavailableCDNs.length);
+      }
+
+    } else if (strategy.mode === 'speed') {
+      // 速度优先策略：按响应速度排序，响应快的排前面
+      const sortedResults = results
+        .filter(result => result.available) // 只考虑可用的CDN
+        .sort((a, b) => {
+          // 计算综合得分：速度权重 + 可用性权重
+          const scoreA = (1 / a.responseTime) * strategy.speedWeight +
+                        (a.available ? 1 : 0) * strategy.availabilityWeight;
+          const scoreB = (1 / b.responseTime) * strategy.speedWeight +
+                        (b.available ? 1 : 0) * strategy.availabilityWeight;
+          return scoreB - scoreA; // 得分高的排前面
+        });
+
+      const unavailableCDNs = results.filter(result => !result.available);
+
+      reorderedUrls = [
+        ...sortedResults.map(result => result.url),
+        ...unavailableCDNs.map(result => result.url),
+      ];
+
+      if (isDebugEnabled()) {
+        console.log('[CDN Health Check] Using speed-first strategy');
+        console.log('[CDN Health Check] Speed weight:', strategy.speedWeight);
+        console.log('[CDN Health Check] Availability weight:', strategy.availabilityWeight);
+        console.log('[CDN Health Check] Sorted by performance:',
+          sortedResults.map(r => `${r.url} (${r.responseTime}ms)`));
+      }
+
+    } else {
+      console.warn('[CDN Health Check] Unknown sorting strategy:', strategy.mode);
+      return;
+    }
 
     // 更新CDN配置中的URL顺序
     updateCDNConfig({
@@ -253,8 +305,6 @@ export class CDNHealthChecker {
 
     if (isDebugEnabled()) {
       console.log('[CDN Health Check] CDN URLs reordered:', reorderedUrls);
-      console.log('[CDN Health Check] Available CDNs:', availableCDNs.length);
-      console.log('[CDN Health Check] Unavailable CDNs:', unavailableCDNs.length);
     }
   }
 
@@ -301,6 +351,14 @@ export class CDNHealthChecker {
   public getBestCDN(): string | null {
     const availableCDNs = this.getAvailableCDNs();
     return availableCDNs.length > 0 ? availableCDNs[0] : null;
+  }
+
+  /**
+   * 获取所有健康检查结果
+   * Get all health check results
+   */
+  public getAllResults(): CDNHealthResult[] {
+    return Array.from(this.healthResults.values());
   }
 }
 

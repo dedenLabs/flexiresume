@@ -50,9 +50,19 @@ export default {
         avatar: "/images/avatar.webp",//https://photocartoon.net/ This is a website that converts photos into cartoon images
         location: "Shanghai",
         is_male: "1",// 1 male 0 female display icon
-        phone: "13********9",
+        status: "⚡Available immediately",//⚡Resigned - available immediately 🕐Employed - available within a month 🔒Employed - not looking for a job
+        
+        phone: "+86-138****8888",
         wechat: "taomeejack",
-        status: "💚Available immediately",//💚Resigned - available immediately 💛Employed - available within a month 💗Employed - not looking for a job
+        // Mainstream communication methods - International support (uncomment to display)
+        // telegram: "@your_telegram",      // Telegram
+        // whatsapp: "+86-138****8888",     // WhatsApp
+        // skype: "your.skype.id",          // Skype
+        // linkedin: "linkedin.com/in/yourprofile", // LinkedIn
+        // discord: "YourDiscord#1234",     // Discord
+        // slack: "@yourslack",             // Slack
+        // line: "your_line_id",            // Line (Popular in Japan/Korea)
+        // kakao: "your_kakao_id",          // KakaoTalk (Popular in Korea)
         age: "38 years old",
         education: "Undergraduate",
         work_experience_num: "18+ years of work experience",

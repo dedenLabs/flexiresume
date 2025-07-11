@@ -51,9 +51,19 @@ export default {
         avatar: "/images/avatar.webp",//https://photocartoon.net/ 这是一个将照片转换为卡通形象的网站
         location: "上海",
         is_male: "1",// 1男 0女 显示图标
-        phone: "13********9",
+        status: "⚡随时到岗",//⚡离职-随时到岗 🕐在职-月内到岗 🔒在职-暂不换工作
+        
+        // 主流通讯方式 - 国际化支持（取消注释后显示）
+        phone: "+86-138****8888",
         wechat: "taomeejack",
-        status: "💚随时到岗",//💚离职-随时到岗 💛在职-月内到岗 💗在职-暂不换工作
+        // telegram: "@your_telegram",      // Telegram
+        // whatsapp: "+86-138****8888",     // WhatsApp
+        // skype: "your.skype.id",          // Skype
+        // linkedin: "linkedin.com/in/yourprofile", // LinkedIn
+        // discord: "YourDiscord#1234",     // Discord
+        // slack: "@yourslack",             // Slack
+        // line: "your_line_id",            // Line (日韩流行)
+        // kakao: "your_kakao_id",          // KakaoTalk (韩国流行)
         age: "38岁",
         education: "本科",
         work_experience_num: "18年以上工作经验",
