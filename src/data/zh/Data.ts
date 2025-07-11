@@ -74,7 +74,7 @@ export default {
 
         // 是否显示个人主页的URL地址
         // home_page: "https://dedenlabs.github.io/flexiresume",
-        home_page: "https://flexiresume.web.app",
+        home_page: "https://deden.web.app",
 
         // 静态资源目录白名单
         cdn_static_assets_dirs: ["images"],

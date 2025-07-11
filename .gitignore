@@ -10,6 +10,7 @@ ssl/*
 tests/reports
 tests/screenshots
 tests/test-results
+docs/images
 scp-commit.sh
 
 node_modules

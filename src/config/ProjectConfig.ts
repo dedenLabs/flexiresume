@@ -7,7 +7,7 @@ export const defaultProjectConfig: ProjectConfig = {
     enabled: true,
     baseUrls: [
       "https://cdn.jsdelivr.net/gh/dedenLabs/flexiresume-static/",
-      "https://flexi-77796.web.app/",
+      "https://flexiresume-static.web.app/",
       "https://dedenlabs.github.io/flexiresume-static/",
     ],
     healthCheck: {
