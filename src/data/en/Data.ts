@@ -44,13 +44,13 @@ const loadSkillsData = async () => {
 export default {
     header_info: {
         "type": "header_info", // Resume header module
-        name: "Chen Jian",
+        name: "Jack Chen",
         email: "jk@deden.cn",
         gender: "Male",
         avatar: "/images/avatar.webp",//https://photocartoon.net/ This is a website that converts photos into cartoon images
         location: "Shanghai",
         is_male: "1",// 1 male 0 female display icon
-        phone: "13*******99",
+        phone: "13********9",
         wechat: "taomeejack",
         status: "💚Available immediately",//💚Resigned - available immediately 💛Employed - available within a month 💗Employed - not looking for a job
         age: "38 years old",
@@ -62,18 +62,8 @@ export default {
         resume_name_format: "{position}-{name}-{age}-{location}",
 
         // Whether to display the URL address of the personal homepage
-        home_page: "https://dedenlabs.github.io/flexiresume",
-
-        // Whether to use CDN to load static resources
-        use_static_assets_from_cdn: true,
-
-        // Static resource CDN address
-        static_assets_cdn_base_urls: [
-            // "",
-            "https://cdn.jsdelivr.net/gh/dedenLabs/flexiresume-static/",
-            "https://dedenlabs.github.io/flexiresume-static/",
-            "https://demo.deden.cn:8080/",
-        ],
+        // home_page: "https://dedenlabs.github.io/flexiresume",
+        home_page: "https://deden.web.app/flexiresume",
 
         // Static resource directory whitelist
         cdn_static_assets_dirs: ["images"],
@@ -116,7 +106,7 @@ export default {
                 collapsedNodes: [
                     // Display core full-stack Tech Stack
                     "Full Stack Development Experience.AI Development Learning and Practice.Agent Engineer Direction Research",
-                    "Full Stack Development Experience.AI Development Learning and Practice.Learning Plan and Goals",  
+                    "Full Stack Development Experience.AI Development Learning and Practice.Learning Plan and Goals",
                 ]
             },
         },
@@ -146,11 +136,11 @@ export default {
             {
                 collapsedNodes: [// Folded content not displayed
                     "Game Development Experience.AI Development Learning and Practice.Agent Engineer Direction Research",
-                    "Game Development Experience.AI Development Learning and Practice.Learning Plan and Goals",  
+                    "Game Development Experience.AI Development Learning and Practice.Learning Plan and Goals",
                     "Tech Stack.Front-end development",
                     ["Tech Stack.Front-end development.Game development", false],
                     ["Tech Stack.Front-end development.Performance and experience", false],
-                    "Tech Stack.Client-side development", 
+                    "Tech Stack.Client-side development",
                     "Tech Stack.DevOps",
                     ["Tech Stack.DevOps.Automation Deployment and Management", false],
                     ["Tech Stack.DevOps.CICD and Containerization", false],

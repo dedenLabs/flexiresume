@@ -1,14 +1,16 @@
 /**
  * 多语言数据加载器
- * 
+ *
  * 根据当前语言动态加载对应的数据文件
  * 支持运行时语言切换和数据热更新
- * 
+ *
  * @author 陈剑
  * @date 2024-12-27
  */
 
 import { IFlexiResume } from "../types/IFlexiResume";
+import { getProjectConfig } from "../config/ProjectConfig";
+import { cdnManager } from "../utils/CDNManager";
 
 /**
  * 支持的语言列表

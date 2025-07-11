@@ -5,6 +5,7 @@ import { reaction, set } from 'mobx';
 import debug from 'debug';
 import { getCurrentLanguageData } from '../data/DataLoader';
 import { IFlexiResume } from '../types/IFlexiResume';
+import { cdnManager } from './CDNManager';
 
 // 全局数据缓存，用于同步函数访问
 let cachedOriginData: IFlexiResume | null = null;
@@ -45,9 +46,7 @@ const getCachedData = (): IFlexiResume => {
     // 返回一个基本的默认配置
     return {
       header_info: {
-        use_static_assets_from_cdn: false,
-        cdn_static_assets_dirs: ['images'],
-        static_assets_cdn_base_urls: []
+        cdn_static_assets_dirs: ['images']
       }
     } as IFlexiResume;
   }
@@ -398,7 +397,7 @@ export function useLazyVideo() {
 /**
  * 将URL地址替换为CDN上的地址
  * @param url 需要替换的URL
- * @param sourceIndex CDN 源地址索引
+ * @param sourceIndex CDN 源地址索引（已废弃，保留兼容性）
  * @returns 替换后的URL或原始URL
  */
 export function replaceCDNBaseURL(url: string, sourceIndex = 0) {
@@ -406,19 +405,27 @@ export function replaceCDNBaseURL(url: string, sourceIndex = 0) {
     const originData = getCachedData();
 
     // 静态资源目录白名单
-    const staticResourceDirs = originData.header_info.cdn_static_assets_dirs;
+    const staticResourceDirs = originData.header_info.cdn_static_assets_dirs || ['images'];
 
-    const shouldUseCDN = originData.header_info.use_static_assets_from_cdn;
-    const staticAssetsCdnBaseUrls = originData.header_info.static_assets_cdn_base_urls;
-    const cdnBaseURL = shouldUseCDN ? staticAssetsCdnBaseUrls[sourceIndex] : "";
-
-    if (!cdnBaseURL || !url) return url;
+    if (!url) return url;
 
     // 检查URL是否以任一静态资源目录开头（支持绝对路径和相对路径）
     const dirPattern = staticResourceDirs.map(dir => `^\\/?${dir}\\/`).join('|');
     const isStaticResource = new RegExp(dirPattern).test(url);
 
-    return isStaticResource
-        ? (cdnBaseURL + url).replace(/^\/+/, '/') // 合并并规范化路径
-        : url;
+    if (!isStaticResource) {
+        return url;
+    }
+
+    try {
+        // 使用新的CDN管理器获取资源URL
+        return cdnManager.getResourceUrl(url, {
+            enableFallback: true,
+            localBasePath: '',
+            cacheUrls: true,
+        });
+    } catch (error) {
+        console.warn('[Tools] Failed to get CDN URL, using original:', error);
+        return url;
+    }
 }

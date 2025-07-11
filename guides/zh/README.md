@@ -248,8 +248,46 @@ const staticRoutePageNames = ["game", "frontend", "backend", "cto", "agent", "co
 - **输出目录**: `docs/` (适配GitHub Pages)
 - **代码分割**: 精细的chunk分割策略，减少初始包大小
 - **资源优化**: Terser压缩 + Tree-shaking优化
-- **CDN支持**: 支持静态资源CDN替换
+- **CDN支持**: 智能CDN管理和健康检查
 - **Mermaid支持**: 自定义插件支持.mmd文件导入
+
+#### CDN配置管理
+项目采用智能CDN管理系统，提供高可用性和性能优化：
+
+**配置文件结构**：
+```typescript
+// src/config/ProjectConfig.ts
+export interface CDNConfig {
+  enabled: boolean;                    // 是否启用CDN
+  baseUrls: string[];                 // CDN基础URL列表
+  healthCheck: {
+    timeout: number;                  // 检测超时时间
+    testPath: string;                 // 检测路径
+    enabled: boolean;                 // 是否启用健康检查
+  };
+}
+```
+
+**CDN健康检查机制**：
+- **并发检测**: 应用启动时并发检测所有CDN URL的可用性
+- **智能排序**: 将响应正常的URL排在队列前面，无响应的移至末尾
+- **超时控制**: 每个URL检测超时时间为5秒，避免长时间等待
+- **降级处理**: 如果所有CDN都不可用，自动使用本地资源
+- **性能优化**: 检测过程不阻塞应用主要功能的加载
+
+**使用方式**：
+```typescript
+import { cdnManager } from './utils/CDNManager';
+
+// 获取资源URL（自动选择最佳CDN）
+const imageUrl = cdnManager.getResourceUrl('/images/avatar.webp');
+
+// 预加载资源
+await cdnManager.preloadResources(['/images/background.webp']);
+
+// 获取CDN健康状态
+const healthStatus = cdnManager.getCDNHealthStatus();
+```
 
 ---
 

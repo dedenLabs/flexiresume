@@ -51,7 +51,7 @@ export default {
         avatar: "/images/avatar.webp",//https://photocartoon.net/ 这是一个将照片转换为卡通形象的网站
         location: "上海",
         is_male: "1",// 1男 0女 显示图标
-        phone: "13*******99",
+        phone: "13********9",
         wechat: "taomeejack",
         status: "💚随时到岗",//💚离职-随时到岗 💛在职-月内到岗 💗在职-暂不换工作
         age: "38岁",
@@ -63,18 +63,8 @@ export default {
         resume_name_format: "{position}-{name}-{age}-{location}",
 
         // 是否显示个人主页的URL地址
-        home_page: "https://dedenlabs.github.io/flexiresume",
-
-        // 是否使用CDN加载静态资源
-        use_static_assets_from_cdn: true,
-
-        // 静态资源CDN地址
-        static_assets_cdn_base_urls: [
-            // "",
-            "https://cdn.jsdelivr.net/gh/dedenLabs/flexiresume-static/",
-            "https://dedenlabs.github.io/flexiresume-static/",
-            "https://demo.deden.cn:8080/",
-        ],
+        // home_page: "https://dedenlabs.github.io/flexiresume",
+        home_page: "https://deden.web.app/flexiresume",
 
         // 静态资源目录白名单
         cdn_static_assets_dirs: ["images"],

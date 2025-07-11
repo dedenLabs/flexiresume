@@ -178,7 +178,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className }) => {
   }, [isOpen, handleClickOutside]);
 
   return (
-    <SwitcherContainer className={className} data-language-switcher>
+    <SwitcherContainer className={className} data-testid="language-switcher" data-language-switcher>
       <SwitcherButton
         isDark={isDark}
         onClick={() => setIsOpen(!isOpen)}

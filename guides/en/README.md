@@ -254,8 +254,46 @@ const staticRoutePageNames = ["game", "frontend", "backend", "cto", "agent", "co
 - **Output Directory**: `docs/` (GitHub Pages compatible)
 - **Code Splitting**: Fine-grained chunk splitting strategy to reduce initial bundle size
 - **Resource Optimization**: Terser compression + Tree-shaking optimization
-- **CDN Support**: Support for static resource CDN replacement
+- **CDN Support**: Intelligent CDN management and health checking
 - **Mermaid Support**: Custom plugin for .mmd file imports
+
+#### CDN Configuration Management
+The project adopts an intelligent CDN management system providing high availability and performance optimization:
+
+**Configuration File Structure**:
+```typescript
+// src/config/ProjectConfig.ts
+export interface CDNConfig {
+  enabled: boolean;                    // Whether to enable CDN
+  baseUrls: string[];                 // CDN base URLs list
+  healthCheck: {
+    timeout: number;                  // Detection timeout
+    testPath: string;                 // Detection path
+    enabled: boolean;                 // Whether to enable health check
+  };
+}
+```
+
+**CDN Health Check Mechanism**:
+- **Concurrent Detection**: Concurrently detect availability of all CDN URLs at application startup
+- **Smart Sorting**: Place responsive URLs at the front of the queue, move unresponsive ones to the end
+- **Timeout Control**: Each URL detection timeout is 5 seconds to avoid long waits
+- **Fallback Handling**: Automatically use local resources if all CDNs are unavailable
+- **Performance Optimization**: Detection process does not block loading of main application features
+
+**Usage**:
+```typescript
+import { cdnManager } from './utils/CDNManager';
+
+// Get resource URL (automatically select best CDN)
+const imageUrl = cdnManager.getResourceUrl('/images/avatar.webp');
+
+// Preload resources
+await cdnManager.preloadResources(['/images/background.webp']);
+
+// Get CDN health status
+const healthStatus = cdnManager.getCDNHealthStatus();
+```
 
 ---
 

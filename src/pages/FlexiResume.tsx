@@ -127,7 +127,7 @@ const FlexiResume: React.FC<FlexiResumeProps> = ({ path }) => {
   const header_info = data.header_info;
 
   return (
-    <ResumeWrapper style={{ minWidth: `${minWidth - 40}px`,  maxWidth: `800px` }}>
+    <ResumeWrapper data-testid="resume-content" style={{ minWidth: `${minWidth - 40}px`,  maxWidth: `800px` }}>
       <SEOHead position={postionName} />
       <Header {...header_info} />
       {
@@ -192,7 +192,7 @@ const FlexiResume: React.FC<FlexiResumeProps> = ({ path }) => {
           }
         })
       }
-    </ResumeWrapper >
+    </ResumeWrapper>
   );
 };
 

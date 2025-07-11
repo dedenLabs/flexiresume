@@ -18,6 +18,8 @@ import {
 import { IFlexiResume } from './data/types/IFlexiResume';
 // import useCDNInterceptor from './hooks/useCDNInterceptor';
 import { useLazyVideo, updateDataCache } from './utils/Tools';
+import { cdnManager } from './utils/CDNManager';
+import { getProjectConfig } from './config/ProjectConfig';
 import './utils/PerformanceMonitor'; // 初始化性能监控
 
 /**
@@ -64,6 +66,32 @@ const App: React.FC = () => {
   const [tabs, setTabs] = useState<any[]>([]);
   const [defaultPath, setDefaultPath] = useState<string>("/");
   const [isLoading, setIsLoading] = useState(true);
+  const [cdnStatus, setCdnStatus] = useState<'checking' | 'ready' | 'error'>('checking');
+
+  /**
+   * 初始化CDN管理器
+   */
+  const initializeCDN = async () => {
+    try {
+      setCdnStatus('checking');
+      const config = getProjectConfig();
+
+      if (config.cdn.enabled && config.cdn.healthCheck.enabled) {
+        console.log('[App] Initializing CDN health check...');
+        await cdnManager.initialize();
+
+        // 预加载性能配置中的资源
+        if (config.performance.enablePreloading && config.performance.preloadResources.length > 0) {
+          await cdnManager.preloadResources(config.performance.preloadResources);
+        }
+      }
+
+      setCdnStatus('ready');
+    } catch (error) {
+      console.error('[App] CDN initialization failed:', error);
+      setCdnStatus('error');
+    }
+  };
 
   /**
    * 加载当前语言数据
@@ -95,8 +123,15 @@ const App: React.FC = () => {
    * 初始化和语言变更处理
    */
   useEffect(() => {
-    // 初始加载
-    loadCurrentData();
+    // 并行初始化CDN和数据加载
+    const initializeApp = async () => {
+      await Promise.all([
+        initializeCDN(),
+        loadCurrentData()
+      ]);
+    };
+
+    initializeApp();
 
     // 预加载所有语言数据（后台进行）
     // preloadAllLanguages().catch(console.warn);
@@ -131,6 +166,21 @@ const App: React.FC = () => {
           <ErrorBoundary>
             <GlobalStyle />
             <ControlPanel collapsible={true} />
+            <div style={{
+              position: 'fixed',
+              top: '20px',
+              right: '20px',
+              background: 'rgba(0,0,0,0.8)',
+              color: 'white',
+              padding: '8px 12px',
+              borderRadius: '4px',
+              fontSize: '12px',
+              zIndex: 9999
+            }}>
+              {cdnStatus === 'checking' && '🔄 检测CDN...'}
+              {cdnStatus === 'ready' && '✅ CDN就绪'}
+              {cdnStatus === 'error' && '⚠️ CDN检测失败'}
+            </div>
             <SkeletonResume />
           </ErrorBoundary>
         </I18nProvider>

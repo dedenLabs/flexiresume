@@ -159,7 +159,7 @@ const Tabs: React.FC = () => {
   }
 
   return (
-    <TabsWrapper isDark={isDark}>
+    <TabsWrapper data-testid="navigation-tabs" isDark={isDark}>
       {
         tabs.map(([position, url], index) => (
           <TabLink key={url} className="no-link-icon" to={url} isDark={isDark}>{position}</TabLink>
