@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import SkillItem from './SkillItem';
-import MermaidChart from '../mermaid/MermaidChart';
 import MermaidLazyChart from '../mermaid/MermaidLazyChart';
 import { getLogger } from '../../utils/Tools';
 const logMermaid = getLogger(`Mermaid`);
@@ -211,11 +210,12 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
                 const root = createRoot(mermaidContainer);
                 rootsRef.current.set(id, root);
 
-                // 渲染 MermaidChart
+                // 渲染 MermaidLazyChart
                 root.render(
-                    <MermaidChart
+                    <MermaidLazyChart
                         chart={chart}
                         id={chartId}
+                        enableZoom={true}
                     />
                 );
 
@@ -263,9 +263,10 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
                                             logMermaid('🔄 开始重新渲染，新ID:', newId);
 
                                             newRoot.render(
-                                                <MermaidChart
+                                                <MermaidLazyChart
                                                     chart={chart}
                                                     id={newId}
+                                                    enableZoom={true}
                                                 />
                                             );
                                         } catch (error) {
@@ -325,9 +326,10 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
                                     logMermaid('🔄 定时检查开始重新渲染，新ID:', newId);
 
                                     newRoot.render(
-                                        <MermaidChart
+                                        <MermaidLazyChart
                                             chart={chart}
                                             id={newId}
+                                            enableZoom={true}
                                         />
                                     );
                                 } catch (error) {

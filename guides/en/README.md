@@ -115,32 +115,10 @@ npm run dev
 npm run build
 ```
 
-### 🐳 Docker Deployment (Recommended)
+### 🔥Deploying on Firebase
 
-We provide an optimized Docker image, specially optimized for Chinese network environment, including complete Firebase development environment:
-
-```bash
-# Pull the image
-docker pull jackchen86/firebase-dev-cn:latest
-
-# Create persistent volume (save Firebase login state)
-docker volume create firebase-config
-
-# Start development environment
-docker run -it --rm \
-  -p 5000:5000 \
-  -p 5001:5001 \
-  -p 8080:8080 \
-  -p 4000:4000 \
-  -p 9005:9005 \
-  -v $(pwd):/workspace \
-  -v firebase-config:/home/firebase/.config \
-  jackchen86/firebase-dev-cn:latest
-
-# Execute in container
-firebase login
-firebase serve --host 0.0.0.0
-```
+If you don't want to buy a cloud server and don't mind your resume information leaking, you can completely consider the free cloud service provided by Google for deployment, with global CDN acceleration, very fast both domestically and internationally, ⭐worth praising.
+> 📖 **Detailed Tutorial**: Check out [🐳Docker Deployment Tutorial](DOCKER_HUB_README.md) to learn
 
 **Docker Advantages**:
 - ✅ **Ready to Use**: Pre-installed Firebase CLI and all dependencies

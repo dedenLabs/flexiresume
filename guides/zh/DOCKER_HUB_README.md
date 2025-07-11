@@ -203,12 +203,6 @@ A: 修改端口映射：
 | 模拟器启动 | 30-60秒 | 10-15秒 | 3倍+ |
 | 项目初始化 | 复杂配置 | 一键启动 | 10倍+ |
 
-## 🤝 支持与反馈
-
-- **GitHub**: [项目地址](https://github.com/your-repo/firebase-docker-cn)
-- **Issues**: [问题反馈](https://github.com/your-repo/firebase-docker-cn/issues)
-- **文档**: [详细教程](https://github.com/your-repo/firebase-docker-cn/tree/main/docs)
-
 ## 📄 许可证
 
 MIT License - 自由使用，欢迎贡献

@@ -203,12 +203,6 @@ A: Modify port mapping:
 | Emulator Startup | 30-60 seconds | 10-15 seconds | 3x+ |
 | Project Initialization | Complex configuration | One-click start | 10x+ |
 
-## 🤝 Support & Feedback
-
-- **GitHub**: [Project Repository](https://github.com/your-repo/firebase-docker-cn)
-- **Issues**: [Issue Feedback](https://github.com/your-repo/firebase-docker-cn/issues)
-- **Documentation**: [Detailed Tutorial](https://github.com/your-repo/firebase-docker-cn/tree/main/docs)
-
 ## 📄 License
 
 MIT License - Free to use, contributions welcome
