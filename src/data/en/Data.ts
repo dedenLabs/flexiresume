@@ -73,7 +73,7 @@ export default {
 
         // Whether to display the URL address of the personal homepage
         // home_page: "https://dedenlabs.github.io/flexiresume",
-        home_page: "https://deden.web.app/flexiresume",
+        home_page: "https://flexiresume.web.app",
 
         // Static resource directory whitelist
         cdn_static_assets_dirs: ["images"],

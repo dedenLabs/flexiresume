@@ -3,10 +3,7 @@
  * 整合懒加载和点击放大功能
  * 参考视频懒加载机制，实现可视范围内渲染
  * 解决折叠后再打开无法渲染的问题
- * 支持点击放大和svg-pan-zoom缩放功能
- *
- * @author AI Assistant
- * @date 2025-01-09
+ * 支持点击放大和svg-pan-zoom缩放功能 
  */
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
@@ -194,13 +191,11 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
             
             // 渲染图表
             const { svg: renderedSvg } = await mermaid.render(uniqueId, chart);
-
-            // 修改SVG以确保正确显示
-            const modifiedSvg = modifySvgForDisplay(renderedSvg);
-            setSvg(modifiedSvg);
+            
+            setSvg(renderedSvg);
             setIsLoaded(true);
 
-            logMermaid('🎯 MermaidLazyChart渲染成功:', { id, uniqueId, svgLength: renderedSvg.length });
+            logMermaid('🎯 MermaidLazyChart渲染成功:', { id, uniqueId });
 
             // 在下一个tick中初始化svg-pan-zoom和点击事件
             setTimeout(() => {
@@ -216,7 +211,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
         } finally {
             setIsLoading(false);
         }
-    }, [chart, id, isDark, isLoading, modifySvgForDisplay, enableZoom]);
+    }, [chart, id, isDark, modifySvgForDisplay, enableZoom]);
 
     // 初始化svg-pan-zoom
     const initializeSvgPanZoom = useCallback(async () => {
@@ -309,7 +304,8 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                 // 如果还没有加载过，或者需要重新渲染
                 if (!isLoaded || !svg) {
                     console.log('🔄 MermaidLazyChart进入可视区域，开始渲染:', { id, isLoaded, hasSvg: !!svg });
-                    renderMermaid();
+                    // 通过状态更新触发重新渲染
+                    setRenderKey(prev => prev + 1);
                 }
 
                 // 继续观察，以便处理折叠/展开的情况
@@ -319,7 +315,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                 console.log('👁️ MermaidLazyChart离开可视区域:', { id });
             }
         });
-    }, [id, isLoaded, svg, renderMermaid]);
+    }, [id, isLoaded, svg]);
 
     /**
      * 初始化IntersectionObserver
@@ -365,7 +361,8 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                     if (isNowVisible && !isVisible && (!isLoaded || !svg)) {
                         console.log('🔄 MutationObserver检测到容器重新可见，触发渲染:', { id });
                         setIsVisible(true);
-                        renderMermaid();
+                        // 通过状态更新触发重新渲染，而不是直接调用
+                        setRenderKey(prev => prev + 1);
                     }
                 }
             });
@@ -392,7 +389,15 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                 console.log('🧹 MermaidLazyChart清理MutationObserver:', { id });
             }
         };
-    }, [id, isVisible, isLoaded, svg, renderMermaid]);
+    }, [id, isVisible, isLoaded, svg]);
+
+    // 监听renderKey变化，触发重新渲染
+    useEffect(() => {
+        if (renderKey > 0 && isVisible && (!isLoaded || !svg)) {
+            console.log('🔄 renderKey变化，触发重新渲染:', { id, renderKey });
+            renderMermaid();
+        }
+    }, [renderKey, isVisible, isLoaded, svg]);
 
     // 键盘事件处理
     useEffect(() => {
@@ -425,11 +430,17 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
      * 监听主题变化，重新渲染
      */
     useEffect(() => {
-        if (isVisible && isLoaded) {
+        // 只有在已经渲染过的情况下才重新渲染
+        if (isVisible && isLoaded && svg && !isLoading) {
             console.log('🎨 主题变化，重新渲染Mermaid图表:', { id, isDark });
-            renderMermaid();
+            // 增加渲染键值，触发重新渲染
+            setRenderKey(prev => prev + 1);
+            // 重置状态
+            setIsLoaded(false);
+            setSvg('');
+            setError('');
         }
-    }, [isDark, isVisible, isLoaded, renderMermaid]);
+    }, [isDark]);
 
     /**
      * 强制重新渲染
@@ -469,7 +480,8 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                 // 容器可见但图表未加载
                 if (!isLoaded || !svg) {
                     console.log('⏰ 定时检查发现需要渲染:', { id, isLoaded, hasSvg: !!svg });
-                    renderMermaid();
+                    // 通过状态更新触发重新渲染
+                    setRenderKey(prev => prev + 1);
                 }
             }
         }, 5000); // 每5秒检查一次
@@ -477,7 +489,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
         return () => {
             clearInterval(checkInterval);
         };
-    }, [id, isLoaded, svg, renderMermaid]);
+    }, [id, isLoaded, svg]);
 
     /**
      * 渲染占位符

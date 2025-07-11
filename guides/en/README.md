@@ -118,16 +118,8 @@ npm run build
 ### 🔥Deploying on Firebase
 
 If you don't want to buy a cloud server and don't mind your resume information leaking, you can completely consider the free cloud service provided by Google for deployment, with global CDN acceleration, very fast both domestically and internationally, ⭐worth praising.
-> 📖 **Detailed Tutorial**: Check out [🐳Docker Deployment Tutorial](DOCKER_HUB_README.md) to learn
-
-**Docker Advantages**:
-- ✅ **Ready to Use**: Pre-installed Firebase CLI and all dependencies
-- ✅ **Network Optimization**: Configured with domestic mirror sources, 10x+ download speed improvement
-- ✅ **Environment Isolation**: Avoid local environment conflicts
-- ✅ **One-click Deployment**: Support one-click deployment to Firebase Hosting
-
-> 📖 **Detailed Tutorial**: Check [Docker Hub Usage Guide](DOCKER_HUB_README.md) for more configuration options
-
+>📖**Detailed Tutorial**: Check out [🔥Firebase Docker Deployment Image](DOCKER_HUB_README.md)
+ 
 ---
 
 ## 🏗️ System Architecture

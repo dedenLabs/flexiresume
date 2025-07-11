@@ -120,8 +120,8 @@ npm run build
 - [🚀 部署指南](guides/zh/DEPLOYMENT.md) - 多种部署方案
 - [🎨 自定义指南](guides/zh/CUSTOMIZATION.md) - 个性化配置
 - [🔧 API文档](guides/zh/API.md) - 完整的API参考
-- [🤝 贡献指南](guides/zh/CONTRIBUTING.md) - 如何参与开发
-- [🐳 Docker指南](guides/zh/DOCKER_HUB_README.md) - Docker部署详解
+- [🤝 贡献指南](guides/zh/CONTRIBUTING.md) - 如何参与开发 
+- [🔥 firebase Docker 镜像](DOCKER_HUB_README.md) - Docker部署详解
 
 ### 🇺🇸 English Documentation
 - [📖 Usage Guide](guides/en/USAGE.md) - Comprehensive usage guide
@@ -129,7 +129,7 @@ npm run build
 - [🎨 Customization Guide](guides/en/CUSTOMIZATION.md) - Personalization configuration
 - [🔧 API Documentation](guides/en/API.md) - Complete API reference
 - [🤝 Contributing Guide](guides/en/CONTRIBUTING.md) - How to contribute
-- [🐳 Docker Guide](guides/en/DOCKER_HUB_README.md) - Docker deployment details
+- [🔥 Firebase Docker image](DOCKER_HUB_README.md) - Docker deployment explained
 
 ---
 
