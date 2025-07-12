@@ -1,8 +1,9 @@
 /**
  * 控制面板组件
- * 
+ *
  * 集成语言切换和主题切换功能
- * 
+ * 支持响应式折叠：大于768px时默认展开，小于768px时默认折叠
+ *
  * @author 陈剑
  * @date 2024-12-27
  */
@@ -13,6 +14,47 @@ import { useTheme } from '../theme';
 import { useI18n } from '../i18n';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeSwitcher from './ThemeSwitcher';
+
+/**
+ * 检测屏幕尺寸的Hook
+ * @param breakpoint 断点尺寸，默认768px
+ * @returns 是否大于断点尺寸
+ */
+const useMediaQuery = (breakpoint: number = 768): boolean => {
+  const [isLargeScreen, setIsLargeScreen] = React.useState<boolean>(() => {
+    // 初始化时检查窗口尺寸
+    if (typeof window !== 'undefined') {
+      return window.innerWidth > breakpoint;
+    }
+    return true; // SSR时默认为大屏幕
+  });
+
+  React.useEffect(() => {
+    // 防抖处理，避免频繁触发
+    let timeoutId: NodeJS.Timeout;
+
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setIsLargeScreen(window.innerWidth > breakpoint);
+      }, 100);
+    };
+
+    // 添加事件监听器
+    window.addEventListener('resize', handleResize);
+
+    // 初始检查
+    handleResize();
+
+    // 清理函数
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(timeoutId);
+    };
+  }, [breakpoint]);
+
+  return isLargeScreen;
+};
 
 const PanelContainer = styled.div.withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
@@ -35,6 +77,11 @@ const PanelContainer = styled.div.withConfig({
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 40px ${props => props.isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.15)'};
+  }
+
+  /* 在打印时隐藏控制面板 */
+  @media print {
+    display: none !important;
   }
 
   @media (max-width: 768px) {
@@ -176,14 +223,41 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 }) => {
   const { isDark } = useTheme();
   const { t } = useI18n();
-  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
+
+  // 检测屏幕尺寸，决定默认折叠状态
+  const isLargeScreen = useMediaQuery(768);
+
+  // 响应式默认折叠状态：大屏幕默认展开，小屏幕默认折叠
+  const responsiveDefaultCollapsed = React.useMemo(() => {
+    if (defaultCollapsed !== false) {
+      return defaultCollapsed; // 如果明确指定了defaultCollapsed，使用指定值
+    }
+    return !isLargeScreen; // 大屏幕展开(false)，小屏幕折叠(true)
+  }, [isLargeScreen, defaultCollapsed]);
+
+  const [isCollapsed, setIsCollapsed] = React.useState(responsiveDefaultCollapsed);
+
+  // 当屏幕尺寸变化时，更新折叠状态（仅在用户未手动操作时）
+  const [userHasInteracted, setUserHasInteracted] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!userHasInteracted) {
+      setIsCollapsed(responsiveDefaultCollapsed);
+    }
+  }, [responsiveDefaultCollapsed, userHasInteracted]);
+
+  // 处理用户点击折叠/展开
+  const handleToggle = () => {
+    setUserHasInteracted(true);
+    setIsCollapsed(!isCollapsed);
+  };
 
   if (collapsible) {
     return (
       <CollapsiblePanel isCollapsed={isCollapsed} isDark={isDark} className={className}>
         <ToggleButton
           isDark={isDark}
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={handleToggle}
           title={t.common.controlPanel}
           aria-label={t.common.controlPanel}
         >

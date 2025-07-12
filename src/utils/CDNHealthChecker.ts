@@ -65,67 +65,65 @@ export class CDNHealthChecker {
   /**
    * 检测单个CDN URL的可用性
    * Check availability of a single CDN URL
+   *
+   * 使用多种检测方法避免跨域问题：
+   * 1. 优先使用图片加载检测（避免跨域）
+   * 2. 降级到fetch HEAD请求
+   * 3. 最后尝试fetch GET请求
    */
   private async checkSingleCDN(
-    baseUrl: string, 
-    testPath: string, 
+    baseUrl: string,
+    testPath: string,
     timeout: number
   ): Promise<CDNHealthResult> {
     const startTime = Date.now();
     const timestamp = startTime;
-    
+
     try {
       // 构建测试URL
-      const testUrl = baseUrl.endsWith('/') 
-        ? `${baseUrl}${testPath}` 
+      const testUrl = baseUrl.endsWith('/')
+        ? `${baseUrl}${testPath}`
         : `${baseUrl}/${testPath}`;
 
       if (isDebugEnabled()) {
         console.log(`[CDN Health Check] Testing: ${testUrl}`);
       }
 
-      // 创建AbortController用于超时控制
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
-
+      // 方法1: 使用图片加载检测（避免跨域问题）
       try {
-        // 发送HEAD请求检测可用性
-        const response = await fetch(testUrl, {
-          method: 'HEAD',
-          signal: controller.signal,
-          cache: 'no-cache',
-          mode: 'cors',
-        });
-
-        clearTimeout(timeoutId);
-        const responseTime = Date.now() - startTime;
-
-        const result: CDNHealthResult = {
-          url: baseUrl,
-          available: response.ok,
-          responseTime,
-          timestamp,
-        };
-
-        if (!response.ok) {
-          result.error = `HTTP ${response.status}: ${response.statusText}`;
+        const result = await this.checkCDNWithImage(baseUrl, testUrl, timeout, startTime, timestamp);
+        if (result.available) {
+          return result;
         }
-
+      } catch (imageError) {
         if (isDebugEnabled()) {
-          console.log(`[CDN Health Check] ${baseUrl}: ${response.ok ? 'OK' : 'FAILED'} (${responseTime}ms)`);
+          console.log(`[CDN Health Check] Image method failed for ${baseUrl}, trying fetch...`);
         }
+      }
 
-        return result;
-
+      // 方法2: 使用fetch HEAD请求
+      try {
+        const result = await this.checkCDNWithFetch(baseUrl, testUrl, timeout, startTime, timestamp, 'HEAD');
+        if (result.available) {
+          return result;
+        }
       } catch (fetchError) {
-        clearTimeout(timeoutId);
-        throw fetchError;
+        if (isDebugEnabled()) {
+          console.log(`[CDN Health Check] HEAD method failed for ${baseUrl}, trying GET...`);
+        }
+      }
+
+      // 方法3: 使用fetch GET请求（最后尝试）
+      try {
+        return await this.checkCDNWithFetch(baseUrl, testUrl, timeout, startTime, timestamp, 'GET');
+      } catch (getError) {
+        throw getError;
       }
 
     } catch (error) {
       const responseTime = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      
+
       if (isDebugEnabled()) {
         console.warn(`[CDN Health Check] ${baseUrl}: FAILED - ${errorMessage} (${responseTime}ms)`);
       }
@@ -137,6 +135,118 @@ export class CDNHealthChecker {
         error: errorMessage,
         timestamp,
       };
+    }
+  }
+
+  /**
+   * 使用图片加载检测CDN可用性（避免跨域问题）
+   * Check CDN availability using image loading (avoids CORS issues)
+   */
+  private async checkCDNWithImage(
+    baseUrl: string,
+    testUrl: string,
+    timeout: number,
+    startTime: number,
+    timestamp: number
+  ): Promise<CDNHealthResult> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      let isResolved = false;
+
+      // 设置超时
+      const timeoutId = setTimeout(() => {
+        if (!isResolved) {
+          isResolved = true;
+          reject(new Error('Image load timeout'));
+        }
+      }, timeout);
+
+      // 成功加载
+      img.onload = () => {
+        if (!isResolved) {
+          isResolved = true;
+          clearTimeout(timeoutId);
+          const responseTime = Date.now() - startTime;
+
+          if (isDebugEnabled()) {
+            console.log(`[CDN Health Check] ${baseUrl}: OK via image (${responseTime}ms)`);
+          }
+
+          resolve({
+            url: baseUrl,
+            available: true,
+            responseTime,
+            timestamp,
+          });
+        }
+      };
+
+      // 加载失败
+      img.onerror = () => {
+        if (!isResolved) {
+          isResolved = true;
+          clearTimeout(timeoutId);
+          const responseTime = Date.now() - startTime;
+
+          reject(new Error(`Image load failed: ${testUrl}`));
+        }
+      };
+
+      // 开始加载图片
+      // 添加随机参数避免缓存
+      const cacheBuster = `?_t=${Date.now()}&_r=${Math.random()}`;
+      img.src = testUrl + cacheBuster;
+    });
+  }
+
+  /**
+   * 使用fetch检测CDN可用性
+   * Check CDN availability using fetch
+   */
+  private async checkCDNWithFetch(
+    baseUrl: string,
+    testUrl: string,
+    timeout: number,
+    startTime: number,
+    timestamp: number,
+    method: 'HEAD' | 'GET' = 'HEAD'
+  ): Promise<CDNHealthResult> {
+    // 创建AbortController用于超时控制
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      // 发送请求检测可用性
+      const response = await fetch(testUrl, {
+        method,
+        signal: controller.signal,
+        cache: 'no-cache',
+        mode: 'cors',
+      });
+
+      clearTimeout(timeoutId);
+      const responseTime = Date.now() - startTime;
+
+      const result: CDNHealthResult = {
+        url: baseUrl,
+        available: response.ok,
+        responseTime,
+        timestamp,
+      };
+
+      if (!response.ok) {
+        result.error = `HTTP ${response.status}: ${response.statusText}`;
+      }
+
+      if (isDebugEnabled()) {
+        console.log(`[CDN Health Check] ${baseUrl}: ${response.ok ? 'OK' : 'FAILED'} via ${method} (${responseTime}ms)`);
+      }
+
+      return result;
+
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      throw fetchError;
     }
   }
 

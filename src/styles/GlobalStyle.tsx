@@ -89,13 +89,14 @@ const GlobalStyle = createGlobalStyle`
     font-family: 'Arial', sans-serif;
     color: var(--color-text-primary);
     background-color: var(--color-surface);
-    letter-spacing: 0.02em; /* 调整为你需要的值 */
-    word-break: break-all;
+    letter-spacing: 0.02em;
+    word-break: break-word; /* 改为break-word，避免强制断行 */
     transition: color 0.3s ease, background-color 0.3s ease, filter 0.3s ease;
 
     /* 修复移动端横向溢出问题 */
     overflow-x: hidden; /* 隐藏横向滚动条 */
     width: 100%;
+    max-width: 100vw; /* 确保不超出视口宽度 */
     box-sizing: border-box;
     min-height: 100vh;
 
@@ -244,9 +245,15 @@ const GlobalStyle = createGlobalStyle`
   #root {
     display: flex;
     justify-content: center; /* 水平居中 */
+    width: 100%;
+    max-width: 100vw; /* 确保不超出视口宽度 */
+    box-sizing: border-box;
+    overflow-x: hidden; /* 防止横向溢出 */
+
     @media (max-width: ${maxWidth}) {
       flex-direction: column;
-      align-items: center
+      align-items: center;
+      padding: 0; /* 移除可能的padding */
     }
   }
   h1, h2, h3, h4 {
@@ -417,15 +424,63 @@ const GlobalStyle = createGlobalStyle`
     border-radius: 6px;
   }
 
+  /* 打印样式优化 */
   @media print {
-    body {
-      background-color: white; 
+    /* 页面设置 */
+    @page {
+      size: A4;
+      margin: 1cm;
     }
-   
+
+    /* 重置根元素和body */
+    html, body {
+      width: 100% !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: white !important;
+      background-image: none !important;
+      overflow: visible !important;
+      font-size: 12pt !important;
+      line-height: 1.4 !important;
+      color: black !important;
+    }
+
+    /* 隐藏深色模式背景伪元素 */
+    [data-theme="dark"] body::before {
+      display: none !important;
+    }
+
+    /* 根元素打印优化 */
+    #root {
+      display: block !important;
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: white !important;
+      overflow: visible !important;
+    }
+
+    /* 隐藏不需要打印的元素 */
+    .no-print,
+    .print-hide,
+    button,
+    .control-panel,
+    .floating-controls,
+    nav,
+    .navigation,
+    .tabs,
+    .tab-container {
+      display: none !important;
+    }
+
+    /* 打印背景设置 */
     .print-background {
       position: relative;
+      background: white !important;
     }
-  
+
     .print-background::before {
       content: "";
       position: absolute;
@@ -433,10 +488,37 @@ const GlobalStyle = createGlobalStyle`
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: lightgrey;
+      background-color: white;
       z-index: -1;
     }
-  } 
+
+    /* 确保所有文本颜色为黑色 */
+    * {
+      color: black !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      text-shadow: none !important;
+    }
+
+    /* 链接样式 */
+    a {
+      color: black !important;
+      text-decoration: underline !important;
+    }
+
+    /* 分页控制 */
+    .page-break-before {
+      page-break-before: always;
+    }
+
+    .page-break-after {
+      page-break-after: always;
+    }
+
+    .page-break-inside-avoid {
+      page-break-inside: avoid;
+    }
+  }
 `;
 
 export default GlobalStyle;

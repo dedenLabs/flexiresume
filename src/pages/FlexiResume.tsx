@@ -35,12 +35,55 @@ const ResumeWrapper = styled.div`
   box-shadow: 0 0 15px var(--color-shadow-medium); /* 使用主题阴影 */
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 
-  /* 在打印时隐藏 */
+  /* 确保容器居中显示 */
+  margin: 0 auto;
+  width: 100%;
+
+  /* 移动端适配 - 防止横向溢出 */
+  @media (max-width: 768px) {
+    padding: 15px;
+    margin: 0 10px;
+    width: calc(100% - 20px);
+    min-width: auto; /* 移动端不限制最小宽度 */
+    max-width: calc(100vw - 20px); /* 确保不超出视口宽度 */
+  }
+
+  /* 超小屏幕适配 */
+  @media (max-width: 480px) {
+    padding: 10px;
+    margin: 0 5px;
+    width: calc(100% - 10px);
+    max-width: calc(100vw - 10px);
+  }
+
+  /* 打印样式优化 */
   @media print {
-    border: 0px;
-    box-shadow: 0 0 0px rgba(0, 0, 0, 0);
+    /* 重置所有装饰性样式 */
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
     background: white !important;
     color: black !important;
+
+    /* 打印时的尺寸和布局 */
+    max-width: 100% !important;
+    min-width: auto !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 15px !important;
+
+    /* 确保内容可见 */
+    overflow: visible !important;
+    position: static !important;
+
+    /* 字体优化 */
+    font-size: 11pt !important;
+    line-height: 1.3 !important;
+
+    /* 分页控制 */
+    page-break-inside: avoid;
+    orphans: 3;
+    widows: 3;
   }
 `;
 

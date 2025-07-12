@@ -155,8 +155,9 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
   const tooltipText = isDark ? t.common.lightMode : t.common.darkMode;
 
   return (
-    <SwitcherContainer 
+    <SwitcherContainer
       className={className}
+      data-theme-switcher
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

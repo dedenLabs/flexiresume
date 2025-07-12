@@ -12,19 +12,36 @@ const TabsWrapper = styled.nav.withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
 })<{ isDark?: boolean }>`
   /* 移动端样式 - 修复横向溢出问题 */
-  padding: 0 5px; /* 进一步减少左右padding */
+  padding: 0 10px; /* 适当的左右padding */
   position: relative;
   display: flex;
   flex-direction: row;
   margin-top: 20px;
   width: 100%; /* 确保不超出容器宽度 */
-  max-width: calc(100vw - 10px); /* 留出边距，防止溢出 */
+  max-width: 100%; /* 不超出父容器 */
   box-sizing: border-box;
   top: 2px;
   justify-content: flex-start; /* 改为左对齐，避免溢出 */
   overflow-x: auto; /* 允许横向滚动 */
   overflow-y: hidden;
   gap: 2px; /* 减少标签间距 */
+
+  /* 移动端特殊处理 */
+  @media (max-width: 768px) {
+    padding: 0 5px;
+    margin: 20px 5px 0 5px;
+    width: calc(100% - 10px);
+    max-width: calc(100vw - 10px);
+  }
+
+  /* 超小屏幕适配 */
+  @media (max-width: 480px) {
+    padding: 0 2px;
+    margin: 20px 2px 0 2px;
+    width: calc(100% - 4px);
+    max-width: calc(100vw - 4px);
+    gap: 1px;
+  }
 
   /* 隐藏滚动条但保持功能 */
   scrollbar-width: none; /* Firefox */
@@ -74,12 +91,11 @@ const TabsWrapper = styled.nav.withConfig({
 const TabLink = styled(NavLink).withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
 })<{ isDark?: boolean }>`
-  /* 移动端样式优化 */
-  padding: 6px 8px; /* 进一步减少padding */
+  /* 基础样式 */
   text-decoration: none;
   color: ${props => props.isDark ? 'var(--color-text-primary)' : 'black'};
-  border: 2px solid transparent; /* 默认无边框 */
-  border-radius: 6px 6px 0 0; /* 减小圆角 */
+  border: 2px solid transparent;
+  border-radius: 6px 6px 0 0;
   border-top: 1px solid ${props => props.isDark ? 'var(--color-border-medium)' : borderColor};
   border-right: 1px solid ${props => props.isDark ? 'var(--color-border-medium)' : borderColor};
   border-bottom: 0px solid ${props => props.isDark ? 'var(--color-border-medium)' : borderColor};
@@ -87,14 +103,25 @@ const TabLink = styled(NavLink).withConfig({
   transition: background-color 0.3s, border 0.3s, color 0.3s, transform 0.2s;
   box-shadow: 0 0 10px ${props => props.isDark ? 'var(--color-shadow-medium)' : 'rgba(0, 0, 0, 0.1)'};
   background-color: ${props => props.isDark ? 'var(--color-card)' : '#fff'};
-  white-space: nowrap; /* 防止文字换行 */
-  font-size: 12px; /* 移动端使用更小字体 */
-  font-weight: 500; /* 增加字体粗细以提高可读性 */
-  flex-shrink: 0; /* 防止被压缩 */
-  min-width: fit-content; /* 最小宽度适应内容 */
-  max-width: 120px; /* 限制最大宽度 */
-  overflow: hidden; /* 隐藏溢出内容 */
-  text-overflow: ellipsis; /* 文字溢出显示省略号 */
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-sizing: border-box;
+
+  /* 移动端样式 */
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: fit-content;
+  max-width: 100px; /* 减小最大宽度 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* 超小屏幕适配 */
+  @media (max-width: 480px) {
+    padding: 4px 6px;
+    font-size: 11px;
+    max-width: 80px;
+  }
 
   &:hover, &.active {
     background-color: ${props => props.isDark ? 'var(--color-surface)' : '#f0f0f0'};
