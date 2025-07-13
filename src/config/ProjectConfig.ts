@@ -21,6 +21,11 @@ export const defaultProjectConfig: ProjectConfig = {
       speedWeight: 0.7, // 速度权重70%
       availabilityWeight: 0.3, // 可用性权重30%
     },
+    localOptimization: {
+      enabled: true, // 启用本地环境优化
+      forceLocal: false, // 不强制使用本地资源
+      localBasePath: '', // 使用自动检测的基础路径
+    },
   },
   
   api: {
@@ -134,6 +139,21 @@ export interface CDNConfig {
 
     /** 是否启用健康检查 / Whether to enable health check */
     enabled: boolean;
+  };
+
+  /** 本地环境优化配置 / Local environment optimization configuration */
+  localOptimization: {
+    /** 是否启用本地环境自动检测 / Whether to enable automatic local environment detection */
+    enabled: boolean;
+
+    /** 强制使用本地资源（忽略环境检测） / Force use local resources (ignore environment detection) */
+    forceLocal: boolean;
+
+    /** 自定义本地环境检测函数 / Custom local environment detection function */
+    customDetection?: () => boolean;
+
+    /** 本地资源基础路径 / Local resource base path */
+    localBasePath: string;
   };
 
   /** CDN智能排序策略 / CDN intelligent sorting strategy */

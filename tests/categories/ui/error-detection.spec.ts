@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { ErrorCollector } from './utils/test-helpers';
+import { ErrorCollector } from '../../utils/test-helpers';
 
 /**
  * 错误检测专项测试

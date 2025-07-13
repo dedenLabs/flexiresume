@@ -44,6 +44,43 @@ export interface TestConfig {
   };
 }
 
+
+/**
+ * 默认测试配置
+ */
+export const defaultTestConfig: TestConfig = {
+  baseUrl: 'http://localhost:5177',
+  timeout: 30000,
+  headless: false,
+  
+  browser: 'chromium',
+  viewport: {
+    width: 1280,
+    height: 720,
+  },
+  
+  screenshot: {
+    onFailure: true,
+    dir: 'tests/screenshots',
+  },
+  
+  report: {
+    dir: 'tests/reports',
+    generateHtml: true,
+  },
+  
+  cdn: {
+    timeout: 8000,
+    healthCheckEnabled: true,
+  },
+  
+  mobile: {
+    devices: ['iPhone', 'Samsung'],
+  },
+};
+
+
+
 /**
  * 获取环境变量值，支持默认值
  */
@@ -89,40 +126,6 @@ function parseNumber(value: string): number {
 function parseArray(value: string): string[] {
   return value.split(',').map(item => item.trim()).filter(Boolean);
 }
-
-/**
- * 默认测试配置
- */
-export const defaultTestConfig: TestConfig = {
-  baseUrl: 'http://localhost:5177',
-  timeout: 30000,
-  headless: false,
-  
-  browser: 'chromium',
-  viewport: {
-    width: 1280,
-    height: 720,
-  },
-  
-  screenshot: {
-    onFailure: true,
-    dir: 'tests/screenshots',
-  },
-  
-  report: {
-    dir: 'tests/reports',
-    generateHtml: true,
-  },
-  
-  cdn: {
-    timeout: 8000,
-    healthCheckEnabled: true,
-  },
-  
-  mobile: {
-    devices: ['iPhone', 'Samsung'],
-  },
-};
 
 /**
  * 从环境变量加载测试配置

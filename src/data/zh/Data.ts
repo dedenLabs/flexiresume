@@ -101,8 +101,7 @@ export default {
             // "is_home_page": true, // 标记为首页显示
             header_info: {
                 position: "AI Agent工程师",
-                expected_salary: "期望薪资 面议",
-                status: "💚随时到岗", // 特殊状态标识
+                expected_salary: "期望薪资 面议",                
             }
         },
         // 全栈开发工程师岗位（整合前端后端技术实现+DevOps+AI应用）
@@ -110,8 +109,7 @@ export default {
             "is_home_page": true, // 标记为首页显示
             header_info: {
                 position: "全栈开发工程师",
-                expected_salary: "期望薪资 面议",
-                status: "💚随时到岗", // 特殊状态标识
+                expected_salary: "期望薪资 面议",                
             },
             skills: {
                 collapsedNodes: [
@@ -279,8 +277,7 @@ export default {
         "contracttask": {
             header_info: {
                 position: "技术顾问/游戏资源优化/外包",
-                expected_salary: "价格面议",
-                status: "💚空闲-可接外包",
+                expected_salary: "价格面议", 
 
                 // 是否显示个人主页的URL地址
                 home_page: "",

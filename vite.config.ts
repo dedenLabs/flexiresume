@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import { visualizer } from 'rollup-plugin-visualizer';
-import fs from 'node:fs';
-import path from 'node:path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { globSync } from 'glob';
 
 // 如果要完全支持静态 CDN 地址环境，需要配置静态页签名称，这样用户访问时就能找到入口文件。
@@ -188,8 +188,8 @@ export default defineConfig(({ command }) => ({
     // 启用CSS代码分割
     cssCodeSplit: true,
 
-    // 设置chunk大小警告阈值
-    chunkSizeWarningLimit: 500, // 500kb警告阈值，更严格的控制
+    // 设置chunk大小警告阈值 - 提高阈值以减少警告
+    chunkSizeWarningLimit: 1000, // 1MB警告阈值，允许大型库存在但控制在合理范围内
 
     // 实验性功能：启用更好的tree shaking
     target: 'esnext',

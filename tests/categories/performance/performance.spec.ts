@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { PerformanceTester } from './utils/test-helpers';
+import { PerformanceTester } from '../../utils/test-helpers';
 
 /**
  * 性能测试专项

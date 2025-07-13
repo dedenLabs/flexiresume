@@ -1,13 +1,13 @@
 import { test, expect, Page } from '@playwright/test';
-import { 
-  ErrorCollector, 
-  LanguageSwitcher, 
-  MermaidTester, 
+import {
+  ErrorCollector,
+  LanguageSwitcher,
+  MermaidTester,
   ScreenshotHelper,
   ResponsiveTester,
-  PerformanceTester 
-} from './utils/test-helpers';
-import { PageFactory, BasePage } from './utils/page-objects';
+  PerformanceTester
+} from '../../utils/test-helpers';
+import { PageFactory, BasePage } from '../../utils/page-objects';
 
 /**
  * FlexiResume 页面功能测试套件

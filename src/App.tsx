@@ -43,6 +43,22 @@ const initializeTabs = (data: IFlexiResume) => {
 };
 
 /**
+ * 获取所有路由（包括隐藏的页面）
+ * @param data 简历数据
+ * @returns 所有路由数组
+ */
+const getAllRoutes = (data: IFlexiResume) => {
+  return Object.keys(data.expected_positions)
+    .map((key) => ({
+      key,
+      title: data.expected_positions[key].header_info?.position || key,
+      path: "/" + key,
+      isHomePage: !!data.expected_positions[key].is_home_page,
+      hidden: !!data.expected_positions[key].hidden
+    }));
+};
+
+/**
  * 获取默认路径
  * @param tabs 页签数组
  * @returns 默认路径
@@ -65,6 +81,7 @@ const getDefaultPath = (tabs: any[]) => {
 const App: React.FC = () => {
   const [originData, setOriginData] = useState<IFlexiResume | null>(null);
   const [tabs, setTabs] = useState<any[]>([]);
+  const [allRoutes, setAllRoutes] = useState<any[]>([]);
   const [defaultPath, setDefaultPath] = useState<string>("/");
   const [isLoading, setIsLoading] = useState(true);
   const [cdnStatus, setCdnStatus] = useState<'checking' | 'ready' | 'error'>('checking');
@@ -122,7 +139,9 @@ const App: React.FC = () => {
 
       // 更新页签和默认路径
       const newTabs = initializeTabs(data);
+      const newAllRoutes = getAllRoutes(data);
       setTabs(newTabs);
+      setAllRoutes(newAllRoutes);
       setDefaultPath(getDefaultPath(newTabs));
 
       // 更新store中的数据
@@ -213,13 +232,13 @@ const App: React.FC = () => {
             <Router basename={originData.header_info.route_base_name}>
               <Tabs /> {/* 页签导航栏 */}
             <Routes>
+              {/* 为所有页面（包括隐藏页面）生成路由 */}
               {
-                tabs.map(([title, path], i) => (
-                  // <Route key={i} path={path} element={<FlexiResume path={path} />} />
-                  <Route key={i} path={path} element={
+                allRoutes.map((route, i) => (
+                  <Route key={i} path={route.path} element={
                     <ErrorBoundary>
                       <Suspense fallback={<SkeletonResume />}>
-                        <FlexiResume path={path} />
+                        <FlexiResume path={route.path} />
                       </Suspense>
                     </ErrorBoundary>
                   } />
@@ -227,13 +246,13 @@ const App: React.FC = () => {
               }
               {/* 添加对 .html 后缀路由的支持 - 重定向到无后缀版本 */}
               {
-                tabs.map(([title, path], i) => {
-                  const htmlPath = path + '.html';
+                allRoutes.map((route, i) => {
+                  const htmlPath = route.path + '.html';
                   return (
                     <Route
                       key={`html-${i}`}
                       path={htmlPath}
-                      element={<Navigate to={path} replace />}
+                      element={<Navigate to={route.path} replace />}
                     />
                   );
                 })

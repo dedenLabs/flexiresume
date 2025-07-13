@@ -6,7 +6,7 @@ import debug from 'debug';
 import { getCurrentLanguageData } from '../data/DataLoader';
 import { IFlexiResume } from '../types/IFlexiResume';
 import { cdnManager } from './CDNManager';
-import { getCDNConfig } from '../config/ProjectConfig';
+import { getCDNConfig, isDebugEnabled } from '../config/ProjectConfig';
 
 // 全局数据缓存，用于同步函数访问
 let cachedOriginData: IFlexiResume | null = null;
@@ -378,24 +378,19 @@ export function useLazyVideo() {
         });
 
         // 添加本地回退URL作为最后的fallback
-        // 构建本地回退URL，考虑项目基础路径
+        // 使用CDN管理器构建本地回退URL，避免重复逻辑
         let localFallbackUrl = sources.original;
-        if (typeof window !== 'undefined') {
-            try {
-                const currentPath = window.location.pathname;
-                const pathSegments = currentPath.split('/').filter(segment => segment);
-                const isDev = window.location.port && (window.location.port === '5173' || window.location.port === '5174' || window.location.port === '3000');
-
-                if (!isDev && pathSegments.length >= 1) {
-                    const baseSegments = pathSegments.slice(0, -1);
-                    if (baseSegments.length > 0) {
-                        const projectBasePath = '/' + baseSegments.join('/') + '/';
-                        const cleanResourcePath = sources.original.startsWith('/') ? sources.original.slice(1) : sources.original;
-                        localFallbackUrl = projectBasePath + cleanResourcePath;
-                    }
-                }
-            } catch (error) {
-                console.warn('[Video Loader] Failed to determine local fallback path:', error);
+        try {
+            // 使用CDN管理器的本地URL构建逻辑
+            localFallbackUrl = cdnManager.getResourceUrl(sources.original, {
+                enableFallback: true,
+                localBasePath: '',
+                cacheUrls: false // 不缓存fallback URL
+            });
+        } catch (error) {
+            // 如果CDN管理器失败，保持原始URL
+            if (isDebugEnabled()) {
+                console.warn('[Tools] Failed to build local fallback URL:', error);
             }
         }
         sourceTags += `<source src="${localFallbackUrl}" type="video/mp4">`;

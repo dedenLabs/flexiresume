@@ -100,8 +100,7 @@ export default {
             // "is_home_page": true, // Mark as home page display
             header_info: {
                 position: "AI Eng",
-                expected_salary: "Expected salary to be discussed",
-                status: "💚Available immediately", // Special status identifier
+                expected_salary: "Expected salary to be discussed",                
             }
         },
         // Full-stack development engineer position (integrated frontend and backend technology implementation + DevOps + AI application)
@@ -109,8 +108,7 @@ export default {
             "is_home_page": true, // Mark as home page display
             header_info: {
                 position: "Full-Stack Eng",
-                expected_salary: "Expected salary to be discussed",
-                status: "💚Available immediately", // Special status identifier
+                expected_salary: "Expected salary to be discussed",                
             },
             skills: {
                 collapsedNodes: [
@@ -276,7 +274,7 @@ export default {
             header_info: {
                 position: "Tech Consult",
                 expected_salary: "Price Negotiable",
-                status: "💚 Available for Outsourcing",
+                status: "Available for Outsourcing",
 
                 // URL Address for Personal Homepage Display
                 home_page: "",

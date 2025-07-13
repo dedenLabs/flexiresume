@@ -50,17 +50,10 @@ const TabsWrapper = styled.nav.withConfig({
     display: none; /* Chrome, Safari, Opera */
   }
 
-  /* 移动端滚动提示 */
+  /* 完全移除滚动提示渐变遮罩 - 用户反馈不需要此功能 */
   &::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 20px;
-    background: linear-gradient(to right, transparent, ${props => props.isDark ? 'var(--color-surface)' : '#f8f9fa'});
-    pointer-events: none;
-    opacity: 0.8;
+    display: none !important;
+    content: none !important;
   }
 
   @media (min-width: ${minWidth}) {
@@ -76,9 +69,10 @@ const TabsWrapper = styled.nav.withConfig({
     overflow: visible; /* 桌面端恢复正常 */
     gap: 2px; /* 桌面端也减少间距 */
 
-    /* 桌面端不需要滚动提示 */
+    /* 桌面端不需要滚动提示 - 强制隐藏 */
     &::after {
-      display: none;
+      display: none !important;
+      content: none !important;
     }
   }
 

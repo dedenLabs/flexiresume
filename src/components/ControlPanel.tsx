@@ -254,7 +254,12 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
   if (collapsible) {
     return (
-      <CollapsiblePanel isCollapsed={isCollapsed} isDark={isDark} className={className}>
+      <CollapsiblePanel
+        isCollapsed={isCollapsed}
+        isDark={isDark}
+        className={className}
+        data-testid="control-panel"
+      >
         <ToggleButton
           isDark={isDark}
           onClick={handleToggle}
@@ -284,7 +289,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   }
 
   return (
-    <PanelContainer isDark={isDark} className={className}>
+    <PanelContainer isDark={isDark} className={className} data-testid="control-panel">
       <ThemeSwitcher />
       <Divider isDark={isDark} />
       <LanguageSwitcher />
