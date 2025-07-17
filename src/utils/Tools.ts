@@ -396,7 +396,8 @@ export function useLazyVideo() {
             // 如果CDN管理器失败，保持原始URL
             debugCDN('Failed to build local fallback URL: %O', error);
         }
-        sourceTags += `<source src="${localFallbackUrl}" type="video/mp4">`;
+        sourceTags += `<source src="${sources.original}" type="video/mp4">`;
+        // sourceTags += `<source src="${localFallbackUrl}" type="video/mp4">`;
 
         videoEl.innerHTML = sourceTags;
         videoEl.classList.remove('lazy-video');

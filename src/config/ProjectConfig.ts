@@ -34,8 +34,8 @@ export const defaultProjectConfig: ProjectConfig = {
   cdn: {
     enabled: parseEnvBoolean(import.meta.env.VITE_CDN_ENABLED, true),
     baseUrls: parseEnvArray(import.meta.env.VITE_CDN_BASE_URLS, [
-      "https://cdn.jsdelivr.net/gh/dedenLabs/flexiresume-static/",
       "https://flexiresume-static.web.app/",
+      "https://cdn.jsdelivr.net/gh/dedenLabs/flexiresume-static/",
       "https://dedenlabs.github.io/flexiresume-static/",
     ]),
     healthCheck: {
