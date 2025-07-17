@@ -7,7 +7,11 @@ import { globSync } from 'glob';
 
 // 如果要完全支持静态 CDN 地址环境，需要配置静态页签名称，这样用户访问时就能找到入口文件。
 // To fully support a static CDN address environment, you need to configure the static tab name so that users can find the entry file when they visit.
-const staticRoutePageNames = ["game", "frontend", "backend", "cto", "agent", "contracttask", "fullstack"];
+// 从环境变量读取静态路由页面名称，如果未设置则使用默认值
+// Read static route page names from environment variables, use default values if not set
+const staticRoutePageNames = process.env.VITE_STATIC_ROUTE_PAGES
+  ? process.env.VITE_STATIC_ROUTE_PAGES.split(',').map(name => name.trim())
+  : ["frontend", "backend", "fullstack"];
 
 /**
  * 自定义 Rollup 插件 - 生成静态服务器路由入口文件

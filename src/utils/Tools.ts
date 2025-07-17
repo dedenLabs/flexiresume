@@ -8,6 +8,11 @@ import { IFlexiResume } from '../types/IFlexiResume';
 import { cdnManager } from './CDNManager';
 import { getCDNConfig, isDebugEnabled } from '../config/ProjectConfig';
 
+// Debug loggers
+const debugCache = debug('app:cache');
+const debugCDN = debug('app:cdn');
+const debugTools = debug('app:tools');
+
 // 全局数据缓存，用于同步函数访问
 let cachedOriginData: IFlexiResume | null = null;
 let isInitializing = false;
@@ -23,9 +28,9 @@ const initializeDataCache = async () => {
   initPromise = (async () => {
     try {
       cachedOriginData = await getCurrentLanguageData();
-      console.log('Data cache initialized successfully');
+      debugCache('Data cache initialized successfully');
     } catch (error) {
-      console.error('Failed to initialize data cache:', error);
+      debugCache('Failed to initialize data cache: %O', error);
     } finally {
       isInitializing = false;
     }
@@ -42,7 +47,7 @@ const getCachedData = (): IFlexiResume => {
   if (!cachedOriginData) {
     // 如果数据还在初始化中，不显示警告
     if (!isInitializing) {
-      console.warn('Data cache not initialized, using fallback');
+      debugCache('Data cache not initialized, using fallback');
     }
     // 返回一个基本的默认配置
     return {
@@ -59,7 +64,7 @@ export const updateDataCache = async (): Promise<void> => {
   try {
     cachedOriginData = await getCurrentLanguageData();
   } catch (error) {
-    console.error('Failed to update data cache:', error);
+    debugCache('Failed to update data cache: %O', error);
   }
 };
 
@@ -389,9 +394,7 @@ export function useLazyVideo() {
             });
         } catch (error) {
             // 如果CDN管理器失败，保持原始URL
-            if (isDebugEnabled()) {
-                console.warn('[Tools] Failed to build local fallback URL:', error);
-            }
+            debugCDN('Failed to build local fallback URL: %O', error);
         }
         sourceTags += `<source src="${localFallbackUrl}" type="video/mp4">`;
 
@@ -451,7 +454,7 @@ export function replaceCDNBaseURL(url: string, sourceIndex = 0) {
             cacheUrls: true,
         });
     } catch (error) {
-        console.warn('[Tools] Failed to get CDN URL, using original:', error);
+        debugCDN('Failed to get CDN URL, using original: %O', error);
         return url;
     }
 }

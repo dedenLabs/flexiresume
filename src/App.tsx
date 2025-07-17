@@ -4,7 +4,7 @@ import GlobalStyle from './styles/GlobalStyle';
 import Tabs from './components/Tabs';
 import flexiResumeStore from './store/Store';
 import { ImageViewerProvider } from './components/image_viewer/ImageViewerContext';
-import ErrorBoundary from './components/ErrorBoundary';
+import EnhancedErrorBoundary from './components/EnhancedErrorBoundary';
 import { SkeletonResume } from './components/SkeletonComponents';
 import { I18nProvider } from './i18n';
 import { ThemeProvider } from './theme';
@@ -22,6 +22,14 @@ import { cdnManager } from './utils/CDNManager';
 import { libraryPreloader } from './utils/LibraryPreloader';
 import { getProjectConfig } from './config/ProjectConfig';
 import './utils/PerformanceMonitor'; // 初始化性能监控
+import { baiduAnalytics } from './utils/BaiduAnalytics';
+import { googleAnalytics } from './utils/GoogleAnalytics';
+import { elkAnalytics } from './utils/ELKAnalytics';
+import { analyticsConfig } from './config/AnalyticsConfig';
+import debug from 'debug';
+
+// Debug logger
+const debugApp = debug('app:main');
 
 /**
  * 懒加载FlexiResume组件
@@ -99,12 +107,12 @@ const App: React.FC = () => {
 
       // CDN健康检查
       if (config.cdn.enabled && config.cdn.healthCheck.enabled) {
-        console.log('[App] Initializing CDN health check...');
+        debugApp('Initializing CDN health check...');
         initTasks.push(cdnManager.initialize());
       }
 
       // 库预加载
-      console.log('[App] Starting library preloading...');
+      debugApp('Starting library preloading...');
       initTasks.push(libraryPreloader.startPreloading());
 
       // 等待CDN初始化完成（不等待库预加载完成）
@@ -114,13 +122,13 @@ const App: React.FC = () => {
       if (config.performance.enablePreloading && config.performance.preloadResources.length > 0) {
         // 不等待预加载完成，避免阻塞应用启动
         cdnManager.preloadResources(config.performance.preloadResources).catch(error => {
-          console.warn('[App] Resource preloading failed:', error);
+          debugApp('Resource preloading failed: %O', error);
         });
       }
 
       setCdnStatus('ready');
     } catch (error) {
-      console.error('[App] CDN initialization failed:', error);
+      debugApp('CDN initialization failed: %O', error);
       setCdnStatus('error');
     }
   };
@@ -147,9 +155,42 @@ const App: React.FC = () => {
       // 更新store中的数据
       flexiResumeStore.tabs = newTabs;
     } catch (error) {
-      console.error('Failed to load language data:', error);
+      debugApp('Failed to load language data: %O', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  /**
+   * 初始化分析统计
+   */
+  const initializeAnalytics = async () => {
+    try {
+      debugApp('Initializing analytics...');
+
+      // 初始化百度统计
+      await baiduAnalytics.initialize();
+
+      // 初始化Google Analytics
+      await googleAnalytics.initialize();
+
+      // ELK统计会自动初始化
+      const baiduStatus = baiduAnalytics.getStatus();
+      const googleStatus = googleAnalytics.getStatus();
+      const elkStatus = elkAnalytics.getStatus();
+
+      debugApp('Analytics status: %O', {
+        baidu: baiduStatus,
+        google: googleStatus,
+        elk: elkStatus,
+        config: analyticsConfig.getConfigSummary()
+      });
+
+      // 跟踪应用启动
+      elkAnalytics.trackPageView('App Initialized', window.location.href);
+
+    } catch (error) {
+      debugApp('Analytics initialization failed: %O', error);
     }
   };
 
@@ -157,18 +198,19 @@ const App: React.FC = () => {
    * 初始化和语言变更处理
    */
   useEffect(() => {
-    // 并行初始化CDN和数据加载
+    // 并行初始化CDN、数据加载和分析统计
     const initializeApp = async () => {
       await Promise.all([
         initializeCDN(),
-        loadCurrentData()
+        loadCurrentData(),
+        initializeAnalytics()
       ]);
     };
 
     initializeApp();
 
     // 预加载所有语言数据（后台进行）
-    // preloadAllLanguages().catch(console.warn);
+    // preloadAllLanguages().catch(error => debugApp('Preload languages failed: %O', error));
 
     // 监听语言变更
     const unsubscribe = addLanguageChangeListener(() => {
@@ -197,7 +239,7 @@ const App: React.FC = () => {
     return (
       <ThemeProvider>
         <I18nProvider>
-          <ErrorBoundary>
+          <EnhancedErrorBoundary level="page" maxRetries={3}>
             <GlobalStyle />
             <ControlPanel collapsible={true} />
             <div style={{
@@ -216,7 +258,7 @@ const App: React.FC = () => {
               {cdnStatus === 'error' && '⚠️ CDN检测失败'}
             </div>
             <SkeletonResume />
-          </ErrorBoundary>
+          </EnhancedErrorBoundary>
         </I18nProvider>
       </ThemeProvider>
     );
@@ -225,7 +267,7 @@ const App: React.FC = () => {
   return (
     <ThemeProvider>
       <I18nProvider>
-        <ErrorBoundary>
+        <EnhancedErrorBoundary level="page" maxRetries={3}>
           <ImageViewerProvider >
             <GlobalStyle />
             <ControlPanel collapsible={true} />
@@ -236,11 +278,11 @@ const App: React.FC = () => {
               {
                 allRoutes.map((route, i) => (
                   <Route key={i} path={route.path} element={
-                    <ErrorBoundary>
+                    <EnhancedErrorBoundary level="section" maxRetries={2}>
                       <Suspense fallback={<SkeletonResume />}>
                         <FlexiResume path={route.path} />
                       </Suspense>
-                    </ErrorBoundary>
+                    </EnhancedErrorBoundary>
                   } />
                 ))
               }
@@ -261,7 +303,7 @@ const App: React.FC = () => {
             </Routes>
             </Router>
           </ImageViewerProvider >
-        </ErrorBoundary>
+        </EnhancedErrorBoundary>
       </I18nProvider>
     </ThemeProvider>
   );

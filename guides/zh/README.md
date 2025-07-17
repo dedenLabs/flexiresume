@@ -107,12 +107,21 @@ cd FlexiResume
 # 安装依赖
 npm install
 
+# 配置环境变量
+
+cp .env.example .env.local # npm run dev 时生效
+
+# cp .env.example .env.production # 用于生产环境的配置 npm run build 时生效
+
+# 根据需要修改 .env.* 文件中的配置项
+
 # 启动开发服务器
 npm run dev
 
 # 构建生产版本
 npm run build
 ```
+[🌐环境变量配置详细介绍](./CUSTOMIZATION.md)
 
 ### 🔥firebase上部署项目
 

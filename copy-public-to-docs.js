@@ -29,6 +29,10 @@ function copyDirectoryIfNotExists(src, dest) {
   let copiedCount = 0;
   let skippedCount = 0;
 
+  // 定义要排除的目录列表
+  const excludeDirs = ['.git', 'node_modules', '.vscode', '.idea'];
+
+
   for (const item of items) {
     const srcPath = path.join(src, item);
     const destPath = path.join(dest, item);
@@ -36,6 +40,13 @@ function copyDirectoryIfNotExists(src, dest) {
     const stat = fs.statSync(srcPath);
 
     if (stat.isDirectory()) {
+      const dirName = path.basename(srcPath);
+
+      // 检查当前目录是否在排除列表中
+      if (excludeDirs.includes(dirName)) {
+        console.log(`跳过目录: ${srcPath}`); 
+        continue;
+      }
       // 递归处理子目录
       const result = copyDirectoryIfNotExists(srcPath, destPath);
       if (result) {
@@ -69,12 +80,12 @@ function main() {
 
   try {
     const result = copyDirectoryIfNotExists(publicDir, docsDir);
-    
+
     console.log('');
     console.log('✅ 映射完成！');
     console.log(`📁 复制文件数: ${result.copied}`);
     console.log(`⏭️ 跳过文件数: ${result.skipped}`);
-    
+
     if (result.copied === 0 && result.skipped === 0) {
       console.log('ℹ️ 没有需要复制的文件');
     }

@@ -85,7 +85,7 @@ export default {
 
         // 生成二维码的URL地址
         qrcode: true,// 不指定特定URL会默认根据当前URL地址动态生成二维码,或直接填写URL地址生成固定的二维码
-        // qrcode: "https://resume.deden.cn/game",// 生成固定的URL地址二维码
+        // qrcode: "https://deden.web.app/game",// 生成固定的URL地址二维码
         qrcode_msg: "",//二维码提示信息
     } as IHeaderInfo,
     /**

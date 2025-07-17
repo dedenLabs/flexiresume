@@ -108,12 +108,23 @@ cd FlexiResume
 # Install dependencies
 npm install
 
+# Configure environment variables
+
+cp .env.example .env.local # Takes effect when running npm run dev
+
+# cp .env.example .env.production # Configuration for production environment, takes effect when running npm run build
+
+# Modify the settings in the .env.* files as needed
+
+
 # Start the development server
 npm run dev
 
 # Build the production version
 npm run build
 ```
+[🌐Detailed introduction to environment variable configuration](./CUSTOMIZATION.md)
+
 
 ### 🔥Deploying on Firebase
 

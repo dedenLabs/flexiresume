@@ -37,6 +37,10 @@ npm audit
 # 安装依赖
 npm install
 
+# 配置环境变量
+cp .env.example .env
+# 根据部署环境修改 .env 文件中的配置项
+
 # 运行测试（如果有）
 npm test
 
@@ -170,6 +174,61 @@ vercel --prod
 
 [build.environment]
   NODE_VERSION = "18"
+```
+
+### Firebase Hosting 部署
+
+
+1. **手动 Firebase 部署**
+
+如果不使用自动脚本，也可以手动部署：
+
+```bash
+# 安装 Firebase CLI
+npm install -g firebase-tools
+
+# 登录 Firebase
+firebase login
+
+# 初始化项目
+firebase init hosting
+
+# 部署
+firebase deploy
+```
+
+2. **Firebase 配置示例**
+
+创建或更新 `firebase.json`：
+
+```json
+{
+  "hosting": {
+    "public": "docs",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(js|css)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=31536000"
+          }
+        ]
+      }
+    ]
+  }
+}
 ```
 
 ---

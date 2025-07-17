@@ -1,22 +1,50 @@
 /**
- * 默认项目配置
- * Default project configuration
+ * 从环境变量解析数组
+ * Parse array from environment variable
+ */
+const parseEnvArray = (envValue: string | undefined, defaultValue: string[]): string[] => {
+  if (!envValue) return defaultValue;
+  return envValue.split(',').map(item => item.trim()).filter(Boolean);
+};
+
+/**
+ * 从环境变量解析布尔值
+ * Parse boolean from environment variable
+ */
+const parseEnvBoolean = (envValue: string | undefined, defaultValue: boolean): boolean => {
+  if (!envValue) return defaultValue;
+  return envValue.toLowerCase() === 'true';
+};
+
+/**
+ * 从环境变量解析数字
+ * Parse number from environment variable
+ */
+const parseEnvNumber = (envValue: string | undefined, defaultValue: number): number => {
+  if (!envValue) return defaultValue;
+  const parsed = parseInt(envValue, 10);
+  return isNaN(parsed) ? defaultValue : parsed;
+};
+
+/**
+ * 默认项目配置 (支持环境变量覆盖)
+ * Default project configuration (supports environment variable override)
  */
 export const defaultProjectConfig: ProjectConfig = {
   cdn: {
-    enabled: true,
-    baseUrls: [
+    enabled: parseEnvBoolean(import.meta.env.VITE_CDN_ENABLED, true),
+    baseUrls: parseEnvArray(import.meta.env.VITE_CDN_BASE_URLS, [
       "https://cdn.jsdelivr.net/gh/dedenLabs/flexiresume-static/",
       "https://flexiresume-static.web.app/",
       "https://dedenlabs.github.io/flexiresume-static/",
-    ],
+    ]),
     healthCheck: {
-      timeout: 5000, // 5秒超时
-      testPath: "favicon.ico", // 使用favicon作为测试文件
+      timeout: parseEnvNumber(import.meta.env.VITE_CDN_HEALTH_CHECK_TIMEOUT, 5000),
+      testPath: import.meta.env.VITE_CDN_HEALTH_CHECK_PATH || "favicon.ico",
       enabled: true,
     },
     sortingStrategy: {
-      mode: 'speed', // 默认使用速度优先策略
+      mode: (import.meta.env.VITE_CDN_SORTING_MODE as 'speed' | 'availability') || 'speed',
       enabled: true,
       speedWeight: 0.7, // 速度权重70%
       availabilityWeight: 0.3, // 可用性权重30%
@@ -27,27 +55,27 @@ export const defaultProjectConfig: ProjectConfig = {
       localBasePath: '', // 使用自动检测的基础路径
     },
   },
-  
+
   api: {
-    baseUrl: (typeof process !== 'undefined' && process.env?.REACT_APP_API_BASE_URL) || "",
-    timeout: 10000, // 10秒超时
-    version: "v1",
+    baseUrl: import.meta.env.VITE_API_BASE_URL || "",
+    timeout: parseEnvNumber(import.meta.env.VITE_API_TIMEOUT, 10000),
+    version: import.meta.env.VITE_API_VERSION || "v1",
   },
-  
+
   theme: {
-    defaultTheme: 'auto',
-    enableTransitions: true,
-    transitionDuration: 300,
+    defaultTheme: (import.meta.env.VITE_DEFAULT_THEME as 'auto' | 'light' | 'dark') || 'auto',
+    enableTransitions: parseEnvBoolean(import.meta.env.VITE_ENABLE_THEME_TRANSITIONS, true),
+    transitionDuration: parseEnvNumber(import.meta.env.VITE_THEME_TRANSITION_DURATION, 300),
   },
-  
+
   performance: {
-    enableLazyLoading: true,
-    lazyLoadingThreshold: 100,
-    enablePreloading: true,
-    preloadResources: [
+    enableLazyLoading: parseEnvBoolean(import.meta.env.VITE_ENABLE_LAZY_LOADING, true),
+    lazyLoadingThreshold: parseEnvNumber(import.meta.env.VITE_LAZY_LOADING_THRESHOLD, 100),
+    enablePreloading: parseEnvBoolean(import.meta.env.VITE_ENABLE_PRELOADING, true),
+    preloadResources: parseEnvArray(import.meta.env.VITE_PRELOAD_RESOURCES, [
       "/images/avatar.webp",
       "/images/background.webp",
-    ],
+    ]),
     // 大型库预加载配置
     preloadLibraries: {
       mermaid: true,        // 预加载Mermaid图表库
@@ -56,18 +84,18 @@ export const defaultProjectConfig: ProjectConfig = {
       cytoscape: false,     // 按需加载图形布局库
     },
   },
-  
+
   app: {
-    name: "FlexiResume",
-    version: (typeof process !== 'undefined' && process.env?.REACT_APP_VERSION) || "1.0.0",
-    buildTime: (typeof process !== 'undefined' && process.env?.REACT_APP_BUILD_TIME) || new Date().toISOString(),
-    isDevelopment: (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') || false,
+    name: import.meta.env.VITE_APP_NAME || "FlexiResume",
+    version: import.meta.env.VITE_APP_VERSION || "1.0.0",
+    buildTime: import.meta.env.VITE_APP_BUILD_TIME || new Date().toISOString(),
+    isDevelopment: import.meta.env.DEV || false,
   },
-  
+
   debug: {
-    enabled: (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') || false,
-    showPerformanceMonitor: (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') || false,
-    verboseLogging: (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') || false,
+    enabled: parseEnvBoolean(import.meta.env.VITE_DEBUG, import.meta.env.DEV || false),
+    showPerformanceMonitor: import.meta.env.DEV || false,
+    verboseLogging: import.meta.env.DEV || false,
   },
 };
 

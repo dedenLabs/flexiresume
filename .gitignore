@@ -17,6 +17,13 @@ node_modules
 dist
 dist-ssr
 *.local
+.firebaserc
+.env
+.env.*
+!.env.example
+.*/
+scripts/*
+tools/*
 
 # Editor directories and files
 .vscode/*
@@ -24,7 +31,7 @@ dist-ssr
 public/images/game/*
 !.vscode/extensions.json
 .idea
-.*
+
 .DS_Store
 *.suo
 *.ntvs*
@@ -33,4 +40,3 @@ public/images/game/*
 *.sw?
 *.ini
 dist.zip
-scripts/*

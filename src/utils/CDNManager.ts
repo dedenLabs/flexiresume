@@ -6,8 +6,12 @@
  * Unified management of CDN resource loading and health checking
  */
 
+import debug from 'debug';
 import { getCDNConfig, isDebugEnabled } from '../config/ProjectConfig';
 import { cdnHealthChecker, CDNHealthResult } from './CDNHealthChecker';
+
+// Debug logger
+const debugCDN = debug('app:cdn');
 
 /**
  * 本地开发环境检测缓存
@@ -46,9 +50,7 @@ function isLocalDevelopment(): boolean {
       localDevelopmentCache = result;
       return result;
     } catch (error) {
-      if (isDebugEnabled()) {
-        console.warn('[CDN Manager] Custom detection function failed:', error);
-      }
+      debugCDN('Custom detection function failed: %O', error);
     }
   }
 
@@ -94,9 +96,7 @@ function isLocalDevelopment(): boolean {
     }
   } catch (error) {
     // 忽略环境变量检测错误，依赖其他检测方式
-    if (isDebugEnabled()) {
-      console.log('[CDN Manager] Environment variable detection failed, using hostname/port detection');
-    }
+    debugCDN('Environment variable detection failed, using hostname/port detection');
   }
 
   const result = isLocalHost && (isDevelopmentPort || isDevEnvironment);
@@ -104,17 +104,15 @@ function isLocalDevelopment(): boolean {
   // 缓存结果
   localDevelopmentCache = result;
 
-  if (isDebugEnabled()) {
-    console.log(`[CDN Manager] Local development detection: ${result}`, {
-      hostname,
-      port,
-      isLocalHost,
-      isDevelopmentPort,
-      isDevEnvironment,
-      configEnabled: cdnConfig.localOptimization.enabled,
-      forceLocal: cdnConfig.localOptimization.forceLocal
-    });
-  }
+  debugCDN('Local development detection: %s %O', result, {
+    hostname,
+    port,
+    isLocalHost,
+    isDevelopmentPort,
+    isDevEnvironment,
+    configEnabled: cdnConfig.localOptimization.enabled,
+    forceLocal: cdnConfig.localOptimization.forceLocal
+  });
 
   return result;
 }
@@ -186,18 +184,14 @@ export class CDNManager {
     const cdnConfig = getCDNConfig();
 
     if (!cdnConfig.enabled) {
-      if (isDebugEnabled()) {
-        console.log('[CDN Manager] CDN is disabled, skipping health check');
-      }
+      debugCDN('CDN is disabled, skipping health check');
       this.isInitialized = true;
       return;
     }
 
     // 检查是否为本地开发环境
     if (isLocalDevelopment()) {
-      if (isDebugEnabled()) {
-        console.log('[CDN Manager] Local development environment detected, skipping CDN health check and using local resources');
-      }
+      debugCDN('Local development environment detected, skipping CDN health check and using local resources');
       this.isInitialized = true;
       return;
     }
@@ -366,20 +360,44 @@ export class CDNManager {
         const currentPath = window.location.pathname;
         const pathSegments = currentPath.split('/').filter(segment => segment);
 
-        // 如果路径包含项目目录（如 my-resume/docs），保留这些段
-        if (pathSegments.length > 0) {
-          // 检查是否是开发环境（使用优化的检测逻辑）
-          const isDev = isLocalDevelopment();
+        // 检查是否是开发环境
+        const isDev = isLocalDevelopment();
 
-          if (!isDev && pathSegments.length >= 1) {
-            // 生产环境，保留路径段作为基础路径
-            // 例如：/my-resume/docs/fullstack -> /my-resume/docs/
-            const baseSegments = pathSegments.slice(0, -1); // 移除最后一个段（页面名）
-            if (baseSegments.length > 0) {
-              projectBasePath = '/' + baseSegments.join('/') + '/';
+        if (isDev) {
+          // 开发环境：通常在根目录，不需要额外的基础路径
+          projectBasePath = '';
+        } else {
+          // 生产环境：需要智能检测部署路径
+          if (pathSegments.length > 0) {
+            // 检查是否是根目录部署还是子目录部署
+            const lastSegment = pathSegments[pathSegments.length - 1];
+
+            // 如果最后一个段是 HTML 文件名或已知的路由路径，则移除它
+            const knownRoutes = ['fullstack', 'games', 'tools', 'operations', 'automation', 'management'];
+            const isKnownRoute = knownRoutes.includes(lastSegment) || lastSegment.endsWith('.html');
+
+            if (isKnownRoute && pathSegments.length > 1) {
+              // 子目录部署：保留除最后一个段之外的所有段
+              // 例如：/my-resume/docs/fullstack -> /my-resume/docs
+              // 例如：/folder/index.html -> /folder
+              const baseSegments = pathSegments.slice(0, -1);
+              projectBasePath = '/' + baseSegments.join('/');
+            } else if (!isKnownRoute && pathSegments.length >= 1) {
+              // 可能是子目录部署，但当前路径就是基础路径
+              // 例如：/my-resume/docs/ -> /my-resume/docs
+              // 例如：/folder/ -> /folder
+              projectBasePath = '/' + pathSegments.join('/');
             }
+            // 如果是根目录部署且访问的是路由，projectBasePath 保持为空字符串
+            // 例如：/index.html -> '' (根目录部署)
           }
         }
+
+        // 确保路径格式正确（不以 / 结尾，除非是根路径）
+        if (projectBasePath && projectBasePath !== '/' && projectBasePath.endsWith('/')) {
+          projectBasePath = projectBasePath.slice(0, -1);
+        }
+
       } catch (error) {
         if (isDebugEnabled()) {
           console.warn('[CDN Manager] Failed to determine project base path:', error);
@@ -422,13 +440,29 @@ export class CDNManager {
 
     // 确保资源路径格式正确
     const cleanResourcePath = resourcePath.startsWith('/') ? resourcePath.slice(1) : resourcePath;
-    const fullResourcePath = projectBasePath + cleanResourcePath;
 
-    // 如果是开发环境，使用当前域 + 端口
+    // 构建完整的资源路径
+    let fullResourcePath: string;
+
+    if (projectBasePath) {
+      // 确保项目基础路径以 / 开头和结尾
+      const normalizedBasePath = projectBasePath.startsWith('/') ? projectBasePath : '/' + projectBasePath;
+      const basePathWithSlash = normalizedBasePath.endsWith('/') ? normalizedBasePath : normalizedBasePath + '/';
+      fullResourcePath = basePathWithSlash + cleanResourcePath;
+    } else {
+      // 没有项目基础路径，直接使用根路径
+      fullResourcePath = '/' + cleanResourcePath;
+    }
+
+    // 如果是浏览器环境，构建完整URL
     if (typeof window !== 'undefined') {
       const { protocol, hostname, port } = window.location;
       const portSuffix = port && port !== '80' && port !== '443' ? `:${port}` : '';
-      return `${protocol}//${hostname}${portSuffix}${fullResourcePath}`;
+
+      // 确保fullResourcePath以/开头，避免路径拼接错误
+      const normalizedResourcePath = fullResourcePath.startsWith('/') ? fullResourcePath : '/' + fullResourcePath;
+
+      return `${protocol}//${hostname}${portSuffix}${normalizedResourcePath}`;
     }
 
     return fullResourcePath;
