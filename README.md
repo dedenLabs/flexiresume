@@ -32,23 +32,6 @@
 
 ### 🚀 快速开始 / Quick Start
 
-#### 🐳 Docker 部署（推荐 / Recommended）
-
-```bash
-# 拉取镜像 / Pull image
-docker pull jackchen86/firebase-dev-cn:latest
-
-# 启动开发环境 / Start development environment
-docker run -it --rm \
-  -p 5000:5000 -p 5173:5173 \
-  -v $(pwd):/workspace \
-  jackchen86/firebase-dev-cn:latest
-
-# 在容器内 / In container
-npm install && npm run dev
-```
-
-#### 📦 本地安装 / Local Installation
 
 ```bash
 # 克隆项目 / Clone project
