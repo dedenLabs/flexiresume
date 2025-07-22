@@ -6,10 +6,14 @@
 import React from 'react';
 import { remark } from 'remark';
 import html from 'remark-html';
+import debug from 'debug';
 import { SecurityUtils } from './SecurityUtils';
 import { remarkQRCodeLazyLoad, remarkVideoLazyLoad, remarkImagesLazyLoad, remarkMermaidLazyLoad } from './ParseAndReplaceSkills';
 import { replaceVariables } from './Tools';
 import { flexiResumeStore } from '../store/FlexiResumeStore';
+
+// Debug logger
+const debugMarkdown = debug('app:markdown');
 
 /**
  * 安全的Markdown处理配置
@@ -139,7 +143,7 @@ export class SecureMarkdownProcessor {
       return processedContent;
 
     } catch (error) {
-      console.error('Secure markdown processing failed:', error);
+      debugMarkdown('Secure markdown processing failed:', error);
       SecurityUtils.logSecurityEvent({
         type: 'xss_attempt',
         details: `Markdown processing error: ${error}`
@@ -202,7 +206,7 @@ export class SecureMarkdownProcessor {
       return processedContent;
 
     } catch (error) {
-      console.error('Secure markdown sync processing failed:', error);
+      debugMarkdown('Secure markdown sync processing failed:', error);
       return '';
     }
   }
@@ -247,7 +251,7 @@ export class SecureMarkdownProcessor {
         return String(value);
       });
     } catch (error) {
-      console.error('Variable replacement failed:', error);
+      debugMarkdown('Variable replacement failed:', error);
       return content;
     }
   }
@@ -368,7 +372,7 @@ export const useSecureMarkdown = (content: string, options: {
         
         setHtmlContent(result);
       } catch (err) {
-        console.error('Markdown processing error:', err);
+        debugMarkdown('Markdown processing error:', err);
         setError('内容处理失败');
         setHtmlContent('');
       } finally {

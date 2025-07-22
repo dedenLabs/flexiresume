@@ -41,6 +41,10 @@ export interface I18nTexts {
     controlPanel: string;
     theme: string;
     language: string;
+    export: string;
+    exportPDF: string;
+    exporting: string;
+    exportFailed: string;
   };
 
   // 简历模块标题
@@ -93,7 +97,11 @@ const zhTexts: I18nTexts = {
     darkMode: '深色模式',
     controlPanel: '控制面板',
     theme: '主题',
-    language: '语言'
+    language: '语言',
+    export: '导出',
+    exportPDF: '导出PDF',
+    exporting: '导出中...',
+    exportFailed: 'PDF导出失败，请重试'
   },
 
   resume: {
@@ -142,7 +150,11 @@ const enTexts: I18nTexts = {
     darkMode: 'Dark Mode',
     controlPanel: 'Control Panel',
     theme: 'Theme',
-    language: 'Language'
+    language: 'Language',
+    export: 'Export',
+    exportPDF: 'Export PDF',
+    exporting: 'Exporting...',
+    exportFailed: 'PDF export failed, please try again'
   },
 
   resume: {

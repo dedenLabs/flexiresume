@@ -16,8 +16,12 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import styled from 'styled-components';
+import debug from 'debug';
 import { useTheme } from '../theme';
 import { getCurrentNetworkStatus, addNetworkStatusListener } from '../utils/NetworkManager';
+
+// Debug logger
+const debugErrorBoundary = debug('app:error-boundary');
 import { isDebugEnabled } from '../config/ProjectConfig';
 
 // 错误类型
@@ -273,15 +277,15 @@ class EnhancedErrorBoundaryImpl extends Component<Props & { isDark: boolean }, S
     
     // 开发环境下打印详细错误信息
     if (isDebugEnabled()) {
-      console.error('EnhancedErrorBoundary caught an error:', error, errorInfo);
-      console.error('Error details:', errorDetails);
+      debugErrorBoundary('EnhancedErrorBoundary caught an error:', error, errorInfo);
+      debugErrorBoundary('Error details:', errorDetails);
     }
     
     // 监听网络状态变化
     this.networkStatusUnsubscribe = addNetworkStatusListener((status) => {
       if (status.isOnline && this.state.hasError) {
         // 网络恢复时提示用户可以重试
-        console.log('Network recovered, user can retry');
+        debugErrorBoundary('Network recovered, user can retry');
       }
     });
   }

@@ -9,6 +9,7 @@ import { SkeletonResume } from './components/SkeletonComponents';
 import { I18nProvider } from './i18n';
 import { ThemeProvider } from './theme';
 import ControlPanel from './components/ControlPanel';
+import DevelopmentNoticeLoader from './components/DevelopmentNoticeLoader';
 import {
   getCurrentLanguageData,
   addLanguageChangeListener,
@@ -270,6 +271,7 @@ const App: React.FC = () => {
         <EnhancedErrorBoundary level="page" maxRetries={3}>
           <ImageViewerProvider >
             <GlobalStyle />
+            <DevelopmentNoticeLoader />
             <ControlPanel collapsible={true} />
             <Router basename={originData.header_info.route_base_name}>
               <Tabs /> {/* 页签导航栏 */}

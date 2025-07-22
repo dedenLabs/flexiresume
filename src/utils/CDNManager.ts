@@ -364,8 +364,24 @@ export class CDNManager {
         const isDev = isLocalDevelopment();
 
         if (isDev) {
-          // 开发环境：通常在根目录，不需要额外的基础路径
-          projectBasePath = '';
+          // 开发环境：需要检查是否有子目录部署
+          // 修复：开发环境也需要正确处理子目录路径
+          if (pathSegments.length > 0) {
+            const lastSegment = pathSegments[pathSegments.length - 1];
+            const knownRoutes = ['fullstack', 'games', 'tools', 'operations', 'automation', 'management'];
+            const isKnownRoute = knownRoutes.includes(lastSegment) || lastSegment.endsWith('.html');
+
+            if (isKnownRoute && pathSegments.length > 1) {
+              // 开发环境子目录部署：保留除最后一个段之外的所有段
+              // 例如：/my-resume/docs/fullstack -> /my-resume/docs
+              const baseSegments = pathSegments.slice(0, -1);
+              projectBasePath = '/' + baseSegments.join('/');
+            } else if (!isKnownRoute && pathSegments.length >= 1) {
+              // 开发环境：当前路径可能就是基础路径
+              // 例如：/my-resume/docs/ -> /my-resume/docs
+              projectBasePath = '/' + pathSegments.join('/');
+            }
+          }
         } else {
           // 生产环境：需要智能检测部署路径
           if (pathSegments.length > 0) {

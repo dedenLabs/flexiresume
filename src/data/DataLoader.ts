@@ -8,9 +8,13 @@
  * @date 2024-12-27
  */
 
+import debug from 'debug';
 import { IFlexiResume } from "../types/IFlexiResume";
 import { getProjectConfig } from "../config/ProjectConfig";
 import { cdnManager } from "../utils/CDNManager";
+
+// Debug logger
+const debugDataLoader = debug('app:dataloader');
 
 /**
  * 支持的语言列表
@@ -109,11 +113,11 @@ export const loadLanguageData = async (language: SupportedLanguage): Promise<IFl
     
     return data;
   } catch (error) {
-    console.error(`Failed to load data for language: ${language}`, error);
-    
+    debugDataLoader(`Failed to load data for language: ${language}`, error);
+
     // 如果加载失败且不是默认语言，尝试加载默认语言
     if (language !== DEFAULT_LANGUAGE) {
-      console.warn(`Falling back to default language: ${DEFAULT_LANGUAGE}`);
+      debugDataLoader(`Falling back to default language: ${DEFAULT_LANGUAGE}`);
       return loadLanguageData(DEFAULT_LANGUAGE);
     }
     
@@ -140,9 +144,9 @@ export const preloadAllLanguages = async (): Promise<void> => {
     languages.map(async (language) => {
       try {
         await loadLanguageData(language);
-        console.log(`Preloaded data for language: ${language}`);
+        debugDataLoader(`Preloaded data for language: ${language}`);
       } catch (error) {
-        console.warn(`Failed to preload data for language: ${language}`, error);
+        debugDataLoader(`Failed to preload data for language: ${language}`, error);
       }
     })
   );
@@ -189,7 +193,7 @@ export const initializeLanguage = (): void => {
       currentLanguage = detectBrowserLanguage();
     }
   } catch (error) {
-    console.warn('Failed to read language preference from localStorage', error);
+    debugDataLoader('Failed to read language preference from localStorage', error);
     currentLanguage = detectBrowserLanguage();
   }
 };
@@ -202,7 +206,7 @@ export const saveLanguagePreference = (language: SupportedLanguage): void => {
   try {
     localStorage.setItem('flexiresume-language', language);
   } catch (error) {
-    console.warn('Failed to save language preference to localStorage', error);
+    debugDataLoader('Failed to save language preference to localStorage', error);
   }
 };
 
