@@ -6,7 +6,8 @@ import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import flexiResumeStore from '../../store/Store';
 import { useCollapser } from '../../utils/Tools';
 import { useTheme } from '../../theme';
-import SkillRenderer from '../skill/SkillRenderer';
+import SkillRenderer from '../skill/SkillRenderer.tsx';
+import { SecureContentRenderer } from '../Security/SecureContentRenderer';
 
 interface EmploymentHistoryCardProps {
 	id: string;
@@ -33,12 +34,20 @@ const PersonalStrengthCard: React.FC<PersonalStrengthCardProps> = ({ id, name, d
 	const { collapsedItems } = useCollapser(name, 1);
 	// 将 content 转换为 HTML, 获取到可以实时更新数据并渲染的html结构数据
 	const markdownContent = checkConvertMarkdownToHtml(content || "");
+	// console.error('PersonalStrengthCard:'+markdownContent.length)
 	if (!collapsedItems[0]) {
 		return (
 			<CardWrapper isDark={isDark}>
-				{/* {markdownContent} */}
-				<SkillRenderer>
+				{/* <SkillRenderer>
 					<div className='markdown-content' dangerouslySetInnerHTML={{ __html: markdownContent }} />
+				</SkillRenderer> */}
+				<SkillRenderer>
+					<SecureContentRenderer
+						content={markdownContent}
+						contentType="html"
+						className="markdown-content"
+						trustedZone={false}
+					/>
 				</SkillRenderer>
 			</CardWrapper>
 		);

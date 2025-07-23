@@ -424,99 +424,116 @@ const GlobalStyle = createGlobalStyle`
     border-radius: 6px;
   }
 
-  /* 打印样式优化 */
+  /* 打印样式优化 - 只在激活时生效 */
   @media print {
-    /* 页面设置 */
-    @page {
-      size: A4;
-      margin: 1cm;
-    }
+    /* 只有当body有print-mode-active类时才应用打印样式 */
+    body.print-mode-active {
+      /* 页面设置 */
+      @page {
+        size: A4;
+        margin: 1cm;
+      }
 
-    /* 重置根元素和body */
-    html, body {
-      width: 100% !important;
-      height: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      background: white !important;
-      background-image: none !important;
-      overflow: visible !important;
-      font-size: 12pt !important;
-      line-height: 1.4 !important;
-      color: black !important;
-    }
+      /* 重置根元素和body */
+      html, body {
+        width: 100% !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+        background-image: none !important;
+        overflow: visible !important;
+        font-size: 12pt !important;
+        line-height: 1.4 !important;
+        color: black !important;
+      }
 
-    /* 隐藏深色模式背景伪元素 */
-    [data-theme="dark"] body::before {
-      display: none !important;
-    }
+      /* 隐藏深色模式背景伪元素 */
+      [data-theme="dark"] body::before {
+        display: none !important;
+      }
 
-    /* 根元素打印优化 */
-    #root {
-      display: block !important;
-      width: 100% !important;
-      max-width: none !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      background: white !important;
-      overflow: visible !important;
-    }
+      /* 根元素打印优化 */
+      #root {
+        display: block !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+        overflow: visible !important;
+      }
 
-    /* 隐藏不需要打印的元素 */
-    .no-print,
-    .print-hide,
-    button,
-    .control-panel,
-    .floating-controls,
-    nav,
-    .navigation,
-    .tabs,
-    .tab-container {
-      display: none !important;
-    }
+      /* 隐藏不需要打印的元素 */
+      .no-print,
+      .print-hide,
+      button,
+      .control-panel,
+      .floating-controls,
+      nav,
+      .navigation,
+      .tabs,
+      .tab-container,
+      [data-testid="control-panel"],
+      [data-testid="development-notice"],
+      [data-pdf-downloader],
+      .pdf-downloader,
+      .control-button,
+      .floating-button,
+      [class*="control"]:not(.skill-item),
+      [class*="floating"]:not(.skill-item),
+      [class*="button"]:not(.skill-item),
+      [class*="Panel"],
+      [class*="Switcher"],
+      [class*="Downloader"],
+      .fixed,
+      .absolute {
+        display: none !important;
+      }
 
-    /* 打印背景设置 */
-    .print-background {
-      position: relative;
-      background: white !important;
-    }
+      /* 打印背景设置 */
+      .print-background {
+        position: relative;
+        background: white !important;
+      }
 
-    .print-background::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: white;
-      z-index: -1;
-    }
+      .print-background::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        z-index: -1;
+      }
 
-    /* 确保所有文本颜色为黑色 */
-    * {
-      color: black !important;
-      background: transparent !important;
-      box-shadow: none !important;
-      text-shadow: none !important;
-    }
+      /* 确保所有文本颜色为黑色 */
+      * {
+        color: black !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+      }
 
-    /* 链接样式 */
-    a {
-      color: black !important;
-      text-decoration: underline !important;
-    }
+      /* 链接样式 */
+      a {
+        color: black !important;
+        text-decoration: underline !important;
+      }
 
-    /* 分页控制 */
-    .page-break-before {
-      page-break-before: always;
-    }
+      /* 分页控制 */
+      .page-break-before {
+        page-break-before: always;
+      }
 
-    .page-break-after {
-      page-break-after: always;
-    }
+      .page-break-after {
+        page-break-after: always;
+      }
 
-    .page-break-inside-avoid {
-      page-break-inside: avoid;
+      .page-break-inside-avoid {
+        page-break-inside: avoid;
+      }
     }
   }
 `;

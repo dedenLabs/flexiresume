@@ -18,6 +18,10 @@ import {
 import EducationHistoryCard from '../components/education_history/EducationHistoryCard';
 import TimelineContainer from '../components/timeline/TimelineContainer';
 import { SkeletonResume } from '../components/SkeletonComponents';
+import debug from 'debug';
+
+// Debug logger
+const debugResume = debug('app:resume');
 import SEOHead from '../components/SEOHead';
 
 interface FlexiResumeProps {
@@ -129,7 +133,7 @@ const FlexiResume: React.FC<FlexiResumeProps> = ({ path }) => {
         recordDataLoadTime(`position-${postionName}`, dataLoadTime);
 
       } catch (error) {
-        console.error('Failed to load position data:', error);
+        debugResume('Failed to load position data:', error);
       } finally {
         setIsLoading(false);
 

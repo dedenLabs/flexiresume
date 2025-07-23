@@ -4,7 +4,8 @@ import TimelineNode from './TimelineNode';
 import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import { useCollapser } from '../../utils/Tools';
 import { useTheme } from '../../theme';
-import SkillRenderer from '../skill/SkillRenderer';
+import SkillRenderer from '../skill/SkillRenderer.tsx';
+import { SecureContentRenderer } from '../Security/SecureContentRenderer';
 
 interface TimelineProps {
   id: string;
@@ -56,9 +57,11 @@ const TimelineContainer: React.FC<{
       <TimelineWrapper isDark={isDark}>
         {/* 头部内容 */}
         {content_head && (
-          <div
+          <SecureContentRenderer
+            content={headHtml}
+            contentType="html"
             className="timeline-header markdown-content"
-            dangerouslySetInnerHTML={{ __html: headHtml }}
+            trustedZone={false}
           />
         )}
 
@@ -69,9 +72,11 @@ const TimelineContainer: React.FC<{
 
         {/* 底部内容 */}
         {content && (
-          <div
+          <SecureContentRenderer
+            content={footerHtml}
+            contentType="html"
             className="timeline-footer markdown-content"
-            dangerouslySetInnerHTML={{ __html: footerHtml }}
+            trustedZone={false}
           />
         )}
       </TimelineWrapper>

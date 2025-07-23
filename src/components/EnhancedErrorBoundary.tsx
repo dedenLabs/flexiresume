@@ -18,6 +18,7 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import styled from 'styled-components';
 import debug from 'debug';
 import { useTheme } from '../theme';
+import { useI18n } from '../i18n';
 import { getCurrentNetworkStatus, addNetworkStatusListener } from '../utils/NetworkManager';
 
 // Debug logger
@@ -48,6 +49,8 @@ interface Props {
   maxRetries?: number;
   showErrorDetails?: boolean;
   level?: 'page' | 'section' | 'component';
+  isDark?: boolean;
+  t?: any; // i18n翻译函数
 }
 
 // 组件状态
@@ -61,7 +64,9 @@ interface State {
 }
 
 // 样式组件
-const ErrorContainer = styled.div<{ level: string; isDark: boolean }>`
+const ErrorContainer = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isDark' && prop !== 'level',
+})<{ level: string; isDark: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -82,7 +87,9 @@ const ErrorContainer = styled.div<{ level: string; isDark: boolean }>`
   transition: all 0.3s ease;
 `;
 
-const ErrorIcon = styled.div<{ level: string }>`
+const ErrorIcon = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'level',
+})<{ level: string }>`
   font-size: ${props => {
     switch (props.level) {
       case 'page': return '48px';
@@ -94,14 +101,18 @@ const ErrorIcon = styled.div<{ level: string }>`
   opacity: 0.8;
 `;
 
-const ErrorTitle = styled.h3<{ isDark: boolean }>`
+const ErrorTitle = styled.h3.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isDark',
+})<{ isDark: boolean }>`
   color: ${props => props.isDark ? 'var(--color-text-primary)' : '#333'};
   margin: 0 0 12px 0;
   font-size: 18px;
   font-weight: 600;
 `;
 
-const ErrorMessage = styled.p<{ isDark: boolean }>`
+const ErrorMessage = styled.p.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isDark',
+})<{ isDark: boolean }>`
   color: ${props => props.isDark ? 'var(--color-text-secondary)' : '#666'};
   margin: 0 0 24px 0;
   line-height: 1.5;
@@ -115,7 +126,9 @@ const ButtonGroup = styled.div`
   justify-content: center;
 `;
 
-const ActionButton = styled.button<{ variant: 'primary' | 'secondary'; isDark: boolean }>`
+const ActionButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isDark' && prop !== 'variant',
+})<{ variant: 'primary' | 'secondary'; isDark: boolean }>`
   padding: 10px 20px;
   border: none;
   border-radius: 6px;
@@ -150,7 +163,9 @@ const ActionButton = styled.button<{ variant: 'primary' | 'secondary'; isDark: b
   }
 `;
 
-const ErrorDetails = styled.details<{ isDark: boolean }>`
+const ErrorDetails = styled.details.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isDark',
+})<{ isDark: boolean }>`
   margin-top: 24px;
   max-width: 600px;
   text-align: left;
@@ -180,7 +195,9 @@ const ErrorDetails = styled.details<{ isDark: boolean }>`
   }
 `;
 
-const NetworkStatus = styled.div<{ isDark: boolean }>`
+const NetworkStatus = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isDark',
+})<{ isDark: boolean }>`
   margin-top: 16px;
   padding: 8px 12px;
   background: ${props => props.isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'};
@@ -343,9 +360,9 @@ class EnhancedErrorBoundaryImpl extends Component<Props & { isDark: boolean }, S
           </ErrorIcon>
           
           <ErrorTitle isDark={this.props.isDark}>
-            {errorType === 'network' ? '网络连接问题' :
-             errorType === 'chunk' ? '资源加载失败' :
-             errorType === 'runtime' ? '运行时错误' : '页面加载出错了'}
+            {errorType === 'network' ? (this.props.t?.common?.networkError || '网络连接问题') :
+             errorType === 'chunk' ? (this.props.t?.common?.resourceLoadError || '资源加载失败') :
+             errorType === 'runtime' ? (this.props.t?.common?.runtimeError || '运行时错误') : (this.props.t?.common?.pageLoadError || '页面加载出错了')}
           </ErrorTitle>
           
           <ErrorMessage isDark={this.props.isDark}>
@@ -362,8 +379,8 @@ class EnhancedErrorBoundaryImpl extends Component<Props & { isDark: boolean }, S
               onClick={this.handleRetry}
               disabled={isRetrying || retryCount >= maxRetries}
             >
-              {isRetrying ? '重试中...' : 
-               retryCount >= maxRetries ? '已达最大重试次数' : '重新加载'}
+              {isRetrying ? (this.props.t?.common?.retrying || '重试中...') :
+               retryCount >= maxRetries ? (this.props.t?.common?.maxRetriesReached || '已达最大重试次数') : (this.props.t?.common?.reload || '重新加载')}
             </ActionButton>
             
             <ActionButton
@@ -407,11 +424,13 @@ class EnhancedErrorBoundaryImpl extends Component<Props & { isDark: boolean }, S
  */
 const EnhancedErrorBoundary: React.FC<Props> = (props) => {
   const { isDark } = useTheme();
-  
+  const { t } = useI18n();
+
   return (
-    <EnhancedErrorBoundaryImpl 
-      {...props} 
+    <EnhancedErrorBoundaryImpl
+      {...props}
       isDark={isDark}
+      t={t}
       showErrorDetails={props.showErrorDetails ?? process.env.NODE_ENV === 'development'}
     />
   );

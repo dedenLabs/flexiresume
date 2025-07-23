@@ -87,7 +87,7 @@ export const defaultProjectConfig: ProjectConfig = {
 
   app: {
     name: import.meta.env.VITE_APP_NAME || "FlexiResume",
-    version: import.meta.env.VITE_APP_VERSION || "1.0.0",
+    version: import.meta.env.VITE_APP_VERSION || "1.0.1",
     buildTime: import.meta.env.VITE_APP_BUILD_TIME || new Date().toISOString(),
     isDevelopment: import.meta.env.DEV || false,
   },

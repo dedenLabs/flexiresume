@@ -8,6 +8,14 @@ import { SecurityUtils } from '../../utils/SecurityUtils';
 import { SecureMarkdownProcessor } from '../../utils/SecureMarkdownProcessor';
 import { securityConfig } from '../../config/SecurityConfig';
 
+// 全局安全配置 - 从环境变量读取
+const GLOBAL_SECURITY_CONFIG = {
+  // 是否全局禁用安全过滤（生产环境应为false）
+  disableSanitization: import.meta.env.VITE_DISABLE_SANITIZATION === 'true' || false,
+  // 开发环境默认启用更多安全警告
+  enableSecurityWarnings: import.meta.env.DEV || import.meta.env.VITE_ENABLE_SECURITY_WARNINGS === 'true'
+};
+
 /**
  * 安全内容渲染器属性
  */
@@ -32,6 +40,10 @@ export interface SecureContentRendererProps {
   onSecurityEvent?: (event: any) => void;
   /** 是否显示安全警告 */
   showSecurityWarnings?: boolean;
+  /** 是否禁用安全过滤（谨慎使用，仅在信任内容时启用） */
+  disableSanitization?: boolean;
+  /** 信任的内容区域标识（用于特定区域放行） */
+  trustedZone?: boolean;
 }
 
 /**
@@ -47,7 +59,9 @@ export const SecureContentRenderer: React.FC<SecureContentRendererProps> = ({
   className = '',
   onError,
   onSecurityEvent,
-  showSecurityWarnings = false
+  showSecurityWarnings = false,
+  disableSanitization = GLOBAL_SECURITY_CONFIG.disableSanitization,
+  trustedZone = false
 }) => {
   const [processedContent, setProcessedContent] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -75,11 +89,11 @@ export const SecureContentRenderer: React.FC<SecureContentRendererProps> = ({
       // 长度检查
       const configMaxLength = securityConfig.get<number>('xss.maxContentLength') || 50000;
       const effectiveMaxLength = maxLength || configMaxLength;
-      
+
       if (content.length > effectiveMaxLength) {
         warnings.push(`内容长度超过限制 (${content.length} > ${effectiveMaxLength})`);
         processed = content.substring(0, effectiveMaxLength) + '...';
-        
+
         SecurityUtils.logSecurityEvent({
           type: 'suspicious_activity',
           details: `Content length exceeds limit: ${content.length} > ${effectiveMaxLength}`
@@ -90,7 +104,7 @@ export const SecureContentRenderer: React.FC<SecureContentRendererProps> = ({
       const sensitiveCheck = SecurityUtils.containsSensitiveInfo(processed);
       if (sensitiveCheck.hasSensitive) {
         warnings.push(`检测到可能的敏感信息: ${sensitiveCheck.types.join(', ')}`);
-        
+
         if (onSecurityEvent) {
           onSecurityEvent({
             type: 'sensitive_data_detected',
@@ -113,7 +127,20 @@ export const SecureContentRenderer: React.FC<SecureContentRendererProps> = ({
           break;
 
         case 'html':
-          processed = SecurityUtils.sanitizeHTML(processed);
+          // 如果禁用安全过滤或在信任区域，跳过HTML清理
+          if (disableSanitization || trustedZone) {
+            // 在信任区域时仍然记录安全事件，但不进行清理
+            if (onSecurityEvent) {
+              onSecurityEvent({
+                type: 'trusted_zone_bypass',
+                details: 'HTML sanitization bypassed in trusted zone',
+                contentLength: processed.length
+              });
+            }
+            // 保持原始HTML内容
+          } else {
+            processed = SecurityUtils.sanitizeHTML(processed);
+          }
           break;
 
         case 'text':
@@ -138,7 +165,7 @@ export const SecureContentRenderer: React.FC<SecureContentRendererProps> = ({
       const errorMessage = err instanceof Error ? err.message : '内容处理失败';
       setError(errorMessage);
       setProcessedContent('');
-      
+
       if (onError) {
         onError(errorMessage);
       }
@@ -251,13 +278,13 @@ export const SecureTextRenderer: React.FC<{
 }> = ({ text, className = '', maxLength = 1000 }) => {
   const sanitizedText = useMemo(() => {
     if (!text) return '';
-    
+
     let processed = SecurityUtils.sanitizeInput(text);
-    
+
     if (processed.length > maxLength) {
       processed = processed.substring(0, maxLength) + '...';
     }
-    
+
     return processed;
   }, [text, maxLength]);
 
@@ -280,7 +307,7 @@ export const SecureLinkRenderer: React.FC<{
 }> = ({ href, children, className = '', target = '_blank', rel = 'noopener noreferrer' }) => {
   const safeHref = useMemo(() => {
     if (!href) return '#';
-    
+
     if (!SecurityUtils.isSecureURL(href)) {
       SecurityUtils.logSecurityEvent({
         type: 'suspicious_activity',
@@ -288,7 +315,7 @@ export const SecureLinkRenderer: React.FC<{
       });
       return '#';
     }
-    
+
     return href;
   }, [href]);
 

@@ -1,74 +1,109 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { createRoot } from 'react-dom/client';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
+import { createRoot, Root } from 'react-dom/client';
 import SkillItem from './SkillItem';
 import MermaidLazyChart from '../mermaid/MermaidLazyChart';
 import { getLogger } from '../../utils/Tools';
-const logMermaid = getLogger(`Mermaid`);
+
+const logger = getLogger('SkillRenderer');
 
 /**
- * 安全地使用主题hook
- * 支持服务器端渲染和客户端渲染
- * 当组件在独立的React根中渲染时，直接从DOM获取主题状态
+ * 生成唯一ID的辅助函数
+ * @param prefix ID前缀
+ * @param content 内容标识
+ * @returns 唯一ID
  */
-export const useSafeTheme = () => {
+const generateUniqueId = (prefix: string, content: string): string => {
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substr(2, 9);
+    return `${prefix}-${content}-${timestamp}-${random}`;
+};
+
+/**
+ * React根节点管理器
+ * 负责创建、存储和清理React根节点
+ */
+class RootManager {
+    private roots = new Map<string, Root>();
+
+    /**
+     * 创建新的React根节点
+     * @param container DOM容器
+     * @param id 根节点ID
+     * @returns React根节点
+     */
+    createRoot(container: HTMLElement, id: string): Root {
+        this.cleanup(id);
+        const root = createRoot(container);
+        this.roots.set(id, root);
+        return root;
+    }
+
+    /**
+     * 安全地清理根节点
+     * @param id 根节点ID
+     */
+    cleanup(id: string): void {
+        const root = this.roots.get(id);
+        if (root) {
+            this.roots.delete(id);
+            queueMicrotask(() => {
+                try {
+                    root.unmount();
+                } catch (error) {
+                    logger('根节点清理警告:', error);
+                }
+            });
+        }
+    }
+
+    /**
+     * 清理所有根节点
+     */
+    cleanupAll(): void {
+        const allIds = Array.from(this.roots.keys());
+        allIds.forEach(id => this.cleanup(id));
+    }
+}
+
+/**
+ * 简化的主题检测hook
+ * 检测当前页面的主题状态（深色/浅色）
+ * @returns 是否为深色主题
+ */
+const useTheme = () => {
     const [isDark, setIsDark] = useState(false);
 
     useEffect(() => {
-        // 在服务器端渲染时，返回默认值
-        if (typeof window === 'undefined') {
-            return;
-        }
+        if (typeof window === 'undefined') return;
 
-        // 直接从DOM获取主题状态，不依赖React Context
-        const getThemeFromDOM = () => {
-            // 方法1: 检查body的data-theme属性
-            const bodyTheme = document.body.getAttribute('data-theme');
-            if (bodyTheme) {
-                return bodyTheme === 'dark';
-            }
+        const detectTheme = (): boolean => {
+            // 检查HTML class
+            if (document.documentElement.classList.contains('dark')) return true;
+            if (document.documentElement.classList.contains('light')) return false;
 
-            // 方法2: 检查html的data-theme属性
-            const htmlTheme = document.documentElement.getAttribute('data-theme');
-            if (htmlTheme) {
-                return htmlTheme === 'dark';
-            }
+            // 检查data-theme属性
+            const theme = document.documentElement.getAttribute('data-theme') ||
+                document.body.getAttribute('data-theme');
+            if (theme === 'dark') return true;
+            if (theme === 'light') return false;
 
-            // 方法3: 检查html的class
-            const htmlClasses = document.documentElement.className;
-            if (htmlClasses.includes('dark')) {
-                return true;
-            }
-            if (htmlClasses.includes('light')) {
-                return false;
-            }
-
-            // 方法4: 检查localStorage
+            // 检查localStorage
             try {
                 const storedTheme = localStorage.getItem('theme');
-                if (storedTheme) {
-                    return storedTheme === 'dark';
-                }
+                if (storedTheme === 'dark') return true;
+                if (storedTheme === 'light') return false;
             } catch (e) {
                 // localStorage可能不可用
             }
 
-            // 方法5: 检查系统偏好
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                return true;
-            }
-
-            // 默认返回false（浅色主题）
-            return false;
+            // 默认跟随系统偏好
+            return window.matchMedia('(prefers-color-scheme: dark)').matches;
         };
 
-        // 初始设置
-        setIsDark(getThemeFromDOM());
+        setIsDark(detectTheme());
 
         // 监听主题变化
-        const observer = new MutationObserver(() => {
-            setIsDark(getThemeFromDOM());
-        });
-
+        const observer = new MutationObserver(() => setIsDark(detectTheme()));
         observer.observe(document.documentElement, {
             attributes: true,
             attributeFilter: ['class', 'data-theme']
@@ -82,135 +117,143 @@ export const useSafeTheme = () => {
         // 监听localStorage变化
         const handleStorageChange = (e: StorageEvent) => {
             if (e.key === 'theme') {
-                setIsDark(getThemeFromDOM());
+                setIsDark(detectTheme());
             }
         };
 
         window.addEventListener('storage', handleStorageChange);
 
-        // 清理函数
         return () => {
             observer.disconnect();
             window.removeEventListener('storage', handleStorageChange);
         };
     }, []);
 
+    return isDark;
+};
+
+/**
+ * 向后兼容的主题hook
+ * @deprecated 推荐直接使用 useTheme
+ * @returns 包含isDark属性的对象
+ */
+export const useSafeTheme = () => {
+    const isDark = useTheme();
     return { isDark };
 };
 
 /**
  * SkillRenderer 组件
- * 用于在客户端将占位符替换为真正的 React 组件
- * - 技能占位符 -> SkillItem 组件
- * - Mermaid占位符 -> MermaidChart 组件
- * 这样可以确保组件在正确的 React 上下文中渲染，包括 ThemeProvider
+ * 
+ * 功能：
+ * - 将HTML占位符替换为React组件
+ * - 支持技能标签和Mermaid图表渲染
+ * - 自动管理组件生命周期
+ * 
+ * 支持的占位符：
+ * - .skill-placeholder[data-skill-name][data-skill-level] -> SkillItem
+ * - .mermaid-placeholder[data-mermaid-chart][data-mermaid-id] -> MermaidLazyChart
+ * - .mermaid-lazy-placeholder[data-mermaid-chart][data-mermaid-id] -> MermaidLazyChart (懒加载)
  */
 interface SkillRendererProps {
+    /** 包含占位符的子内容 */
     children: React.ReactNode;
 }
 
 const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const { isDark } = useSafeTheme(); // 监听主题变化
-    const rootsRef = useRef<Map<string, any>>(new Map()); // 存储所有创建的根
+    const rootManagerRef = useRef(new RootManager());
+    const isDark = useTheme();
+    const observerRef = useRef<MutationObserver | null>(null);
+    const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    useEffect(() => {
+    /**
+     * 处理技能占位符
+     * 查找 .skill-placeholder 元素并替换为 SkillItem 组件
+     */
+    const processSkillPlaceholders = useCallback(() => {
         if (!containerRef.current) return;
 
-        // 清理所有失效的根节点 - 异步处理避免竞态条件
-        const cleanupInvalidRoots = () => {
-            const keysToDelete: string[] = [];
-            const rootsToUnmount: any[] = [];
+        const placeholders = containerRef.current.querySelectorAll(
+            '.skill-placeholder[data-skill-name][data-skill-level]'
+        );
 
-            rootsRef.current.forEach((root, id) => {
-                const container = document.getElementById(id);
-                if (!container || !document.body.contains(container)) {
-                    rootsToUnmount.push(root);
-                    keysToDelete.push(id);
-                }
-            });
+        let processedCount = 0;
 
-            // 立即从Map中删除引用，避免重复处理
-            keysToDelete.forEach(key => rootsRef.current.delete(key));
-
-            // 异步卸载根节点，避免在渲染周期中同步卸载
-            if (rootsToUnmount.length > 0) {
-                setTimeout(() => {
-                    rootsToUnmount.forEach(root => {
-                        try {
-                            root?.unmount();
-                        } catch (e) {
-                            // 忽略清理错误，可能已经被清理
-                            console.warn('Root unmount warning (safe to ignore):', e);
-                        }
-                    });
-                }, 0);
-            }
-        };
-
-        // 先清理失效的根节点
-        cleanupInvalidRoots();
-
-        // 查找所有技能占位符
-        const skillPlaceholders = containerRef.current.querySelectorAll('.skill-placeholder[data-skill-name][data-skill-level]');
-
-        skillPlaceholders.forEach((placeholder, index) => {
+        placeholders.forEach((placeholder) => {
             const skillName = placeholder.getAttribute('data-skill-name');
             const skillLevel = placeholder.getAttribute('data-skill-level');
 
-            if (skillName && skillLevel) {
-                // 使用时间戳确保ID唯一性
-                const timestamp = Date.now();
-                const id = `skill-${skillName}-${skillLevel}-${index}-${timestamp}`;
+            if (!skillName || !skillLevel) return;
 
-                // 创建一个新的容器来渲染 SkillItem
-                const skillContainer = document.createElement('span');
-                skillContainer.style.display = 'inline';
-                skillContainer.id = id;
+            try {
+                const container = document.createElement('span');
+                const id = generateUniqueId('skill', `${skillName}-${skillLevel}`);
 
-                // 替换占位符
-                placeholder.parentNode?.replaceChild(skillContainer, placeholder);
+                container.id = id;
+                container.style.display = 'inline';
 
-                // 创建根并存储
-                const root = createRoot(skillContainer);
-                rootsRef.current.set(id, root);
+                placeholder.parentNode?.replaceChild(container, placeholder);
 
-                // 渲染 SkillItem
-                const levelNumber = parseInt(skillLevel, 10) || 1;
+                const root = rootManagerRef.current.createRoot(container, id);
+                const level = parseInt(skillLevel, 10) || 1;
+
                 root.render(
                     <SkillItem
                         skill={skillName}
-                        level={levelNumber}
+                        level={level}
                     />
                 );
+
+                processedCount++;
+                logger(`技能组件已创建: ${skillName} (级别${level})`);
+            } catch (error) {
+                logger('处理技能占位符失败:', error);
             }
         });
 
-        // 查找所有Mermaid占位符
-        const mermaidPlaceholders = containerRef.current.querySelectorAll('.mermaid-placeholder[data-mermaid-chart][data-mermaid-id]');
+        // 如果处理了占位符，触发自定义事件通知
+        if (processedCount > 0) {
+            const event = new CustomEvent('skillRenderComplete', {
+                detail: { processedCount, timestamp: Date.now() }
+            });
+            containerRef.current?.dispatchEvent(event);
+            logger(`技能渲染完成事件已触发: ${processedCount} 个组件`);
+        }
 
-        mermaidPlaceholders.forEach((placeholder, index) => {
+        return processedCount;
+    }, []);
+
+    /**
+     * 处理Mermaid占位符
+     * 查找 .mermaid-placeholder 和 .mermaid-lazy-placeholder 元素并替换为 MermaidLazyChart 组件
+     */
+    const processMermaidPlaceholders = useCallback(() => {
+        if (!containerRef.current) return 0;
+
+        let processedCount = 0;
+
+        // 处理普通Mermaid占位符
+        const placeholders = containerRef.current.querySelectorAll(
+            '.mermaid-placeholder[data-mermaid-chart][data-mermaid-id]'
+        );
+
+        placeholders.forEach((placeholder) => {
             const chart = placeholder.getAttribute('data-mermaid-chart');
             const chartId = placeholder.getAttribute('data-mermaid-id');
 
-            if (chart && chartId) {
-                // 使用时间戳确保ID唯一性
-                const timestamp = Date.now();
-                const id = `mermaid-${chartId}-${index}-${timestamp}`;
+            if (!chart || !chartId) return;
 
-                // 创建一个新的容器来渲染 MermaidChart
-                const mermaidContainer = document.createElement('div');
-                mermaidContainer.style.display = 'block';
-                mermaidContainer.id = id;
+            try {
+                const container = document.createElement('div');
+                const id = generateUniqueId('mermaid', chartId);
 
-                // 替换占位符
-                placeholder.parentNode?.replaceChild(mermaidContainer, placeholder);
+                container.id = id;
+                container.style.display = 'block';
 
-                // 创建根并存储
-                const root = createRoot(mermaidContainer);
-                rootsRef.current.set(id, root);
+                placeholder.parentNode?.replaceChild(container, placeholder);
 
-                // 渲染 MermaidLazyChart
+                const root = rootManagerRef.current.createRoot(container, id);
                 root.render(
                     <MermaidLazyChart
                         chart={chart}
@@ -219,168 +262,193 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
                     />
                 );
 
-                // 添加容器可见性监听，确保图表在展开时重新渲染
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach((entry) => {
-                        if (entry.isIntersecting && entry.target === mermaidContainer) {
-                            // 容器变为可见时，检查是否需要重新渲染
-                            setTimeout(() => {
-                                const svgElement = mermaidContainer.querySelector('svg');
-                                const needsRerender = !svgElement ||
-                                                    svgElement.innerHTML.length < 100 ||
-                                                    !svgElement.innerHTML.includes('<g') ||
-                                                    svgElement.getBoundingClientRect().width === 0;
-
-                                if (needsRerender) {
-                                    logMermaid('🔄 SkillRenderer检测到需要重新渲染Mermaid图表', {
-                                        chartId,
-                                        hasSvg: !!svgElement,
-                                        contentLength: svgElement?.innerHTML.length || 0,
-                                        hasGraphics: svgElement?.innerHTML.includes('<g') || false,
-                                        width: svgElement?.getBoundingClientRect().width || 0,
-                                        containerVisible: mermaidContainer.offsetParent !== null
-                                    });
-
-                                    // 异步重新渲染，避免在渲染周期中同步操作
-                                    queueMicrotask(() => {
-                                        try {
-                                            // 清理旧的根节点
-                                            const oldRoot = rootsRef.current.get(id);
-                                            if (oldRoot) {
-                                                oldRoot.unmount();
-                                                rootsRef.current.delete(id);
-                                            }
-
-                                            // 清空容器内容
-                                            mermaidContainer.innerHTML = '';
-
-                                            // 创建新的根节点
-                                            const newRoot = createRoot(mermaidContainer);
-                                            rootsRef.current.set(id, newRoot);
-
-                                            // 强制重新渲染
-                                            const newId = `${chartId}-rerender-${Date.now()}`;
-                                            logMermaid('🔄 开始重新渲染，新ID:', newId);
-
-                                            newRoot.render(
-                                                <MermaidLazyChart
-                                                    chart={chart}
-                                                    id={newId}
-                                                    enableZoom={true}
-                                                />
-                                            );
-                                        } catch (error) {
-                                            console.warn('Mermaid重新渲染失败:', error);
-                                        }
-                                    });
-                                }
-                            }, 200);
-                        }
-                    });
-                }, {
-                    root: null,
-                    rootMargin: '0px',
-                    threshold: 0.1
-                });
-
-                observer.observe(mermaidContainer);
-
-                // 存储observer以便清理
-                (mermaidContainer as any)._observer = observer;
-
-                // 暂时禁用定时检查机制，避免循环渲染问题
-                // TODO: 如果需要定时检查，可以考虑更安全的实现方式
-                logMermaid('� SkillRenderer跳过定时检查机制，避免循环渲染', { chartId });
+                processedCount++;
+                logger(`Mermaid图表已创建: ${chartId}`);
+            } catch (error) {
+                logger('处理Mermaid占位符失败:', error);
             }
         });
 
-        // 查找所有Mermaid懒加载占位符
-        const mermaidLazyPlaceholders = containerRef.current.querySelectorAll('.mermaid-lazy-placeholder[data-mermaid-chart][data-mermaid-id]');
+        // 处理懒加载Mermaid占位符
+        const lazyPlaceholders = containerRef.current.querySelectorAll(
+            '.mermaid-lazy-placeholder[data-mermaid-chart][data-mermaid-id]'
+        );
 
-        mermaidLazyPlaceholders.forEach((placeholder, index) => {
+        lazyPlaceholders.forEach((placeholder) => {
             const encodedChart = placeholder.getAttribute('data-mermaid-chart');
             const chartId = placeholder.getAttribute('data-mermaid-id');
 
-            if (encodedChart && chartId) {
-                try {
-                    // 解码图表内容
-                    const chart = decodeURIComponent(encodedChart);
+            if (!encodedChart || !chartId) return;
 
-                    // 使用时间戳确保ID唯一性
-                    const timestamp = Date.now();
-                    const id = `mermaid-lazy-${chartId}-${index}-${timestamp}`;
+            try {
+                const chart = decodeURIComponent(encodedChart);
+                const container = document.createElement('div');
+                const id = generateUniqueId('mermaid-lazy', chartId);
 
-                    // 创建一个新的容器来渲染 MermaidLazyChart
-                    const mermaidLazyContainer = document.createElement('div');
-                    mermaidLazyContainer.style.display = 'block';
-                    mermaidLazyContainer.id = id;
+                container.id = id;
+                container.style.display = 'block';
 
-                    // 替换占位符
-                    placeholder.parentNode?.replaceChild(mermaidLazyContainer, placeholder);
+                placeholder.parentNode?.replaceChild(container, placeholder);
 
-                    // 创建根并存储
-                    const root = createRoot(mermaidLazyContainer);
-                    rootsRef.current.set(id, root);
+                const root = rootManagerRef.current.createRoot(container, id);
+                root.render(
+                    <MermaidLazyChart
+                        chart={chart}
+                        id={chartId}
+                        placeholderHeight="300px"
+                    />
+                );
 
-                    // 渲染 MermaidLazyChart
-                    root.render(
-                        <MermaidLazyChart
-                            chart={chart}
-                            id={chartId}
-                            placeholderHeight="300px"
-                        />
-                    );
-
-                    logMermaid('🚀 SkillRenderer创建懒加载Mermaid图表:', {
-                        id,
-                        chartId,
-                        chartLength: chart.length
-                    });
-
-                } catch (error) {
-                    console.error('❌ SkillRenderer处理懒加载Mermaid占位符失败:', error);
-                }
+                processedCount++;
+                logger(`懒加载Mermaid图表已创建: ${chartId}`);
+            } catch (error) {
+                logger('处理懒加载Mermaid占位符失败:', error);
             }
         });
-    }, [children, isDark]); // 当 children 或主题变化时重新渲染
 
-    // 清理函数
-    useEffect(() => {
-        return () => {
-            // 清理所有observer和定时器
-            if (containerRef.current) {
-                const containers = containerRef.current.querySelectorAll('[id*="mermaid-chart"]');
-                containers.forEach(container => {
-                    const observer = (container as any)._observer;
-                    if (observer) {
-                        observer.disconnect();
-                        delete (container as any)._observer;
-                    }
+        // 如果处理了占位符，触发自定义事件通知
+        if (processedCount > 0) {
+            const event = new CustomEvent('mermaidRenderComplete', {
+                detail: { processedCount, timestamp: Date.now() }
+            });
+            containerRef.current?.dispatchEvent(event);
+            logger(`Mermaid渲染完成事件已触发: ${processedCount} 个组件`);
+        }
 
-                    const intervalCheck = (container as any)._intervalCheck;
-                    if (intervalCheck) {
-                        clearInterval(intervalCheck);
-                        delete (container as any)._intervalCheck;
-                    }
-                });
-            }
+        return processedCount;
+    }, []);
 
-            // 异步清理所有根节点，避免在渲染周期中同步卸载
-            const rootsToCleanup = Array.from(rootsRef.current.values());
-            rootsRef.current.clear();
+    /**
+     * 异步内容监听机制
+     * 监听DOM变化，处理SecureContentRenderer异步渲染的内容
+     */
+    const setupAsyncContentListener = useCallback(() => {
+        if (!containerRef.current) return;
 
-            if (rootsToCleanup.length > 0) {
-                setTimeout(() => {
-                    rootsToCleanup.forEach(root => {
-                        try {
-                            root?.unmount();
-                        } catch (e) {
-                            // 忽略清理错误，组件可能已经被清理
-                            console.warn('Root cleanup warning (safe to ignore):', e);
+        // 清理之前的观察器
+        if (observerRef.current) {
+            observerRef.current.disconnect();
+        }
+
+        // 创建MutationObserver监听DOM变化
+        observerRef.current = new MutationObserver((mutations) => {
+            let hasNewContent = false;
+
+            mutations.forEach((mutation) => {
+                // 检查是否有新增的节点包含占位符
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.nodeType === Node.ELEMENT_NODE) {
+                            const element = node as Element;
+
+                            // 检查新增节点是否包含技能或Mermaid占位符
+                            const hasSkillPlaceholders = element.querySelectorAll?.('.skill-placeholder').length > 0 ||
+                                                        element.classList?.contains('skill-placeholder');
+                            const hasMermaidPlaceholders = element.querySelectorAll?.('.mermaid-placeholder, .mermaid-lazy-placeholder').length > 0 ||
+                                                         element.classList?.contains('mermaid-placeholder') ||
+                                                         element.classList?.contains('mermaid-lazy-placeholder');
+
+                            if (hasSkillPlaceholders || hasMermaidPlaceholders) {
+                                hasNewContent = true;
+                                logger('检测到异步内容包含占位符，准备处理');
+                            }
                         }
                     });
-                }, 0);
+                }
+            });
+
+            // 如果检测到新内容，延迟处理以确保DOM稳定
+            if (hasNewContent) {
+                if (retryTimeoutRef.current) {
+                    clearTimeout(retryTimeoutRef.current);
+                }
+
+                retryTimeoutRef.current = setTimeout(() => {
+                    const skillCount = processSkillPlaceholders();
+                    const mermaidCount = processMermaidPlaceholders();
+
+                    if (skillCount > 0 || mermaidCount > 0) {
+                        logger(`异步内容处理完成: ${skillCount} 个技能组件, ${mermaidCount} 个图表组件`);
+                    }
+                }, 100);
             }
+        });
+
+        // 开始观察DOM变化
+        observerRef.current.observe(containerRef.current, {
+            childList: true,
+            subtree: true,
+            attributes: false
+        });
+
+        logger('异步内容监听器已启动');
+    }, [processSkillPlaceholders, processMermaidPlaceholders]);
+
+    /**
+     * 重试机制
+     * 定期检查是否有未处理的占位符
+     */
+    const setupRetryMechanism = useCallback(() => {
+        const retryInterval = setInterval(() => {
+            if (!containerRef.current) return;
+
+            const skillPlaceholders = containerRef.current.querySelectorAll('.skill-placeholder');
+            const mermaidPlaceholders = containerRef.current.querySelectorAll('.mermaid-placeholder, .mermaid-lazy-placeholder');
+
+            if (skillPlaceholders.length > 0 || mermaidPlaceholders.length > 0) {
+                logger(`重试处理占位符: ${skillPlaceholders.length} 个技能, ${mermaidPlaceholders.length} 个图表`);
+
+                const skillCount = processSkillPlaceholders();
+                const mermaidCount = processMermaidPlaceholders();
+
+                if (skillCount === 0 && mermaidCount === 0) {
+                    // 如果没有处理任何占位符，可能是异步内容还未加载完成
+                    logger('占位符存在但未能处理，可能需要等待异步内容加载');
+                }
+            }
+        }, 2000); // 每2秒检查一次
+
+        // 10秒后停止重试
+        setTimeout(() => {
+            clearInterval(retryInterval);
+            logger('占位符重试机制已停止');
+        }, 10000);
+
+        return () => clearInterval(retryInterval);
+    }, [processSkillPlaceholders, processMermaidPlaceholders]);
+
+    // 当内容或主题变化时处理占位符
+    useEffect(() => {
+        // 立即处理一次
+        processSkillPlaceholders();
+        processMermaidPlaceholders();
+
+        // 设置异步内容监听
+        setupAsyncContentListener();
+
+        // 设置重试机制
+        const cleanupRetry = setupRetryMechanism();
+
+        return cleanupRetry;
+    }, [children, isDark, processSkillPlaceholders, processMermaidPlaceholders, setupAsyncContentListener, setupRetryMechanism]);
+
+    // 组件卸载时清理所有根节点和监听器
+    useEffect(() => {
+        return () => {
+            // 清理根节点
+            rootManagerRef.current.cleanupAll();
+
+            // 清理观察器
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+            }
+
+            // 清理定时器
+            if (retryTimeoutRef.current) {
+                clearTimeout(retryTimeoutRef.current);
+            }
+
+            logger('SkillRenderer 清理完成');
         };
     }, []);
 

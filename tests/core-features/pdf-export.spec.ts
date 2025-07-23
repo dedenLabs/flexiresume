@@ -250,4 +250,97 @@ test.describe('PDF导出功能测试', () => {
     expect(printStyles).toContain('.skill-item');
     expect(printStyles).toContain('.project-item');
   });
+
+  test('PDF导出应该在当前页面弹出打印对话框，不新开窗口', async ({ page }) => {
+    // 监听打印事件
+    await page.addInitScript(() => {
+      const originalPrint = window.print;
+      window.print = () => {
+        window.printTriggered = true;
+      };
+    });
+
+    // 记录初始页面数量
+    const initialPageCount = page.context().pages().length;
+
+    // 展开控制面板并点击PDF导出
+    const toggleButton = page.locator('[data-testid="control-panel"] button').first();
+    const isCollapsed = await toggleButton.textContent() === '⚙️';
+
+    if (isCollapsed) {
+      await toggleButton.click();
+      await page.waitForTimeout(500);
+    }
+
+    const exportButton = page.locator('.pdf-export-btn');
+    await exportButton.click();
+    await page.waitForTimeout(1000);
+
+    // 点击原版模式
+    const originalButton = page.locator('text=原版');
+    if (await originalButton.isVisible()) {
+      await originalButton.click();
+    }
+    await page.waitForTimeout(1000);
+
+    // 验证没有新窗口被打开
+    const finalPageCount = page.context().pages().length;
+    expect(finalPageCount).toBe(initialPageCount);
+
+    // 验证打印被触发
+    const printTriggered = await page.evaluate(() => window.printTriggered);
+    expect(printTriggered).toBe(true);
+  });
+
+  test('原版模式应该保留深色主题样式', async ({ page }) => {
+    // 切换到深色模式
+    const themeButton = page.locator('[data-testid="theme-switcher"]');
+    if (await themeButton.isVisible()) {
+      await themeButton.click();
+      await page.waitForTimeout(500);
+    }
+
+    // 验证当前是深色模式
+    const isDarkMode = await page.evaluate(() => {
+      return document.documentElement.getAttribute('data-theme') === 'dark';
+    });
+
+    if (isDarkMode) {
+      // 监听打印样式的添加
+      await page.addInitScript(() => {
+        const originalPrint = window.print;
+        window.print = () => {
+          // 检查是否有保留深色模式的打印样式
+          const printStyles = Array.from(document.querySelectorAll('style')).find(style =>
+            style.textContent?.includes('data-theme="dark"') &&
+            style.textContent?.includes('color-adjust: exact')
+          );
+          window.darkModePrintStyleFound = !!printStyles;
+        };
+      });
+
+      // 展开控制面板并触发PDF导出
+      const toggleButton = page.locator('[data-testid="control-panel"] button').first();
+      const isCollapsed = await toggleButton.textContent() === '⚙️';
+
+      if (isCollapsed) {
+        await toggleButton.click();
+        await page.waitForTimeout(500);
+      }
+
+      const exportButton = page.locator('.pdf-export-btn');
+      await exportButton.click();
+      await page.waitForTimeout(1000);
+
+      const originalButton = page.locator('text=原版');
+      if (await originalButton.isVisible()) {
+        await originalButton.click();
+      }
+      await page.waitForTimeout(1000);
+
+      // 验证深色模式打印样式被正确添加
+      const darkModePrintStyleFound = await page.evaluate(() => window.darkModePrintStyleFound);
+      expect(darkModePrintStyleFound).toBe(true);
+    }
+  });
 });

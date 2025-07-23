@@ -198,7 +198,7 @@ export class CDNManager {
 
     if (!cdnConfig.healthCheck.enabled) {
       if (isDebugEnabled()) {
-        console.log('[CDN Manager] CDN health check is disabled');
+        debugCDN('[CDN Manager] CDN health check is disabled');
       }
       this.isInitialized = true;
       return;
@@ -206,7 +206,7 @@ export class CDNManager {
 
     try {
       if (isDebugEnabled()) {
-        console.log('[CDN Manager] Starting CDN health check...');
+        debugCDN('[CDN Manager] Starting CDN health check...');
       }
 
       // 执行CDN健康检查
@@ -214,7 +214,7 @@ export class CDNManager {
       
       if (isDebugEnabled()) {
         const availableCDNs = cdnHealthChecker.getAvailableCDNs();
-        console.log(`[CDN Manager] CDN health check completed. Available CDNs: ${availableCDNs.length}`);
+        debugCDN(`[CDN Manager] CDN health check completed. Available CDNs: ${availableCDNs.length}`);
       }
 
     } catch (error) {
@@ -251,7 +251,7 @@ export class CDNManager {
       }
 
       if (isDebugEnabled()) {
-        console.log(`[CDN Manager] Local development: using local resource: ${localUrl}`);
+        debugCDN(`[CDN Manager] Local development: using local resource: ${localUrl}`);
       }
 
       return localUrl;
@@ -425,7 +425,7 @@ export class CDNManager {
     this.projectBasePathCache = projectBasePath;
 
     if (isDebugEnabled()) {
-      console.log(`[CDN Manager] Project base path determined: "${projectBasePath}"`);
+      debugCDN(`[CDN Manager] Project base path determined: "${projectBasePath}"`);
     }
 
     return projectBasePath;
@@ -535,7 +535,7 @@ export class CDNManager {
         document.head.appendChild(link);
         
         if (isDebugEnabled()) {
-          console.log(`[CDN Manager] Preloaded resource: ${url}`);
+          debugCDN(`[CDN Manager] Preloaded resource: ${url}`);
         }
         
       } catch (error) {

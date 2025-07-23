@@ -7,6 +7,9 @@
  */
 
 import { getProjectConfig, isDebugEnabled } from '../config/ProjectConfig';
+import debug from 'debug'; 
+// Debug logger
+const debugPreloader = debug('app:preloader');
 
 // 库加载状态管理
 interface LibraryState {
@@ -47,7 +50,7 @@ class LibraryPreloader {
     const { preloadLibraries } = config.performance;
 
     if (isDebugEnabled()) {
-      console.log('[LibraryPreloader] 开始预加载库:', preloadLibraries);
+      debugPreloader('[LibraryPreloader] 开始预加载库:', preloadLibraries);
     }
 
     const preloadTasks: Promise<void>[] = [];
@@ -71,7 +74,7 @@ class LibraryPreloader {
       if (isDebugEnabled()) {
         const successful = results.filter(r => r.status === 'fulfilled').length;
         const failed = results.filter(r => r.status === 'rejected').length;
-        console.log(`[LibraryPreloader] 预加载完成: ${successful}个成功, ${failed}个失败`);
+        debugPreloader(`[LibraryPreloader] 预加载完成: ${successful}个成功, ${failed}个失败`);
       }
     });
   }
@@ -132,7 +135,7 @@ class LibraryPreloader {
         state.module = module;
         
         if (isDebugEnabled()) {
-          console.log(`[LibraryPreloader] ${name} 预加载成功 (${loadTime.toFixed(2)}ms)`);
+          debugPreloader(`[LibraryPreloader] ${name} 预加载成功 (${loadTime.toFixed(2)}ms)`);
         }
         
         return module;

@@ -7,7 +7,8 @@ import { logCollapse, useCollapser, watchTitleCollapser } from '../../utils/Tool
 import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import { ContentWithLine, Node } from './TimelineStyles';
 import { useTheme } from '../../theme';
-import SkillRenderer from '../skill/SkillRenderer';
+import SkillRenderer from '../skill/SkillRenderer.tsx';
+import { SecureContentRenderer } from '../Security/SecureContentRenderer';
 import TimelineNode from './TimelineNode';
 
 interface TimelineCardProps { id: string }
@@ -30,14 +31,19 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ id, name, data }) => {
     // 定义折叠状态，组别折叠状态默认全部展开 
     const { collapsedItems } = useCollapser(name, 1);
     const headHtml = checkConvertMarkdownToHtml(content_head || "");
-    const html = checkConvertMarkdownToHtml(content || ""); 
+    const html = checkConvertMarkdownToHtml(content || "");
     return (
         <TimelineWrapper isDark={isDark}>
             {
-                !collapsedItems[0] && (
+                !collapsedItems[0] && content_head && (
                     <ContentWithLine isDark={isDark}>
                         <SkillRenderer>
-                            <div className='markdown-content' dangerouslySetInnerHTML={{ __html: headHtml }} />
+                            <SecureContentRenderer
+                                content={headHtml}
+                                contentType="html"
+                                className="markdown-content"
+                                trustedZone={false}
+                            />
                         </SkillRenderer>
                     </ContentWithLine>
                 )
@@ -46,10 +52,15 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ id, name, data }) => {
             <TimelineContainer id={name} list={list} content={""} content_head={""} />
 
             {
-                !collapsedItems[0] && (
+                !collapsedItems[0] && content && (
                     <ContentWithLine isDark={isDark}>
                         <SkillRenderer>
-                            <div className='markdown-content' dangerouslySetInnerHTML={{ __html: html }} />
+                            <SecureContentRenderer
+                                content={html}
+                                contentType="html"
+                                className="markdown-content"
+                                trustedZone={false}
+                            />
                         </SkillRenderer>
                     </ContentWithLine>
                 )

@@ -6,9 +6,10 @@ import EmploymentHistoryItem from './EmploymentHistoryItem';
 import flexiResumeStore from '../../store/Store';
 import { useCollapser } from '../../utils/Tools';
 import { reaction } from 'mobx';
-import SkillRenderer from '../skill/SkillRenderer';
+import SkillRenderer from '../skill/SkillRenderer.tsx';
 import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import { ContentWithLine } from '../timeline/TimelineStyles';
+import { SecureContentRenderer } from '../Security/SecureContentRenderer';
 
 /**
  * 安全地使用主题hook
@@ -132,10 +133,15 @@ const EmploymentHistoryCard: React.FC<EmploymentHistoryCardProps> = ({ id, name,
     return (
         <>
             {
-                !collapsedItems[0] && (
+                !collapsedItems[0] && content_head && (
                     <ContentWithLine isDark={isDark}>
                         <SkillRenderer>
-                            <div className='markdown-content' dangerouslySetInnerHTML={{ __html: headHtml }} />
+                            <SecureContentRenderer
+                                content={headHtml}
+                                contentType="html"
+                                className="markdown-content"
+                                trustedZone={false}
+                            />
                         </SkillRenderer>
                     </ContentWithLine>
                 )

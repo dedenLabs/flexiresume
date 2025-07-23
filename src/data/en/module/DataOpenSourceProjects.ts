@@ -9,7 +9,7 @@ export default {
     {
         "company_name": "FlexiResume Multi-Position Custom Resume Generator",
         "start_time": "2024/10",
-        "end_time": "2024/11",
+        "end_time": "Ongoing",
         "position": "Completed Independently",
         "description": `
 <p align="center">
@@ -29,20 +29,31 @@ Although my experience and abilities fully meet the job requirements, and the sa
 Out of this need, I designed this open-source project, aiming to provide myself and others with a **highly customizable, extensible resume generation tool**.
 
 
-**Project Overview**  
-> Developed a highly customizable resume generator that supports multiple job applications, allowing users to flexibly configure resume content and format to meet the needs of different careers.
+**Project Overview**
+> Developed a highly customizable resume generator that supports multiple job applications, allowing users to flexibly configure resume content and format to meet the needs of different careers. FlexiResume is a technologically advanced, architecturally clear, and feature-complete modern resume generator. The project adopts industry best practices, has good code quality and extensibility. Through intelligent CDN management, multi-position customization, Mermaid chart integration, multi-language support, theme switching, and other special features, it provides users with an excellent resume presentation experience. The project continues to iterate and optimize, constantly enhancing user experience and feature completeness.
 
-**Core Features**  
-- **Highly Customizable**: Users can freely customize various parts of the resume according to personal needs to ensure that the resume highlights personal characteristics and advantages, adding more depth information to the resume.
-- **Markdown Support**: Supports using Markdown language to write resume content, simplifying the text formatting process and enhancing user experience.
-- **Skill Highlighting**: Highlights skills based on user-defined proficiency levels, helping recruiters quickly identify key abilities.
-- **Modular Configuration**: Resume data is modularly configured, supporting different parameters and module counts (such as expected salary, number of work experience sections) for different positions.
+**Core Features**
+- **Multi-Position Customization**: Supports 6 position modes (AI Engineer, Full-stack Developer, Frontend Developer, Backend Developer, Game Developer, CTO), each position displays different skill focuses and project experiences.
+- **Smart PDF Export**: Provides three PDF export modes (Original, Color, Grayscale) to meet different scenario needs, supporting mainstream browsers like Chrome.
+- **Multi-language Support**: Complete Chinese-English bilingual support, including internationalization of interface text and resume content.
+- **Theme Switching**: Supports light/dark theme switching, providing a comfortable reading experience.
+- **Mermaid Chart Integration**: Supports various visualization charts such as skill distribution charts, ability radar charts, project timelines, with lazy loading and zoom functionality.
+- **Intelligent CDN Management**: Multi-CDN source intelligent switching ensures resource loading stability and speed.
+- **Skill Highlighting**: Intelligently highlights skills based on user-defined proficiency levels, helping recruiters quickly identify key abilities.
 - **Responsive Design**: Ensures that resumes are displayed well on different devices, adapting to various screen sizes.
-- **Portfolio Links and Timelines**: Provides portfolio link functionality and allows embedding timelines to describe skills or growth paths, showcasing the user's career development journey.
+- **Performance Optimization**: Multiple performance optimization techniques including skeleton screen loading, lazy loading, code splitting.
+- **Security Protection**: Security mechanisms including XSS protection, data validation, secure Markdown processing.
 
-The technology stack uses **Vite+React+SWC+TypeScript+Mobx+framer-motion+remark-html**, with no third-party UI framework embedded to maximize support for user customization needs. Through this project, I hope to not only optimize my own job search experience but also help more people find more suitable opportunities.
+**Technical Architecture**
+The technology stack uses **React 18 + TypeScript + Vite + Styled Components + MobX + Framer Motion + Mermaid**, with no third-party UI framework embedded to maximize support for user customization needs. Adopts modular architecture design, supporting on-demand loading and extension.
 
-**Project Achievements**: Provided a flexible and efficient resume generation tool to help users stand out in the job search and receive positive feedback.
+**Testing & Quality Assurance**
+- **Automated Testing**: Uses Playwright for end-to-end testing to ensure functional stability
+- **Code Quality**: 100% TypeScript coverage, ESLint code standard checking
+- **Performance Monitoring**: Integrated Baidu Analytics, Google Analytics, ELK Stack and other multi-dimensional data analysis
+- **Continuous Integration**: GitHub Actions automated build and deployment
+
+**Project Achievements**: Provided a feature-complete, technologically advanced resume generation tool to help users stand out in job searches. The project has high code quality, clear architecture, good extensibility and maintainability, and can serve as a best practice reference for modern frontend projects.
 
 #### [FlexiResume Open Source Project ![github](/images/github.svg) *https://github.com/dedenLabs/FlexiResume.git*](https://github.com/dedenLabs/FlexiResume.git)
 > 

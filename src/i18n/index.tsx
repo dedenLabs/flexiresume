@@ -41,10 +41,31 @@ export interface I18nTexts {
     controlPanel: string;
     theme: string;
     language: string;
-    export: string;
-    exportPDF: string;
-    exporting: string;
-    exportFailed: string;
+    downloadPDF: string;
+    originalPDF: string;
+    colorPDF: string;
+    grayscalePDF: string;
+    generating: string;
+    pdfGenerationFailed: string;
+    unknownError: string;
+    buildGuide: string;
+    close: string;
+    reset: string;
+    networkError: string;
+    resourceLoadError: string;
+    runtimeError: string;
+    pageLoadError: string;
+    retrying: string;
+    maxRetriesReached: string;
+    reload: string;
+    developmentMode: string;
+    developmentDescription: string;
+    buildGuideButton: string;
+    resetButton: string;
+    buildGuideAlert: string;
+    resetAlert: string;
+    developmentTips: string;
+    developmentEnvironment: string;
   };
 
   // 简历模块标题
@@ -98,10 +119,38 @@ const zhTexts: I18nTexts = {
     controlPanel: '控制面板',
     theme: '主题',
     language: '语言',
-    export: '导出',
-    exportPDF: '导出PDF',
-    exporting: '导出中...',
-    exportFailed: 'PDF导出失败，请重试'
+    downloadPDF: '下载PDF',
+    originalPDF: '原版PDF',
+    colorPDF: '彩色PDF',
+    grayscalePDF: '黑白PDF',
+    generating: '生成中...',
+    pdfGenerationFailed: 'PDF生成失败',
+    unknownError: '未知错误',
+    buildGuide: '构建指南',
+    close: '关闭提示',
+    reset: '重置',
+    networkError: '网络连接问题',
+    resourceLoadError: '资源加载失败',
+    runtimeError: '运行时错误',
+    pageLoadError: '页面加载出错了',
+    retrying: '重试中...',
+    maxRetriesReached: '已达最大重试次数',
+    reload: '重新加载',
+    developmentMode: '开发环境模式 (npm run dev)',
+    developmentDescription: '如需完整功能测试，建议使用 npm run build 构建后预览。',
+    buildGuideButton: '📖 构建指南',
+    resetButton: '🔄 重置',
+    buildGuideAlert: '📖 构建指南已输出到控制台\n💡 请打开浏览器控制台查看详细信息',
+    resetAlert: '已重置',
+    developmentTips: `📍 当前模式: 开发环境 (npm run dev)
+🔧 特性说明:
+  • 热重载 (HMR) 已启用
+⚠️  注意事项:
+  • Mermaid图表可能需要手动刷新
+💡 建议:
+  • 如需完整功能测试，请使用: npm run build
+  • 生产环境预览: npm run preview`,
+    developmentEnvironment: '🚀 FlexiResume 开发环境'
   },
 
   resume: {
@@ -151,10 +200,38 @@ const enTexts: I18nTexts = {
     controlPanel: 'Control Panel',
     theme: 'Theme',
     language: 'Language',
-    export: 'Export',
-    exportPDF: 'Export PDF',
-    exporting: 'Exporting...',
-    exportFailed: 'PDF export failed, please try again'
+    downloadPDF: 'Download PDF',
+    originalPDF: 'Original PDF',
+    colorPDF: 'Color PDF',
+    grayscalePDF: 'Grayscale PDF',
+    generating: 'Generating...',
+    pdfGenerationFailed: 'PDF generation failed',
+    unknownError: 'Unknown error',
+    buildGuide: 'Build Guide',
+    close: 'Close',
+    reset: 'Reset',
+    networkError: 'Network Connection Issue',
+    resourceLoadError: 'Resource Load Failed',
+    runtimeError: 'Runtime Error',
+    pageLoadError: 'Page Load Error',
+    retrying: 'Retrying...',
+    maxRetriesReached: 'Max retries reached',
+    reload: 'Reload',
+    developmentMode: 'Development Mode (npm run dev)',
+    developmentDescription: 'For complete functionality testing, please use npm run build to build and preview.',
+    buildGuideButton: '📖 Build Guide',
+    resetButton: '🔄 Reset',
+    buildGuideAlert: '📖 Build guide has been output to console\n💡 Please open browser console for detailed information',
+    resetAlert: 'Reset completed',
+    developmentTips: `📍 Current mode: Development (npm run dev)
+🔧 Features:
+  • Hot Module Replacement (HMR) enabled
+⚠️  Notes:
+  • Mermaid charts may need manual refresh
+💡 Recommendations:
+  • For complete functionality testing, use: npm run build
+  • Production preview: npm run preview`,
+    developmentEnvironment: '🚀 FlexiResume Development Environment'
   },
 
   resume: {

@@ -3,7 +3,11 @@ import ReactDOMServer from 'react-dom/server';
 import SkillItem from '../components/skill/SkillItem'; // 根据 SkillItem 的实际路径导入
 import ReactMarkdown from 'react-markdown';
 import { remark } from 'remark';
-import html from 'remark-html'; 
+import html from 'remark-html';
+import debug from 'debug';
+
+// Debug logger
+const debugParse = debug('app:parse-skills');
 
 /**
  * 服务器端渲染的Mermaid占位符组件
@@ -180,7 +184,7 @@ export const parseAndReplaceSkills = (text: string, useHtml = false): string | R
 // 支持的热门视频格式
 const videoFormats = ['.mp4', '.webm', '.ogg', '.mov', '.avi'];
 // 自定义 remark 插件来转换视频链接
-function remarkVideoLazyLoad() {
+export function remarkVideoLazyLoad() {
     return (tree) => {
         // 遍历 AST 节点，查找视频链接
         visit(tree, 'link', (node, index, parent) => {
@@ -295,7 +299,7 @@ function remarkVideoLazyLoad() {
 }
 
 
-function remarkImagesLazyLoad() {
+export function remarkImagesLazyLoad() {
     return (tree) => {
         visit(tree, 'image', (node) => {
             const originalUrl = replaceCDNBaseURL(node.url);
@@ -345,7 +349,7 @@ function remarkImagesLazyLoad() {
     };
 }
 
-function remarkQRCodeLazyLoad() {
+export function remarkQRCodeLazyLoad() {
     return (tree) => {
         const replace = (node) => {
             // 匹配 `QRCode: url size=200` 格式的内容
@@ -549,7 +553,7 @@ const MermaidLazyPlaceholder: React.FC<{ chart: string; id: string }> = ({ chart
  * 自定义 remark 插件来处理 .mmd 文件导入
  * 将 .mmd 文件内容转换为懒加载的 Mermaid 图表
  */
-function remarkMermaidLazyLoad() {
+export function remarkMermaidLazyLoad() {
     return (tree) => {
         // 遍历 AST 节点，查找代码块
         visit(tree, 'code', (node, index, parent) => {
@@ -599,7 +603,7 @@ export const parseMarkdownWithMmdLazyLoad = (content: string): string => {
 
         return processedContent;
     } catch (error) {
-        console.error('❌ parseMarkdownWithMmdLazyLoad 处理失败:', error);
+        debugParse('❌ parseMarkdownWithMmdLazyLoad 处理失败:', error);
         return content;
     }
 };

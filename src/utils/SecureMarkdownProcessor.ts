@@ -10,7 +10,7 @@ import debug from 'debug';
 import { SecurityUtils } from './SecurityUtils';
 import { remarkQRCodeLazyLoad, remarkVideoLazyLoad, remarkImagesLazyLoad, remarkMermaidLazyLoad } from './ParseAndReplaceSkills';
 import { replaceVariables } from './Tools';
-import { flexiResumeStore } from '../store/FlexiResumeStore';
+import flexiResumeStore from '../store/Store';
 
 // Debug logger
 const debugMarkdown = debug('app:markdown');

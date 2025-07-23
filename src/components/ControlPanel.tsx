@@ -14,6 +14,7 @@ import { useTheme } from '../theme';
 import { useI18n } from '../i18n';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeSwitcher from './ThemeSwitcher';
+import PDFDownloader from './PDFDownloader';
 
 /**
  * 检测屏幕尺寸的Hook
@@ -282,6 +283,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               <ControlLabel isDark={isDark}>{t.common.language}</ControlLabel>
               <LanguageSwitcher />
             </ControlGroup>
+
+            <Divider isDark={isDark} />
+
+            <ControlGroup>
+              <ControlLabel isDark={isDark}>{t.common.downloadPDF}</ControlLabel>
+              <PDFDownloader />
+            </ControlGroup>
           </ExpandedPanel>
         )}
       </CollapsiblePanel>
@@ -293,6 +301,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       <ThemeSwitcher />
       <Divider isDark={isDark} />
       <LanguageSwitcher />
+      <Divider isDark={isDark} />
+      <PDFDownloader />
     </PanelContainer>
   );
 };

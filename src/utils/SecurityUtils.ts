@@ -32,7 +32,13 @@ const XSS_CONFIG = {
     // SVG相关属性
     'viewBox', 'xmlns', 'd', 'fill', 'stroke', 'stroke-width',
     'cx', 'cy', 'r', 'x', 'y', 'x1', 'y1', 'x2', 'y2',
-    'transform', 'text-anchor', 'font-size', 'font-family'
+    'transform', 'text-anchor', 'font-size', 'font-family',
+    // SkillItem相关属性
+    'data-skill-name', 'data-skill-level',
+    // Mermaid相关属性
+    'data-mermaid-chart', 'data-mermaid-id',
+    // 其他安全的data属性
+    'data-testid', 'data-content-hash', 'data-observer-attached'
   ],
   
   // 允许的协议

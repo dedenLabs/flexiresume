@@ -64,19 +64,19 @@ const DropdownMenu = styled.div.withConfig({
   shouldForwardProp: (prop) => prop !== 'isOpen' && prop !== 'isDark',
 })<{ isOpen: boolean; isDark: boolean }>`
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   right: 0;
-  margin-top: 4px;
+  margin-bottom: 4px;
   background: ${props => props.isDark ? 'rgba(26, 32, 44, 0.95)' : 'white'};
   border: 1px solid ${props => props.isDark ? 'rgba(45, 55, 72, 0.8)' : '#e0e0e0'};
   border-radius: 6px;
-  box-shadow: 0 4px 12px ${props => props.isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'};
+  box-shadow: 0 -4px 12px ${props => props.isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'};
   backdrop-filter: blur(10px);
   z-index: 1000;
   min-width: 120px;
   opacity: ${props => props.isOpen ? 1 : 0};
   visibility: ${props => props.isOpen ? 'visible' : 'hidden'};
-  transform: ${props => props.isOpen ? 'translateY(0)' : 'translateY(-10px)'};
+  transform: ${props => props.isOpen ? 'translateY(0)' : 'translateY(10px)'};
   transition: all 0.3s ease;
 `;
 
@@ -100,11 +100,11 @@ const DropdownItem = styled.button.withConfig({
   transition: all 0.2s ease;
 
   &:first-child {
-    border-radius: 6px 6px 0 0;
+    border-radius: 0 0 6px 6px;
   }
 
   &:last-child {
-    border-radius: 0 0 6px 6px;
+    border-radius: 6px 6px 0 0;
   }
 
   &:hover {
@@ -188,11 +188,11 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className }) => {
         <LanguageIcon>{currentLanguage?.icon}</LanguageIcon>
         <LanguageText>{currentLanguage?.nativeName}</LanguageText>
         <span style={{
-          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+          transform: isOpen ? 'rotate(0deg)' : 'rotate(180deg)',
           transition: 'transform 0.3s ease',
           fontSize: '12px'
         }}>
-          ▼
+          ▲
         </span>
       </SwitcherButton>
 

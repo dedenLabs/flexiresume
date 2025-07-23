@@ -7,7 +7,7 @@
  */
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { useSafeTheme } from '../skill/SkillRenderer';
+import { useSafeTheme } from '../skill/SkillRenderer.tsx';
 import { getLogger } from '../../utils/Tools';
 import { libraryPreloader } from '../../utils/LibraryPreloader';
 
@@ -73,7 +73,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                 enlargedSvgPanZoomInstance.current.destroy();
                 enlargedSvgPanZoomInstance.current = null;
             } catch (error) {
-                console.warn('放大视图svg-pan-zoom清理失败:', error);
+                logMermaid('放大视图svg-pan-zoom清理失败:', error);
             }
         }
         setIsZoomed(false);
@@ -206,7 +206,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
             }, 100);
             
         } catch (err) {
-            console.error('❌ MermaidLazyChart渲染失败:', err);
+            logMermaid('❌ MermaidLazyChart渲染失败:', err);
             setError(`渲染失败: ${err instanceof Error ? err.message : '未知错误'}`);
         } finally {
             setIsLoading(false);
@@ -238,7 +238,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                 });
                 logMermaid('✅ svg-pan-zoom 初始化成功');
             } catch (error) {
-                console.warn('svg-pan-zoom 初始化失败:', error);
+                logMermaid('svg-pan-zoom 初始化失败:', error);
             }
         }
     }, [enableZoom]);
@@ -288,7 +288,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                 });
                 logMermaid('✅ 放大视图svg-pan-zoom初始化成功');
             } catch (error) {
-                console.warn('放大视图svg-pan-zoom初始化失败:', error);
+                logMermaid('放大视图svg-pan-zoom初始化失败:', error);
             }
         }
     }, []);

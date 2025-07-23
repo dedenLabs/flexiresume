@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { isDevelopment, isDebugEnabled } from '../config/ProjectConfig';
 import debug from 'debug';
+import { useI18n } from '../i18n';
 
 
 // Debug logger
@@ -102,21 +103,7 @@ const CloseButton = styled.button`
 const WarningIcon = styled.span`
 font-size: 16px;
 `;
-const tips = `
-📍 当前模式: 开发环境 (npm run dev)
-🔧 特性说明:
-  • 热重载 (HMR) 已启用
-  • 调试模式已开启
-  • 本地资源优先加载
-  • 性能监控已激活
-⚠️  注意事项:
-  • 部分折叠/展开功能可能不完整渲染
-  • Mermaid图表可能需要手动刷新
-  • 某些懒加载组件行为与生产环境不同
-💡 建议:
-  • 如需完整功能测试，请使用: npm run build
-  • 生产环境预览: npm run preview
-`;
+// tips内容移到i18n中
 
 /**
  * 开发环境提示组件
@@ -130,6 +117,7 @@ const tips = `
 const DevelopmentNotice: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const { t } = useI18n();
 
   useEffect(() => {
     // 只在开发环境显示
@@ -152,8 +140,8 @@ const DevelopmentNotice: React.FC = () => {
       debugDev('Development notice shown');
 
       // 在控制台输出详细信息（用户功能需求，保留console输出）
-      console.group('🚀 FlexiResume 开发环境');
-      console.log(tips);
+      console.group(t.common?.developmentEnvironment || '🚀 FlexiResume 开发环境');
+      console.log(t.common?.developmentTips || '开发环境提示');
       console.groupEnd();
     }, 2000);
 
@@ -178,7 +166,7 @@ const DevelopmentNotice: React.FC = () => {
     setIsDismissed(false);
     setIsVisible(true);
     debugDev('Notice reset');
-    alert(`已重置`)
+    alert(t.common?.resetAlert || '已重置');
   };
 
   /**
@@ -186,15 +174,12 @@ const DevelopmentNotice: React.FC = () => {
    */
   const handleBuildGuide = () => {
     // 用户功能需求，保留console输出
-    console.group('构建指南');
-    console.log(tips);
+    console.group(t.common?.buildGuide || '构建指南');
+    console.log(t.common?.developmentTips || '开发环境提示');
     console.groupEnd();
 
     // 用户友好的提示窗口
-    alert(`📖 构建指南已输出到控制台
-${tips}
-
-💡 请打开浏览器控制台查看详细信息`);
+    alert(t.common?.buildGuideAlert || '📖 构建指南已输出到控制台\n💡 请打开浏览器控制台查看详细信息');
   };
 
   // 不在开发环境或已被关闭时不显示
@@ -208,23 +193,23 @@ ${tips}
         <NoticeText data-testid="notice-text">
           <NoticeTitle>
             <WarningIcon>🚀</WarningIcon>
-            开发环境模式 (npm run dev)
+            {t.common?.developmentMode || '开发环境模式 (npm run dev)'}
           </NoticeTitle>
           <NoticeDescription>
             当前运行在开发模式下，部分折叠/展开功能可能不完整渲染。
-            如需完整功能测试，建议使用 <strong>npm run build</strong> 构建后预览。
+            {t.common?.developmentDescription || '如需完整功能测试，建议使用 npm run build 构建后预览。'}
           </NoticeDescription>
         </NoticeText>
         <NoticeActions>
           <ActionButton onClick={handleBuildGuide}>
-            📖 构建指南
+            {t.common?.buildGuideButton || '📖 构建指南'}
           </ActionButton>
           {isDebugEnabled() && (
             <ActionButton onClick={handleReset}>
-              🔄 重置
+              {t.common?.resetButton || '🔄 重置'}
             </ActionButton>
           )}
-          <CloseButton onClick={handleDismiss} title="关闭提示">
+          <CloseButton onClick={handleDismiss} title={t.common?.close || '关闭提示'}>
             ×
           </CloseButton>
         </NoticeActions>

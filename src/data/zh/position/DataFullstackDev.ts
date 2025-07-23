@@ -41,51 +41,51 @@ export default {
 - #### 📊 工程化体系：持续输出前端工程化🔧、Hybrid混合开发📱及Web安全防护🛡️方案，在微前端🔄、跨端渲染🌐等领域沉淀丰富实战经验💼。`
     },
 
-    fullstack_experience: {
-        "type": "timeline",// 游戏开发经验 - 使用timeline模块渲染
-        name: "全栈开发经验",
-        ...DataGameExperience,  // 对象结构，展开对象
-        content: ``,
-    },
+    // fullstack_experience: {
+    //     "type": "timeline",// 游戏开发经验 - 使用timeline模块渲染
+    //     name: "全栈开发经验",
+    //     ...DataGameExperience,  // 对象结构，展开对象
+    //     content: ``,
+    // },
 
 
-    skills: {
-        "type": "skills",// 技能模块
-        name: "技术栈",
-        ...DataSkills,  // 对象结构，展开对象
-        content: ``,
-    },
+    // skills: {
+    //     "type": "skills",// 技能模块
+    //     name: "技术栈",
+    //     ...DataSkills,  // 对象结构，展开对象
+    //     content: ``,
+    // },
 
-    // 隐藏个人影响力模块，专注技术实现
-    personal_influence: { hidden: true },
+    // // 隐藏个人影响力模块，专注技术实现
+    // personal_influence: { hidden: true },
 
-    game_projects: {
-        "type": "timeline",// 游戏作品
-        "name": "虚拟社区/游戏 作品",
-        ...DataGameProjects,  // 对象结构，展开对象
-    },
+    // game_projects: {
+    //     "type": "timeline",// 游戏作品
+    //     "name": "虚拟社区/游戏 作品",
+    //     ...DataGameProjects,  // 对象结构，展开对象
+    // },
 
-    project_experience: {
-        "type": "project_experience",// 项目经历模块
-        "name": "项目经历",
-        ...DataProjectExperience,  // 对象结构，展开对象
-    },
+    // project_experience: {
+    //     "type": "project_experience",// 项目经历模块
+    //     "name": "项目经历",
+    //     ...DataProjectExperience,  // 对象结构，展开对象
+    // },
 
-    employment_history: {
-        "type": "employment_history",// 工作经历模块
-        "name": "工作经历",
-        ...DataEmploymentHistory,  // 对象结构，展开对象
-    },
+    // employment_history: {
+    //     "type": "employment_history",// 工作经历模块
+    //     "name": "工作经历",
+    //     ...DataEmploymentHistory,  // 对象结构，展开对象
+    // },
 
-    open_source_projects: {
-        "type": "project_experience",// 开源项目
-        "name": "开源项目",
-        ...DataOpenSourceProject  // 对象结构，展开对象
-    },
+    // open_source_projects: {
+    //     "type": "project_experience",// 开源项目
+    //     "name": "开源项目",
+    //     ...DataOpenSourceProject  // 对象结构，展开对象
+    // },
 
-    education_history: {
-        "type": "education_history",// 教育经历模块
-        "name": "教育经历",
-        ...DataEducationHistory  // 对象结构，展开对象
-    },
+    // education_history: {
+    //     "type": "education_history",// 教育经历模块
+    //     "name": "教育经历",
+    //     ...DataEducationHistory  // 对象结构，展开对象
+    // },
 }

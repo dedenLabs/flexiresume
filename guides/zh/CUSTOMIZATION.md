@@ -95,7 +95,7 @@ VITE_STATIC_ROUTE_PAGES=game,frontend,backend,cto,agent,contracttask,fullstack
 
 # 项目信息
 VITE_APP_NAME=FlexiResume
-VITE_APP_VERSION=1.0.0
+VITE_APP_VERSION=1.0.1
 VITE_DEBUG=false
 ```
 

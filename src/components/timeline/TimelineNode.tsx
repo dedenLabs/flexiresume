@@ -7,10 +7,11 @@ import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import TimelineContainer from './TimelineContainer';
 import flexiResumeStore from '../../store/Store';
 import CollapseIcon from './CollapseIcon';
+import { SecureContentRenderer } from '../Security/SecureContentRenderer';
 import { getLogger, logCollapse } from '../../utils/Tools';
 import { Node, CategoryTitle, CategoryBody, Content, ContentWithLine } from './TimelineStyles';
 import { useTheme } from '../../theme';
-import SkillRenderer from '../skill/SkillRenderer';
+import SkillRenderer from '../skill/SkillRenderer.tsx';
 
 const log = getLogger('TimelineNode');
 
@@ -92,7 +93,12 @@ const TimelineNode: React.FC<{ category: TimelineNodeProps }> = ({ id: parentId,
             !collapsedSelf && category.content_head && (
               <ContentWithLine isDark={isDark}>
                 <SkillRenderer>
-                  <div className='markdown-content' dangerouslySetInnerHTML={{ __html: headHtml }} />
+                  <SecureContentRenderer
+                    content={headHtml}
+                    contentType="html"
+                    className="markdown-content"
+                    trustedZone={false}
+                  />
                 </SkillRenderer>
               </ContentWithLine>
             )
@@ -108,7 +114,12 @@ const TimelineNode: React.FC<{ category: TimelineNodeProps }> = ({ id: parentId,
             !collapsedSelf && category.content && (
               <ContentWithLine isDark={isDark}>
                 <SkillRenderer>
-                  <div className='markdown-content' dangerouslySetInnerHTML={{ __html: html }} />
+                  <SecureContentRenderer
+                    content={html}
+                    contentType="html"
+                    className="markdown-content"
+                    trustedZone={false}
+                  />
                 </SkillRenderer>
               </ContentWithLine>
             )
