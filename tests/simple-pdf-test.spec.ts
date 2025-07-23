@@ -9,7 +9,7 @@ test.describe('PDF下载功能 - 简化测试', () => {
     console.log('🧪 开始PDF下载基本功能测试');
     
     // 访问主页
-    await page.goto('http://localhost:5175/');
+    await page.goto('http://localhost:5179/');
     
     // 等待页面加载完成
     await page.waitForLoadState('networkidle');

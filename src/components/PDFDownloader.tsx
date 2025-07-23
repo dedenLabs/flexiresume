@@ -16,6 +16,7 @@ import debug from 'debug';
 // Debug logger
 const debugPDF = debug('app:pdf');
 
+var isDarkTheme = false;
 /**
  * 打印样式控制工具
  */
@@ -77,7 +78,7 @@ const DownloaderContainer = styled.div`
 
 const DownloaderButton = styled.button.withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
-})<{ isDark: boolean }>`
+}) <{ isDark: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -119,7 +120,7 @@ const PDFText = styled.span`
 
 const DropdownMenu = styled.div.withConfig({
   shouldForwardProp: (prop) => prop !== 'isOpen' && prop !== 'isDark',
-})<{ isOpen: boolean; isDark: boolean }>`
+}) <{ isOpen: boolean; isDark: boolean }>`
   position: absolute;
   bottom: 100%;
   right: 0;
@@ -139,7 +140,7 @@ const DropdownMenu = styled.div.withConfig({
 
 const DropdownItem = styled.button.withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
-})<{ isDark: boolean }>`
+}) <{ isDark: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -195,6 +196,7 @@ interface PDFDownloaderProps {
 
 const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
   const { isDark } = useTheme();
+  isDarkTheme = isDark;
   const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -243,10 +245,41 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
+  /**
+   * 动态设置深色模式背景滤镜
+   * @param {boolean} disable - 是否禁用滤镜
+   */
+  function setDarkModeFilter(disable = true) {
+    const styleId = 'dark-filter-override';
+
+    // 移除现有样式
+    const existingStyle = document.getElementById(styleId);
+    if (existingStyle) {
+      existingStyle.remove();
+    }
+
+    if (disable) {
+      // 创建新样式来禁用滤镜
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.type = 'text/css';
+      style.textContent = `
+            [data-theme="dark"] body::before {
+                filter: none !important;
+                -webkit-filter: none !important;
+            }
+        `;
+      document.head.appendChild(style);
+      console.log('已禁用深色模式背景滤镜');
+    } else {
+      console.log('已恢复深色模式背景滤镜');
+    }
+  }
+
 
   const generatePDF = async (colorMode: 'color' | 'grayscale' | 'original') => {
-    if (isGenerating) return;
-
+    if (isGenerating) return; 
+    // console.log('isDarkTheme:'+isDarkTheme)
     setIsGenerating(true);
     setIsOpen(false);
 
@@ -261,12 +294,13 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
       } else {
         // 彩色和黑白模式：激活全局打印样式
         printStyleController.activatePrintStyle('standard');
+        setDarkModeFilter(true);  // 禁用滤镜
         debugPDF(`${colorMode}模式：激活标准打印样式`);
       }
 
       // 获取当前页面内容
       const printContent = document.body.cloneNode(true) as HTMLElement;
-      
+
       // 移除控制面板等不需要的元素
       const elementsToRemove = [
         '[data-testid="control-panel"]',
@@ -274,7 +308,7 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
         '.control-panel',
         '.floating-panel'
       ];
-      
+
       elementsToRemove.forEach(selector => {
         const elements = printContent.querySelectorAll(selector);
         elements.forEach(el => el.remove());
@@ -303,7 +337,8 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
             @page {
               size: A4;
               margin: 1cm;
-              background: var(--color-card);
+              background: ${isDarkTheme ? "#000" : "#fff"};
+              background-color: ${isDarkTheme ? "#000" : "#fff"};
               /* 隐藏页眉页脚 */
               @top-left { content: none; }
               @top-center { content: none; }
@@ -311,6 +346,14 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
               @bottom-left { content: none; }
               @bottom-center { content: none; }
               @bottom-right { content: none; }
+            }
+ 
+
+            /* 强制打印背景色 */
+            html, body {
+                -webkit-print-color-adjust: exact !important;
+                color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
             /* 强制保持所有原有颜色和样式 - 最高优先级 */
@@ -347,7 +390,7 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
               -webkit-print-color-adjust: exact !important;
               color-adjust: exact !important;
               print-color-adjust: exact !important;
-            } 
+            }
 
             /* 确保深色模式的背景伪元素正确显示 */
             [data-theme="dark"] body::before {
@@ -411,7 +454,13 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
             [class*="Skill"],
             span[title*="了解"],
             span[title*="熟练"],
-            span[title*="精通"] {
+            span[title*="精通"],
+            span[title*="Basic"],
+            span[title*="Proficient"],
+            span[title*="Expert"],
+            span[title*="Familiar"],
+            span[title*="Experienced"],
+            span[title*="Advanced"] {
               display: inline-flex !important;
               visibility: visible !important;
               -webkit-print-color-adjust: exact !important;
@@ -428,12 +477,40 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
               /* 页面设置 */
               @page {
                 size: A4;
-                margin: 1cm;
+                margin: 1cm;  
+                /* 隐藏页眉页脚 */
+                @top-left { content: none; }
+                @top-center { content: none; }
+                @top-right { content: none; }
+                @bottom-left { content: none; }
+                @bottom-center { content: none; }
+                @bottom-right { content: none; }
               }
-              /* 强制所有元素使用浅色背景和深色文字 */
-              * {
+
+              /* 强制重置深色模式下的所有滤镜效果 */
+              [data-theme="dark"] body::before { 
+                filter: none !important;
+                -webkit-filter: none !important;
+              }
+
+              /* 重置根元素和主要容器的背景 */
+              html, body, #root {
                 background: white !important;
-                color: #333 !important;
+                background-color: white !important;
+                color: black !important;
+                filter: none !important;
+                -webkit-filter: none !important;    
+              }
+
+              /* 确保简历内容区域有白色背景 */
+              [data-testid="resume-content"],
+              .resume-content,
+              .main-content {
+                background: white !important;
+                background-color: white !important;
+                color: black !important;
+                filter: none !important;
+                -webkit-filter: none !important;    
               }
 
 
@@ -448,12 +525,16 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
                 overflow: visible !important;
                 font-size: 12pt !important;
                 line-height: 1.4 !important;
-                color: black !important;
+                color: black !important;  
+                filter: none !important;
+                -webkit-filter: none !important;                  
               }
 
               /* 隐藏深色模式背景伪元素 */
               [data-theme="dark"] body::before {
                 display: none !important;
+                filter: none !important;
+                -webkit-filter: none !important;    
               }
 
               /* 根元素打印优化 */
@@ -495,15 +576,10 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
                 visibility: hidden !important;
               }
 
-              /* 确保所有文本颜色为黑色，但保留技能标签样式 */
-              * {
+              /* 确保文本内容为黑色，但保持透明背景 */
+              p, h1, h2, h3, h4, h5, h6, li, td, th, span:not(.skill-item span), div:not(.skill-item) {
                 color: black !important;
-                background: transparent !important;
-                box-shadow: none !important;
-                text-shadow: none !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
+                /* 不强制设置背景色，保持透明 */
               }
 
               /* 保留技能标签的样式和颜色 */
@@ -512,7 +588,13 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
               [class*="Skill"],
               span[title*="了解"],
               span[title*="熟练"],
-              span[title*="精通"] {
+              span[title*="精通"],
+              span[title*="Basic"],
+              span[title*="Proficient"],
+              span[title*="Expert"],
+              span[title*="Familiar"],
+              span[title*="Experienced"],
+              span[title*="Advanced"] {
                 background: initial !important;
                 color: initial !important;
                 -webkit-print-color-adjust: exact !important;
@@ -558,7 +640,12 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
                   filter: grayscale(100%) !important;
                   -webkit-filter: grayscale(100%) !important;
                 }
-              ` : ''}
+              ` : ``}
+              /* 强制重置深色模式下的所有滤镜效果 */
+                [data-theme="dark"] * {
+                  filter: none !important;
+                  -webkit-filter: none !important;
+                }
             }
 
             /* 调试信息 */
@@ -579,7 +666,7 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
 
       printStyle.textContent = pdfStyles;
       document.head.appendChild(printStyle);
-
+      // return;
       // 等待样式应用
       await new Promise(resolve => setTimeout(resolve, 300));
 
@@ -588,6 +675,8 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
 
       // 直接在当前页面打印
       window.print();
+
+      setDarkModeFilter(false); // 恢复滤镜
 
       // 打印完成后清理临时样式
       setTimeout(() => {
@@ -607,14 +696,15 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
       // 确保清理打印样式
       printStyleController.deactivatePrintStyle();
       setIsGenerating(false);
+      setDarkModeFilter(false); // 恢复滤镜
       debugPDF('PDF生成流程结束，已清理打印样式');
     }
   };
 
   return (
-    <DownloaderContainer 
-      className={className} 
-      data-testid="pdf-downloader" 
+    <DownloaderContainer
+      className={className}
+      data-testid="pdf-downloader"
       data-pdf-downloader
     >
       <DownloaderButton
