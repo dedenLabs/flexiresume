@@ -430,6 +430,12 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
                 size: A4;
                 margin: 1cm;
               }
+              /* 强制所有元素使用浅色背景和深色文字 */
+              * {
+                background: white !important;
+                color: #333 !important;
+              }
+
 
               /* 重置根元素和body */
               html, body {
