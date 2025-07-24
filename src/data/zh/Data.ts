@@ -48,7 +48,7 @@ export default {
         name: "陈剑",
         email: "jk@deden.cn",
         gender: "男",
-        avatar: "/images/avatar.webp",//https://photocartoon.net/ 这是一个将照片转换为卡通形象的网站
+        avatar: "/images/avatar-ai.png",//https://photocartoon.net/ 这是一个将照片转换为卡通形象的网站
         location: "上海",
         is_male: "1",// 1男 0女 显示图标
         status: "⚡随时到岗",//⚡离职-随时到岗 🕐在职-月内到岗 🔒在职-暂不换工作

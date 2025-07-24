@@ -7,7 +7,7 @@
  */
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { useSafeTheme } from '../skill/SkillRenderer.tsx';
+import { useSafeTheme } from '../skill/SkillRenderer';
 import { getLogger } from '../../utils/Tools';
 import { libraryPreloader } from '../../utils/LibraryPreloader';
 

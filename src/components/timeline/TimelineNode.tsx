@@ -11,7 +11,7 @@ import { SecureContentRenderer } from '../Security/SecureContentRenderer';
 import { getLogger, logCollapse } from '../../utils/Tools';
 import { Node, CategoryTitle, CategoryBody, Content, ContentWithLine } from './TimelineStyles';
 import { useTheme } from '../../theme';
-import SkillRenderer from '../skill/SkillRenderer.tsx';
+import SkillRenderer from '../skill/SkillRenderer';
 
 const log = getLogger('TimelineNode');
 

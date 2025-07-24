@@ -4,7 +4,7 @@
  * 专门测试Timeline组件的折叠展开功能
  */
 
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import path from 'path';
 
 test.describe('Timeline折叠展开测试', () => {

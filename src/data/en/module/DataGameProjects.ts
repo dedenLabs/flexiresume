@@ -255,7 +255,7 @@ Before developing this game, I **already had experience with four community arch
             content: `> Not launched and no separate backup of game data, unfortunately cannot be displayed.`
         },
         {
-            name: 'Kung Fu - horizontal screen闯关格斗类 (Unity)',
+            name: 'Kung Fu - horizontal screen (Unity)',
             content: `> Not launched and no separate backup of game data, unfortunately cannot be displayed.`
         },
         {

@@ -4,7 +4,7 @@
  * 验证技能标签在折叠后再展开时是否正常显示
  */
 
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import path from 'path';
 
 test.describe('技能标签折叠展开验证', () => {

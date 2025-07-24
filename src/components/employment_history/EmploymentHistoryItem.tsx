@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import { calculateWorkDuration } from '../../utils/Tools';
 import { EmploymentHistoryItemProps } from '../../types/IFlexiResume';
-import SkillRenderer from '../skill/SkillRenderer.tsx';
+import SkillRenderer from '../skill/SkillRenderer';
 import { SecureContentRenderer } from '../Security/SecureContentRenderer';
 
 

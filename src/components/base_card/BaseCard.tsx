@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import { useCollapser } from '../../utils/Tools';
-import SkillRenderer from '../skill/SkillRenderer.tsx';
+import SkillRenderer from '../skill/SkillRenderer';
 import { SecureContentRenderer } from '../Security/SecureContentRenderer';
 
 interface BaseCardProps {

@@ -6,7 +6,7 @@ import debug from 'debug';
 import { getCurrentLanguageData } from '../data/DataLoader';
 import { IFlexiResume } from '../types/IFlexiResume';
 import { cdnManager } from './CDNManager';
-import { getCDNConfig, isDebugEnabled } from '../config/ProjectConfig';
+import { getCDNConfig, isDebugEnabled, isDevelopment } from '../config/ProjectConfig';
 
 // Debug loggers
 const debugCache = debug('app:cache');
@@ -20,23 +20,23 @@ let initPromise: Promise<void> | null = null;
 
 // 初始化数据缓存
 const initializeDataCache = async () => {
-  if (isInitializing || cachedOriginData) {
-    return initPromise;
-  }
-
-  isInitializing = true;
-  initPromise = (async () => {
-    try {
-      cachedOriginData = await getCurrentLanguageData();
-      debugCache('Data cache initialized successfully');
-    } catch (error) {
-      debugCache('Failed to initialize data cache: %O', error);
-    } finally {
-      isInitializing = false;
+    if (isInitializing || cachedOriginData) {
+        return initPromise;
     }
-  })();
 
-  return initPromise;
+    isInitializing = true;
+    initPromise = (async () => {
+        try {
+            cachedOriginData = await getCurrentLanguageData();
+            debugCache('Data cache initialized successfully');
+        } catch (error) {
+            debugCache('Failed to initialize data cache: %O', error);
+        } finally {
+            isInitializing = false;
+        }
+    })();
+
+    return initPromise;
 };
 
 // 立即初始化缓存
@@ -44,28 +44,28 @@ initializeDataCache();
 
 // 获取缓存的数据，如果没有则返回默认值
 const getCachedData = (): IFlexiResume => {
-  if (!cachedOriginData) {
-    // 如果数据还在初始化中，不显示警告
-    if (!isInitializing) {
-      debugCache('Data cache not initialized, using fallback');
+    if (!cachedOriginData) {
+        // 如果数据还在初始化中，不显示警告
+        if (!isInitializing) {
+            debugCache('Data cache not initialized, using fallback');
+        }
+        // 返回一个基本的默认配置
+        return {
+            header_info: {
+                cdn_static_assets_dirs: ['images']
+            }
+        } as IFlexiResume;
     }
-    // 返回一个基本的默认配置
-    return {
-      header_info: {
-        cdn_static_assets_dirs: ['images']
-      }
-    } as IFlexiResume;
-  }
-  return cachedOriginData;
+    return cachedOriginData;
 };
 
 // 更新数据缓存（当语言切换时调用）
 export const updateDataCache = async (): Promise<void> => {
-  try {
-    cachedOriginData = await getCurrentLanguageData();
-  } catch (error) {
-    debugCache('Failed to update data cache: %O', error);
-  }
+    try {
+        cachedOriginData = await getCurrentLanguageData();
+    } catch (error) {
+        debugCache('Failed to update data cache: %O', error);
+    }
 };
 
 /** 获取日志 */
@@ -396,7 +396,11 @@ export function useLazyVideo() {
             // 如果CDN管理器失败，保持原始URL
             debugCDN('Failed to build local fallback URL: %O', error);
         }
-        sourceTags += `<source src="${sources.original}" type="video/mp4">`;
+        if (isDevelopment()) {
+            sourceTags = `<source src="${sources.original}" type="video/mp4">` + sourceTags;
+        } else {
+            sourceTags += `<source src="${sources.original}" type="video/mp4">`;
+        }
         // sourceTags += `<source src="${localFallbackUrl}" type="video/mp4">`;
 
         videoEl.innerHTML = sourceTags;

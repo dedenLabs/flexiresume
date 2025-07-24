@@ -371,7 +371,7 @@ export class ScreenshotHelper {
         totalSize,
         averageSize: files.length > 0 ? totalSize / files.length : 0
       };
-    } catch (error) {
+    } catch {
       return {
         totalScreenshots: 0,
         totalSize: 0,

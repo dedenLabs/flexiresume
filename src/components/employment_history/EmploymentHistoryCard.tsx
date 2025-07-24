@@ -6,7 +6,7 @@ import EmploymentHistoryItem from './EmploymentHistoryItem';
 import flexiResumeStore from '../../store/Store';
 import { useCollapser } from '../../utils/Tools';
 import { reaction } from 'mobx';
-import SkillRenderer from '../skill/SkillRenderer.tsx';
+import SkillRenderer from '../skill/SkillRenderer';
 import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import { ContentWithLine } from '../timeline/TimelineStyles';
 import { SecureContentRenderer } from '../Security/SecureContentRenderer';

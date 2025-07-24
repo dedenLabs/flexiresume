@@ -18,16 +18,17 @@ const XSS_CONFIG = {
     'p', 'br', 'strong', 'em', 'u', 'i', 'b', 'span', 'div',
     'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
     'ul', 'ol', 'li',
-    'a', 'img',
+    'a', 'img', 'video',
     'blockquote', 'code', 'pre',
     'table', 'thead', 'tbody', 'tr', 'td', 'th',
     'svg', 'g', 'path', 'circle', 'rect', 'line', 'text', 'defs', 'marker'
   ],
-  
+
   // 允许的属性
   ALLOWED_ATTR: [
     'href', 'src', 'alt', 'title', 'class', 'id',
-    'width', 'height', 'style',
+    'width', 'height', 'style', 'align',
+    'controls', 'onplay',
     'target', 'rel',
     // SVG相关属性
     'viewBox', 'xmlns', 'd', 'fill', 'stroke', 'stroke-width',
@@ -40,13 +41,13 @@ const XSS_CONFIG = {
     // 其他安全的data属性
     'data-testid', 'data-content-hash', 'data-observer-attached'
   ],
-  
+
   // 允许的协议
   ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
-  
+
   // 禁止的标签
   FORBID_TAGS: ['script', 'object', 'embed', 'form', 'input', 'textarea', 'select', 'button'],
-  
+
   // 禁止的属性
   FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur']
 };
@@ -57,28 +58,28 @@ const XSS_CONFIG = {
 export const ValidationRules = {
   // 邮箱验证
   email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-  
+
   // 电话号码验证（支持国际格式）
   phone: /^[\+]?[1-9][\d]{0,15}$/,
-  
+
   // URL验证
   url: /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/,
-  
+
   // 用户名验证（字母、数字、下划线、中文）
   username: /^[\w\u4e00-\u9fa5]{2,20}$/,
-  
+
   // 安全的文件名
   filename: /^[a-zA-Z0-9._-]+$/,
-  
+
   // Markdown内容基础验证
   markdown: /^[\s\S]*$/,
-  
+
   // 技能名称验证
   skillName: /^[\w\u4e00-\u9fa5\s\.\+\-#]{1,50}$/,
-  
+
   // 日期格式验证
   date: /^\d{4}-\d{2}-\d{2}$/,
-  
+
   // 年月格式验证
   yearMonth: /^\d{4}-\d{2}$/
 };
@@ -130,13 +131,13 @@ export class SecurityUtils {
 
     for (const [field, rule] of Object.entries(rules)) {
       const value = data[field];
-      
+
       if (value === undefined || value === null) {
         continue; // 跳过未定义的字段
       }
 
       let isValid = false;
-      
+
       if (rule instanceof RegExp) {
         isValid = rule.test(String(value));
       } else if (typeof rule === 'function') {
@@ -181,7 +182,7 @@ export class SecurityUtils {
 
     try {
       const urlObj = new URL(url);
-      
+
       // 只允许HTTP和HTTPS协议
       if (!['http:', 'https:'].includes(urlObj.protocol)) {
         return false;
@@ -223,12 +224,12 @@ export class SecurityUtils {
 
     const extension = originalName.split('.').pop() || '';
     const baseName = originalName.replace(/\.[^/.]+$/, '');
-    
+
     // 清理文件名
     const cleanName = baseName
       .replace(/[^a-zA-Z0-9\u4e00-\u9fa5._-]/g, '_')
       .substring(0, 50);
-    
+
     return `${cleanName}_${Date.now()}.${extension}`;
   }
 
@@ -302,12 +303,12 @@ export class SecurityUtils {
     try {
       const existingLogs = JSON.parse(localStorage.getItem('security_logs') || '[]');
       existingLogs.push(logEntry);
-      
+
       // 只保留最近100条记录
       if (existingLogs.length > 100) {
         existingLogs.splice(0, existingLogs.length - 100);
       }
-      
+
       localStorage.setItem('security_logs', JSON.stringify(existingLogs));
     } catch (error) {
       debugSecurity('Failed to log security event: %O', error);

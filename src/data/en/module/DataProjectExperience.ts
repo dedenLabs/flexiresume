@@ -107,152 +107,152 @@ ${projectExperienceTimeline}
 ---
 `
             },
-            
+
             {
-                "company_name": "赛尔号多端多人同步在线项目",
+                "company_name": "Project of Multi-platform, Multi-person Sync Online for Seer",
                 "start_time": "2015/10",
                 "end_time": "2018/06",
-                "position": "前端主管/主程",
+                "position": "Senior Front-end Developer/Lead Engineer",
                 "description": ` 
-**技术成就概述**
-- 设计并开发了赛尔号多端多人同步在线项目的技术方案，融入增量热更新功能，确保了游戏的持续迭代与优化。
+**Technical Achievements Overview**
+- Designed and developed the technical scheme for the multi-platform, multi-person sync online project for Seer, incorporating incremental hot update features to ensure continuous iteration and optimization of the game.
 
-**项目职责与贡献**
-- **项目领导与技术核心**：作为项目的主程兼主管，全面负责项目架构设计、技术选型以及技术攻坚工作。通过我的专业指导与团队协作，项目得以高效推进。
-- **自研动画播放引擎**：自主研发了复杂的动画播放引擎，实现了高效多人在线场景下的最大性能优化，显著提升了游戏的流畅度与用户体验。
-- **HTML5游戏开发先锋**：作为H5行业的先驱者，积极拥抱新技术，首批使用最新HTML5特性开发游戏，研发多项领先行业的新技术并成功应用于项目中。
-- **项目资源打包工具**：自研项目资源打包系列工具，功能类似于webpack，具备png图片压缩和资源加密等高级功能，为项目的安全性与性能提供保障。
-- **高性能动画播放引擎**：持续致力于提升动画播放性能与效果，确保多人在线场景下的出色表现。
+**Project Responsibilities and Contributions**
+- **Project Leadership and Technical Core**: As the lead engineer and supervisor, I was fully responsible for the project architecture design, technology selection, and technical solutions. Through my professional guidance and teamwork, the project was efficiently推进ed.
+- **Self-developed Animation Playback Engine**: Developed a complex animation playback engine, achieving maximum performance optimization in high-performance multi-person online scenarios, significantly improving the game's fluency and user experience.
+- **Pioneer in HTML5 Game Development**: As a pioneer in the H5 industry, actively embraced new technologies, using the latest HTML5 features to develop games for the first time, and developed multiple industry-leading new technologies and successfully applied them in the project.
+- **Project Resource Packaging Tools**: Developed a series of project resource packaging tools similar to webpack, with advanced features such as PNG image compression and resource encryption, providing security and performance guarantees for the project.
+- **High-performance Animation Playback Engine**: Continuously committed to improving animation playback performance and effects to ensure outstanding performance in multi-person online scenarios.
 
-#### 🕹️《赛尔号H5》
-> <img alt="《赛尔号H5》" src="images/game/4/1.webp" style="width:48%"/>  <img alt="《赛尔号H5》" src="images/game/4/2.webp" style="width:48%"/>
-> <img alt="《赛尔号H5》" src="images/game/4/3.webp"/>
+#### 🕹️ Seer H5
+> <img alt="Seer H5" src="images/game/4/1.webp" style="width:48%"/> <img alt="Seer H5" src="images/game/4/2.webp" style="width:48%"/>
+> <img alt="Seer H5" src="images/game/4/3.webp"/>
 ---
-        `
+        `,
             },
             {
-                "company_name": "混沌之怒（Chaos Rage）",
+                "company_name": "Chaos Rage",
                 "start_time": "2012/10",
                 "end_time": "2015/10",
-                "position": "前端主程",
+                "position": "Senior Front-end Developer",
                 "description": ` 
-**工作经历：创业合伙人**
-> 作为创业合伙人，我主导了名为“混沌之怒（Chaos Rage）”的项目，该项目专注于海外市场，并主要通过Facebook等平台进行发行。
-    
-**我的主要职责与贡献包括：**
+**Work Experience: Co-founder**
+> As a co-founder, I led a project named "Chaos Rage," which focused on overseas markets and was primarily distributed through platforms such as Facebook.
 
-- **项目整体架构设计：** 我负责规划并设计了项目的整体架构，确保了系统的稳定性、可扩展性和安全性。这一环节是项目成功的基石，为后续的开发和运营提供了坚实的基础。
-- **核心开发与技术领导：** 我不仅亲自参与了开发工作，还担任了主程的角色，带领团队攻克了多个技术难关。项目的大多核心模块都是我亲自开发完成的，这体现了我在技术领域的深厚功底和创新能力。
-- **公司官网设计与开发：** 除了项目本身，我还负责公司官网的设计与开发工作。通过精心策划和设计，我打造了一个符合公司形象、易于用户访问和导航的官方网站，为公司的品牌传播和业务拓展提供了有力支持。
+**My main responsibilities and contributions include:**
 
-*在整个项目过程中，我充分发挥了自己的技术专长和领导力，带领团队高效推进项目，最终实现了项目的成功上线和运营。我的贡献不仅体现在技术层面，还包括对项目整体战略的把握和团队管理的优化。*
+- **Overall Project Architecture Design**: I was responsible for planning and designing the overall architecture of the project, ensuring the stability, scalability, and security of the system. This phase was the cornerstone of the project's success, providing a solid foundation for subsequent development and operation.
+- **Core Development and Technical Leadership**: Not only did I personally participate in the development work, but I also served as the lead developer, guiding the team to overcome multiple technical challenges. Most of the core modules of the project were developed personally by me, reflecting my solid technical expertise and innovative ability.
+- **Company Official Website Design and Development**: In addition to the project itself, I was also responsible for the design and development of the company's official website. Through careful planning and design, I created a website that matched the company's image and was easy for users to access and navigate, providing strong support for the company's brand promotion and business development.
+
+*Throughout the project process, I fully demonstrated my technical expertise and leadership, guiding the team to efficiently推进 the project, ultimately achieving the successful launch and operation of the project. My contributions were not only reflected at the technical level but also included a grasp of the overall project strategy and optimization of team management.*
         
-#### 🕹️《混沌之怒》海外市场
->  [视频](images/game/chaos_rage/1.mp4)
+#### 🕹️ Chaos Rage Overseas Market
+> [Video](images/game/chaos_rage/1.mp4)
 
-#### 🕹️《混沌之怒》国内市场换皮版 -《海贼王online》
->  [视频](images/game/chaos_rage/2.mp4)
+#### 🕹️ Chaos Rage Domestic Market Remake - Seer King Online
+> [Video](images/game/chaos_rage/2.mp4)
 ---
-        `
+        `,
             },
             {
-                "company_name": "《摩尔庄园》多人在线游戏社区项目",
+                "company_name": "Project of Multi-person Online Game Community for摩尔庄园",
                 "start_time": "2007/07",
                 "end_time": "2010/09",
-                "position": "前端主程/主管",
-                "description": `
-**项目经历：《摩尔庄园》多人在线游戏社区项目主程兼主管**
+                "position": "Senior Front-end Developer/Supervisor",
+                "description": ` 
+**Project Experience: Lead Developer and Supervisor for摩尔庄园 Multi-person Online Game Community Project**
 
-**项目概述**
-《摩尔庄园》是一款专为儿童设计的虚拟乐园，基于 Flex 开发，倡导“健康、快乐、创造、分享”的理念，让玩家化身小鼹鼠摩尔，在游戏中体验音乐、舞蹈、社交、宠物养育等多元互动。
+**Project Overview**
+《摩尔庄园》is a virtual playground designed for children, developed based on Flex, advocating the philosophy of "healthy, happy, creative, and sharing," allowing players to transform into moles and experience various interactive activities such as music, dance, socializing, and pet care.
 
-**核心职责**
-- **项目主程与团队管理**：担任项目主程兼主管，全面负责《摩尔庄园》的架构设计与核心系统开发，带领团队按照周开发节奏推进项目，确保功能稳定和体验优质。
-- **多项目支持**：除《摩尔庄园》外，还为公司其他核心项目如《赛尔号》、《小花仙》等提供技术支持，协助设计与实现多个基础架构与游戏功能模块。
-- **核心系统开发**：主导地图标准模型、地图系统、角色系统、寻路系统、底层通信协议及独立小游戏等核心系统的开发，保证了多人在线社区的稳定性与互动丰富度。
+**Core Responsibilities**
+- **Project Lead and Team Management**: Served as the lead developer and supervisor, fully responsible for the architecture design and core system development of《摩尔庄园》, guiding the team to推进 the project according to a weekly rhythm, ensuring stable functions and high-quality experiences.
+- **Support for Multiple Projects**: In addition to《摩尔庄园》, I also provided technical support for other core projects of the company, such as《赛尔号》、《小花仙》, etc., assisting in the design and implementation of multiple basic architecture and game function modules.
+- **Core System Development**: Led the development of core systems such as map standard models, map systems, character systems, pathfinding systems, underlying communication protocols, and independent small games, ensuring the stability and richness of interaction in the multi-person online community.
 
-**团队规模**
-- 领导前端开发团队，团队规模为7-15人，负责团队成员的管理、协作优化与技术攻关。
+**Team Size**
+- Led the front-end development team, with a team size of 7-15 people, responsible for the management, collaboration optimization, and technical resolution of team members.
 
-**项目成就与贡献**
-- **技术创新与用户规模**：作为公司首款最高同时在线人数超过100万的项目，《摩尔庄园》不仅推动了公司上市，也成为行业标杆，为后续推出的《赛尔号》、《小花仙》等项目奠定了技术基础。
-- **公司多产品发展支持**：积极参与《赛尔号》、《功夫派》、《摩尔勇士》等项目，提供横向支持，助力公司多条产品线的成功。
-- **行业影响**：该项目在技术和体验上的创新吸引了多家同行企业模仿跟进，成为儿童社区类游戏的开拓者，推动了行业的发展与创新。 
-**总结**
-从公司初创加入到公司上市的全过程，我作为《摩尔庄园》项目的主程和技术核心，见证并推动了项目的成功，积累了大量管理与前沿技术经验，为后续更大型、更复杂的多人在线项目打下了扎实基础。
+**Project Achievements and Contributions**
+- **Technological Innovation and User Scale**: As the company's first project with a peak concurrent user number of over 1 million,《摩尔庄园》not only propelled the company's listing but also became an industry benchmark, laying a technical foundation for subsequent projects such as《赛尔号》、《小花仙》.
+- **Support for Company's Multi-product Development**: Actively participated in projects such as《赛尔号》、《功夫派》、《摩尔勇士》, providing horizontal support to help the company's success across multiple product lines.
+- **Industry Impact**: The innovative technology and experience of this project attracted many peer companies to imitate and follow, becoming a pioneer in children's community games and driving industry development and innovation. 
+**Summary**
+Throughout the company's growth from inception to listing, as the lead developer and technical core for the《摩尔庄园》project, I witnessed and propelled the project's success, accumulating extensive management and cutting-edge technology experience, laying a solid foundation for subsequent larger and more complex multi-person online projects.
 
+#### 🕹️ 摩尔庄园Ⅰ
+> <img alt="摩尔庄园Ⅰ" src="images/game/2/a.webp" style="width:48%"/> <img alt="摩尔庄园Ⅰ" src="images/game/2/b.webp" style="width:48%"/>
+> [Video](images/game/2/3.mp4)  
 
-#### 🕹️《摩尔庄园Ⅰ》
-> <img alt="《摩尔庄园Ⅰ》" src="images/game/2/a.webp" style="width:48%"/>  <img alt="《摩尔庄园Ⅰ》" src="images/game/2/b.webp" style="width:48%"/>
-> [视频](images/game/2/3.mp4)  
-
-#### 🕹️《摩尔庄园Ⅱ》
-> <img alt="《摩尔庄园Ⅱ》" src="images/game/3/1.webp" style="width:48%"/> <img alt="《摩尔庄园Ⅱ》" src="images/game/3/4.webp" style="width:48%"/> 
-> <img alt="《摩尔庄园Ⅱ》" src="images/game/3/2.webp" style="width:48%"/> <img alt="《摩尔庄园Ⅱ》" src="images/game/3/3.webp" style="width:48%"/>
-[视频](images/game/2/1.mp4)  
- ---
-        `
+#### 🕹️ 摩尔庄园Ⅱ
+> <img alt="摩尔庄园Ⅱ" src="images/game/3/1.webp" style="width:48%"/> <img alt="摩尔庄园Ⅱ" src="images/game/3/4.webp" style="width:48%"/> 
+> <img alt="摩尔庄园Ⅱ" src="images/game/3/2.webp" style="width:48%"/> <img alt="摩尔庄园Ⅱ" src="images/game/3/3.webp" style="width:48%"/>
+[Video](images/game/2/1.mp4)  
+---
+        `,
             },
             {
-                "company_name": "3D社区多人在线社交平台",
+                "company_name": "3D Community Multi-person Online Social Platform",
                 "start_time": "2006/11",
                 "end_time": "2007/11",
-                "position": "前端主程",
-                "description": `
-**项目概述**  
-> 开发了一款3D社区多人在线游戏，玩家在游戏中可进行生活、聊天、唱歌等活动，使用了早期06年的视频流媒体技术。
+                "position": "Senior Front-end Developer",
+                "description": ` 
+**Project Overview**  
+> Developed a 3D community multi-person online game where players could engage in life, chatting, singing, and other activities, using early 2006 video streaming media technology.
 
-**核心职责**  
- - **技术架构设计**：全面负责项目的架构设计和开发工作，确保系统高效稳定。
- - **模块开发**：完成地图标准制定、角色控制和角色与底图深度交换等核心模块的开发。
- - **社交系统构建**：实现好友列表功能，增强玩家之间的互动。
- - **建筑系统设计**：设计小屋系统，支持伪3D建筑深度堆叠，提升游戏的可玩性和用户体验。
+**Core Responsibilities**  
+ - **Technical Architecture Design**: Comprehensively responsible for the project's architecture design and development work, ensuring system efficiency and stability.
+ - **Module Development**: Completed the development of core modules such as map standard establishment, character control, and deep exchange between characters and base maps.
+ - **Social System Construction**: Implemented a friend list function to enhance player interaction.
+ - **Building System Design**: Designed a cottage system supporting pseudo-3D building deep stacking, improving the game's playability and user experience.
 
- #### 🕹️《抱抱城》
- > <img alt="《抱抱城》" src="images/game/1/login.webp" style="width:33%"/><img alt="《抱抱城》" src="images/game/1/house.webp" style="width:33%"/><img alt="《抱抱城》" src="images/game/1/web.webp" style="width:33%"/>
- ---
-        `
+ #### 🕹️ 抱抱城
+ > <img alt="抱抱城" src="images/game/1/login.webp" style="width:33%"/><img alt="抱抱城" src="images/game/1/house.webp" style="width:33%"/><img alt="抱抱城" src="images/game/1/web.webp" style="width:33%"/>
+ --- 
+        `,
             },
             {
-                "company_name": "钢铁原材料类商务网站开发与维护",
+                "company_name": "Development and Maintenance of Business Website for Steel Raw Materials",
                 "start_time": "2005/08",
                 "end_time": "2006/08",
-                "position": "前端开发",
-                "description": `
-**项目概述**  
-> 主导一个钢铁原材料类商务网站的制作与维护，致力于提供优质的用户互动体验，支持企业客户在平台上高效获取信息、交流和达成交易。项目包括前端动画效果、网站后端程序开发与日常维护。
+                "position": "Front-end Developer",
+                "description": ` 
+**Project Overview**  
+> Led the production and maintenance of a business website for steel raw materials, committed to providing high-quality user interaction experiences, supporting enterprise customers in efficiently obtaining information, communicating, and achieving transactions on the platform. The project includes front-end animation effects, website backend program development, and daily maintenance.
 
-**核心职责**  
-- **网站开发与维护**：负责网站的整体开发与维护工作，确保平台的稳定性和运行流畅。
-- **动态动画设计**：主导 Flash 动态网页设计与编程，设计了网页广告和网站进入动画，提升用户体验。
-- **网页设计与美工**：参与网页设计和美工工作，完成 Logo、Banner 和网站模板等平面设计，增强品牌视觉效果。
-- **后端开发支持**：负责开发 ASP 后台程序，确保前端功能的高效实现和业务需求的支持。
+**Core Responsibilities**  
+- **Website Development and Maintenance**: Responsible for the overall development and maintenance of the website, ensuring platform stability and smooth operation.
+- **Dynamic Animation Design**: Led the Flash dynamic web page design and programming, designed web advertisements and website entry animations to enhance user experience.
+- **Web Design and Artistry**: Participated in web design and artwork work, completed logo, banner, and website template design, enhancing brand visual effects.
+- **Backend Development Support**: Responsible for developing ASP backend programs, ensuring the efficient implementation of front-end functions and support for business requirements.
 
-**项目成就**  
-- **用户互动体验提升**：设计和实现多个动态网页项目，增加用户的浏览体验和页面的吸引力。
-- **品牌形象塑造**：平面设计作品得到客户认可，有力地提升了企业品牌的专业形象和市场吸引力。
+**Project Achievements**  
+- **Enhanced User Interaction Experience**: Designed and implemented multiple dynamic web projects, increasing user browsing experience and page attractiveness.
+- **Brand Image Shaping**: Graphic design works received client recognition, effectively enhancing the company's professional image and market appeal.
 
 ---
-        `
+        `,
             },
             {
-                "company_name": "企业网站开发与维护",
+                "company_name": "Enterprise Website Development and Maintenance",
                 "start_time": "2005/08",
                 "end_time": "2006/08",
-                "position": "前端开发",
-                "description": `
-**项目概述**  
-> 负责多个企业网站的前端与参与部分后端开发，完成了从需求分析到设计、开发、上线及优化的全流程。
+                "position": "Front-end Developer",
+                "description": ` 
+**Project Overview**  
+> Responsible for the front-end and partial backend development of multiple enterprise websites, completing the entire process from requirements analysis to design, development, launch, and optimization.
 
-**核心职责**  
-- **前端开发**：使用 HTML、CSS、JavaScript、ActionScript 2 、网页三剑客进行网站排版与 UI 界面设计，确保页面布局美观、用户体验友好。
-- **后端开发**：运用 ASP和 XML 设计并实现网站部分后端功能。
+**Core Responsibilities**  
+- **Front-end Development**: Used HTML, CSS, JavaScript, ActionScript 2, and the "webpage three swords" for web layout and UI interface design, ensuring beautiful page layout and user-friendly experience.
+- **Backend Development**: Utilized ASP and XML to design and implement partial backend functions of the website.
 
-**项目成就**  
-- **全面优化性能**：优化了网站在不同设备和浏览器上的兼容性与响应速度，确保用户获得一致的访问体验。
-- **成功上线多项目**：实现多个项目从概念到上线的全过程，显著提高了网站访问量和用户满意度。
+**Project Achievements**  
+- **Comprehensive Performance Optimization**: Optimized website compatibility and response speed across different devices and browsers, ensuring users receive a consistent访问 experience.
+- **Successful Launch of Multiple Projects**: Achieved the entire process from concept to launch for multiple projects, significantly increasing website traffic and user satisfaction.
 
         `
             },
         ]
 }
+

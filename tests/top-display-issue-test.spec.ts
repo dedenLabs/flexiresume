@@ -7,7 +7,7 @@
  * @date 2025-01-12
  */
 
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
 const BASE_URL = 'http://localhost:5177';
 
@@ -27,7 +27,6 @@ test.describe('顶部异常显示问题检测', () => {
     });
     
     // 检查页面顶部区域
-    const topArea = page.locator('body').first();
     
     // 获取页面顶部的所有可见元素
     const topElements = await page.locator('body > *').all();
@@ -106,7 +105,6 @@ test.describe('顶部异常显示问题检测', () => {
     await page.waitForSelector('[data-testid="resume-content"]', { timeout: 10000 });
     
     // 检查页面头部区域（前100px）
-    const headerArea = page.locator('body').first();
     
     // 获取页面顶部100px内的所有元素
     const topElements = await page.evaluate(() => {

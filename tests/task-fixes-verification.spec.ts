@@ -8,7 +8,6 @@
  */
 
 import { test, expect } from '@playwright/test';
-import path from 'path';
 
 test.describe('任务修复验证', () => {
   test.beforeEach(async ({ page }) => {

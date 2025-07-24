@@ -64,9 +64,9 @@ function isLocalDevelopment(): boolean {
 
   // 本地开发环境的常见特征
   const isLocalHost = hostname === 'localhost' ||
-                     hostname === '127.0.0.1' ||
-                     hostname === '0.0.0.0' ||
-                     hostname.endsWith('.local');
+    hostname === '127.0.0.1' ||
+    hostname === '0.0.0.0' ||
+    hostname.endsWith('.local');
 
   // 开发服务器常用端口（优化：使用数字比较而非字符串）
   const portNum = parseInt(port, 10);
@@ -128,10 +128,10 @@ export function resetLocalDevelopmentCache(): void {
 export interface CDNLoadOptions {
   /** 是否启用降级到本地资源 / Whether to enable fallback to local resources */
   enableFallback?: boolean;
-  
+
   /** 本地资源基础路径 / Local resource base path */
   localBasePath?: string;
-  
+
   /** 是否缓存资源URL / Whether to cache resource URLs */
   cacheUrls?: boolean;
 }
@@ -146,7 +146,7 @@ export class CDNManager {
   private isInitialized = false;
   private initPromise: Promise<void> | null = null;
 
-  private constructor() {}
+  private constructor() { }
 
   /**
    * 获取单例实例
@@ -211,7 +211,7 @@ export class CDNManager {
 
       // 执行CDN健康检查
       await cdnHealthChecker.checkAllCDNs();
-      
+
       if (isDebugEnabled()) {
         const availableCDNs = cdnHealthChecker.getAvailableCDNs();
         debugCDN(`[CDN Manager] CDN health check completed. Available CDNs: ${availableCDNs.length}`);
@@ -313,11 +313,11 @@ export class CDNManager {
     // 最后降级到本地资源
     if (enableFallback) {
       const localUrl = this.buildLocalUrl(resourcePath, localBasePath);
-      
+
       if (isDebugEnabled()) {
         console.warn(`[CDN Manager] No CDN available, falling back to local: ${localUrl}`);
       }
-      
+
       if (cacheUrls) {
         this.urlCache.set(resourcePath, localUrl);
       }
@@ -353,82 +353,35 @@ export class CDNManager {
       return this.projectBasePathCache;
     }
 
-    let projectBasePath = '';
-    if (typeof window !== 'undefined') {
-      try {
-        // 从当前URL获取项目基础路径
-        const currentPath = window.location.pathname;
-        const pathSegments = currentPath.split('/').filter(segment => segment);
+    try {
+      const currentUrl = window.location.href;
+      const url = new URL(currentUrl);
 
-        // 检查是否是开发环境
-        const isDev = isLocalDevelopment();
+      // 获取协议、主机和端口
+      const origin = url.origin;
 
-        if (isDev) {
-          // 开发环境：需要检查是否有子目录部署
-          // 修复：开发环境也需要正确处理子目录路径
-          if (pathSegments.length > 0) {
-            const lastSegment = pathSegments[pathSegments.length - 1];
-            const knownRoutes = ['fullstack', 'games', 'tools', 'operations', 'automation', 'management'];
-            const isKnownRoute = knownRoutes.includes(lastSegment) || lastSegment.endsWith('.html');
+      // 获取路径部分并处理
+      let pathname = url.pathname;
 
-            if (isKnownRoute && pathSegments.length > 1) {
-              // 开发环境子目录部署：保留除最后一个段之外的所有段
-              // 例如：/my-resume/docs/fullstack -> /my-resume/docs
-              const baseSegments = pathSegments.slice(0, -1);
-              projectBasePath = '/' + baseSegments.join('/');
-            } else if (!isKnownRoute && pathSegments.length >= 1) {
-              // 开发环境：当前路径可能就是基础路径
-              // 例如：/my-resume/docs/ -> /my-resume/docs
-              projectBasePath = '/' + pathSegments.join('/');
-            }
-          }
-        } else {
-          // 生产环境：需要智能检测部署路径
-          if (pathSegments.length > 0) {
-            // 检查是否是根目录部署还是子目录部署
-            const lastSegment = pathSegments[pathSegments.length - 1];
 
-            // 如果最后一个段是 HTML 文件名或已知的路由路径，则移除它
-            const knownRoutes = ['fullstack', 'games', 'tools', 'operations', 'automation', 'management'];
-            const isKnownRoute = knownRoutes.includes(lastSegment) || lastSegment.endsWith('.html');
+      // 分割路径
+      const pathSegments = pathname.split('/').slice(0, -1);
 
-            if (isKnownRoute && pathSegments.length > 1) {
-              // 子目录部署：保留除最后一个段之外的所有段
-              // 例如：/my-resume/docs/fullstack -> /my-resume/docs
-              // 例如：/folder/index.html -> /folder
-              const baseSegments = pathSegments.slice(0, -1);
-              projectBasePath = '/' + baseSegments.join('/');
-            } else if (!isKnownRoute && pathSegments.length >= 1) {
-              // 可能是子目录部署，但当前路径就是基础路径
-              // 例如：/my-resume/docs/ -> /my-resume/docs
-              // 例如：/folder/ -> /folder
-              projectBasePath = '/' + pathSegments.join('/');
-            }
-            // 如果是根目录部署且访问的是路由，projectBasePath 保持为空字符串
-            // 例如：/index.html -> '' (根目录部署)
-          }
-        }
+      // 根据路径段数量确定项目根路径
+      this.projectBasePathCache = origin + pathSegments.join("/") + "/";
 
-        // 确保路径格式正确（不以 / 结尾，除非是根路径）
-        if (projectBasePath && projectBasePath !== '/' && projectBasePath.endsWith('/')) {
-          projectBasePath = projectBasePath.slice(0, -1);
-        }
 
-      } catch (error) {
-        if (isDebugEnabled()) {
-          console.warn('[CDN Manager] Failed to determine project base path:', error);
-        }
-      }
+      return this.projectBasePathCache;
+
+    } catch (error) {
+      console.error('获取项目根路径失败:', error);
+
+      // 降级处理：返回当前域名根路径
+      const fallbackPath = window.location.origin + '/';
+      this.projectBasePathCache = fallbackPath;
+
+      return fallbackPath;
     }
-
-    // 缓存结果
-    this.projectBasePathCache = projectBasePath;
-
-    if (isDebugEnabled()) {
-      debugCDN(`[CDN Manager] Project base path determined: "${projectBasePath}"`);
-    }
-
-    return projectBasePath;
   }
 
   /**
@@ -436,52 +389,7 @@ export class CDNManager {
    * Build local URL (optimized)
    */
   private buildLocalUrl(resourcePath: string, basePath: string): string {
-    const cdnConfig = getCDNConfig();
-
-    // 优先级：参数 > 配置 > 自动检测
-    let effectiveBasePath = basePath;
-    if (!effectiveBasePath && cdnConfig.localOptimization.localBasePath) {
-      effectiveBasePath = cdnConfig.localOptimization.localBasePath;
-    }
-
-    // 如果提供了基础路径，直接使用
-    if (effectiveBasePath) {
-      const cleanBasePath = effectiveBasePath.endsWith('/') ? effectiveBasePath.slice(0, -1) : effectiveBasePath;
-      const cleanResourcePath = resourcePath.startsWith('/') ? resourcePath.slice(1) : resourcePath;
-      return `${cleanBasePath}/${cleanResourcePath}`;
-    }
-
-    // 获取项目基础路径（使用缓存）
-    const projectBasePath = this.getProjectBasePath();
-
-    // 确保资源路径格式正确
-    const cleanResourcePath = resourcePath.startsWith('/') ? resourcePath.slice(1) : resourcePath;
-
-    // 构建完整的资源路径
-    let fullResourcePath: string;
-
-    if (projectBasePath) {
-      // 确保项目基础路径以 / 开头和结尾
-      const normalizedBasePath = projectBasePath.startsWith('/') ? projectBasePath : '/' + projectBasePath;
-      const basePathWithSlash = normalizedBasePath.endsWith('/') ? normalizedBasePath : normalizedBasePath + '/';
-      fullResourcePath = basePathWithSlash + cleanResourcePath;
-    } else {
-      // 没有项目基础路径，直接使用根路径
-      fullResourcePath = '/' + cleanResourcePath;
-    }
-
-    // 如果是浏览器环境，构建完整URL
-    if (typeof window !== 'undefined') {
-      const { protocol, hostname, port } = window.location;
-      const portSuffix = port && port !== '80' && port !== '443' ? `:${port}` : '';
-
-      // 确保fullResourcePath以/开头，避免路径拼接错误
-      const normalizedResourcePath = fullResourcePath.startsWith('/') ? fullResourcePath : '/' + fullResourcePath;
-
-      return `${protocol}//${hostname}${portSuffix}${normalizedResourcePath}`;
-    }
-
-    return fullResourcePath;
+    return (this.getProjectBasePath() || basePath) + resourcePath;
   }
 
   /**
@@ -500,12 +408,12 @@ export class CDNManager {
     const preloadPromises = resourcePaths.map(async (resourcePath) => {
       try {
         const url = this.getResourceUrl(resourcePath, options);
-        
+
         // 创建预加载链接
         const link = document.createElement('link');
         link.rel = 'preload';
         link.href = url;
-        
+
         // 根据文件扩展名设置as属性
         const extension = resourcePath.split('.').pop()?.toLowerCase();
         switch (extension) {
@@ -531,13 +439,13 @@ export class CDNManager {
             link.as = 'fetch';
             link.crossOrigin = 'anonymous';
         }
-        
+
         document.head.appendChild(link);
-        
+
         if (isDebugEnabled()) {
           debugCDN(`[CDN Manager] Preloaded resource: ${url}`);
         }
-        
+
       } catch (error) {
         console.error(`[CDN Manager] Failed to preload resource: ${resourcePath}`, error);
       }

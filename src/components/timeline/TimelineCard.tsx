@@ -7,7 +7,7 @@ import { logCollapse, useCollapser, watchTitleCollapser } from '../../utils/Tool
 import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import { ContentWithLine, Node } from './TimelineStyles';
 import { useTheme } from '../../theme';
-import SkillRenderer from '../skill/SkillRenderer.tsx';
+import SkillRenderer from '../skill/SkillRenderer';
 import { SecureContentRenderer } from '../Security/SecureContentRenderer';
 import TimelineNode from './TimelineNode';
 

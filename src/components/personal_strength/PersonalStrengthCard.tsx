@@ -6,7 +6,7 @@ import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import flexiResumeStore from '../../store/Store';
 import { useCollapser } from '../../utils/Tools';
 import { useTheme } from '../../theme';
-import SkillRenderer from '../skill/SkillRenderer.tsx';
+import SkillRenderer from '../skill/SkillRenderer';
 import { SecureContentRenderer } from '../Security/SecureContentRenderer';
 
 interface EmploymentHistoryCardProps {

@@ -5,22 +5,78 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const projectRoot = __dirname; // 脚本在项目根目录
+const projectRoot = __dirname; // Script is in project root
 const publicDir = path.join(projectRoot, 'public');
 const docsDir = path.join(projectRoot, 'docs');
 
 /**
- * 递归复制目录，如果目标文件已存在则跳过
- * @param {string} src 源目录
- * @param {string} dest 目标目录
+ * Progress tracking for dynamic display
  */
-function copyDirectoryIfNotExists(src, dest) {
+let progressState = {
+  totalFiles: 0,
+  processedFiles: 0,
+  copiedFiles: 0,
+  skippedFiles: 0,
+  currentFile: ''
+};
+
+/**
+ * Update progress display on the same line
+ */
+function updateProgress() {
+  const percentage = progressState.totalFiles > 0
+    ? Math.round((progressState.processedFiles / progressState.totalFiles) * 100)
+    : 0;
+
+  const status = `Processing: ${progressState.processedFiles}/${progressState.totalFiles} (${percentage}%) | ` +
+                `Copied: ${progressState.copiedFiles} | Skipped: ${progressState.skippedFiles} | ` +
+                `Current: ${progressState.currentFile}`;
+
+  // Clear line and write new status
+  process.stdout.write('\r' + ' '.repeat(120) + '\r' + status);
+}
+
+/**
+ * Count total files in directory recursively
+ * @param {string} dir Directory path
+ * @param {string[]} excludeDirs Directories to exclude
+ * @returns {number} Total file count
+ */
+function countFiles(dir, excludeDirs = []) {
+  if (!fs.existsSync(dir)) return 0;
+
+  let count = 0;
+  const items = fs.readdirSync(dir);
+
+  for (const item of items) {
+    const itemPath = path.join(dir, item);
+    const stat = fs.statSync(itemPath);
+
+    if (stat.isDirectory()) {
+      if (!excludeDirs.includes(path.basename(itemPath))) {
+        count += countFiles(itemPath, excludeDirs);
+      }
+    } else {
+      count++;
+    }
+  }
+
+  return count;
+}
+
+/**
+ * Recursively copy directory, skip if target file already exists
+ * @param {string} src Source directory
+ * @param {string} dest Destination directory
+ * @param {boolean} showProgress Whether to show progress
+ */
+function copyDirectoryIfNotExists(src, dest, showProgress = false) {
   if (!fs.existsSync(src)) {
-    console.log(`源目录不存在: ${src}`);
+    if (!showProgress) console.log(`Source directory does not exist: ${src}`);
     return { copied: 0, skipped: 0 };
   }
 
-  // 确保目标目录存在
+  // Ensure destination directory exists
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest, { recursive: true });
   }
@@ -29,7 +85,7 @@ function copyDirectoryIfNotExists(src, dest) {
   let copiedCount = 0;
   let skippedCount = 0;
 
-  // 定义要排除的目录列表
+  // Define directories to exclude
   const excludeDirs = ['.git', 'node_modules', '.vscode', '.idea'];
 
 
@@ -42,26 +98,36 @@ function copyDirectoryIfNotExists(src, dest) {
     if (stat.isDirectory()) {
       const dirName = path.basename(srcPath);
 
-      // 检查当前目录是否在排除列表中
+      // Check if current directory is in exclude list
       if (excludeDirs.includes(dirName)) {
-        console.log(`跳过目录: ${srcPath}`); 
+        if (!showProgress) console.log(`Skipping directory: ${srcPath}`);
         continue;
       }
-      // 递归处理子目录
-      const result = copyDirectoryIfNotExists(srcPath, destPath);
+      // Recursively process subdirectories
+      const result = copyDirectoryIfNotExists(srcPath, destPath, showProgress);
       if (result) {
         copiedCount += result.copied;
         skippedCount += result.skipped;
       }
     } else {
-      // 处理文件
+      // Process files
+      const relativePath = path.relative(projectRoot, destPath);
+
+      if (showProgress) {
+        progressState.currentFile = relativePath;
+        progressState.processedFiles++;
+        updateProgress();
+      }
+
       if (fs.existsSync(destPath)) {
-        console.log(`跳过已存在的文件: ${path.relative(projectRoot, destPath)}`);
+        if (!showProgress) console.log(`Skipping existing file: ${relativePath}`);
         skippedCount++;
+        if (showProgress) progressState.skippedFiles++;
       } else {
         fs.copyFileSync(srcPath, destPath);
-        console.log(`复制文件: ${path.relative(projectRoot, srcPath)} -> ${path.relative(projectRoot, destPath)}`);
+        if (!showProgress) console.log(`Copying file: ${path.relative(projectRoot, srcPath)} -> ${relativePath}`);
         copiedCount++;
+        if (showProgress) progressState.copiedFiles++;
       }
     }
   }
@@ -70,30 +136,46 @@ function copyDirectoryIfNotExists(src, dest) {
 }
 
 /**
- * 主函数
+ * Main function
  */
 function main() {
-  console.log('🚀 开始将 public 目录映射到 docs 目录...');
-  console.log(`源目录: ${publicDir}`);
-  console.log(`目标目录: ${docsDir}`);
+  console.log('🚀 Starting to map public directory to docs directory...');
+  console.log(`Source directory: ${publicDir}`);
+  console.log(`Target directory: ${docsDir}`);
   console.log('');
 
   try {
-    const result = copyDirectoryIfNotExists(publicDir, docsDir);
+    // Count total files for progress tracking
+    console.log('📊 Counting files...');
+    progressState.totalFiles = countFiles(publicDir, ['.git', 'node_modules', '.vscode', '.idea']);
 
+    if (progressState.totalFiles === 0) {
+      console.log('ℹ️ No files to copy');
+      return;
+    }
+
+    console.log(`📁 Found ${progressState.totalFiles} files to process`);
     console.log('');
-    console.log('✅ 映射完成！');
-    console.log(`📁 复制文件数: ${result.copied}`);
-    console.log(`⏭️ 跳过文件数: ${result.skipped}`);
+
+    // Start copying with progress display
+    const result = copyDirectoryIfNotExists(publicDir, docsDir, true);
+
+    // Clear progress line and show final results
+    process.stdout.write('\r' + ' '.repeat(120) + '\r');
+    console.log('✅ Mapping completed!');
+    console.log(`📁 Files copied: ${result.copied}`);
+    console.log(`⏭️ Files skipped: ${result.skipped}`);
 
     if (result.copied === 0 && result.skipped === 0) {
-      console.log('ℹ️ 没有需要复制的文件');
+      console.log('ℹ️ No files needed to be copied');
     }
   } catch (error) {
-    console.error('❌ 复制过程中出现错误:', error.message);
+    // Clear progress line before showing error
+    process.stdout.write('\r' + ' '.repeat(120) + '\r');
+    console.error('❌ Error occurred during copying:', error.message);
     process.exit(1);
   }
 }
 
-// 运行主函数
+// Run main function
 main();
