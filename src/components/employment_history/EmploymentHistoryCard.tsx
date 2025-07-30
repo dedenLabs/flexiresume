@@ -10,91 +10,12 @@ import SkillRenderer from '../skill/SkillRenderer';
 import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import { ContentWithLine } from '../timeline/TimelineStyles';
 import { SecureContentRenderer } from '../Security/SecureContentRenderer';
+import { useSafeTheme } from '../../utils/ThemeUtils';
+import { getLogger } from '../../utils/Logger';
 
-/**
- * 安全地使用主题hook
- * 支持服务器端渲染和客户端渲染
- * 当组件在独立的React根中渲染时，直接从DOM获取主题状态
- */
-const useSafeTheme = () => {
-    const [isDark, setIsDark] = useState(false);
+const logEmploymentHistoryCard = getLogger('EmploymentHistoryCard');
 
-    useEffect(() => {
-        // 在服务器端渲染时，返回默认值
-        if (typeof window === 'undefined') {
-            return;
-        }
 
-        // 直接从DOM获取主题状态，不依赖React Context
-        const getThemeFromDOM = () => {
-            // 方法1: 检查body的data-theme属性
-            const bodyTheme = document.body.getAttribute('data-theme');
-            if (bodyTheme) {
-                return bodyTheme === 'dark';
-            }
-
-            // 方法2: 检查html的data-theme属性
-            const htmlTheme = document.documentElement.getAttribute('data-theme');
-            if (htmlTheme) {
-                return htmlTheme === 'dark';
-            }
-
-            // 方法3: 检查localStorage
-            try {
-                const storedTheme = localStorage.getItem('theme');
-                if (storedTheme) {
-                    return storedTheme === 'dark';
-                }
-            } catch (e) {
-                // localStorage可能不可用
-            }
-
-            // 方法4: 检查系统偏好
-            if (window.matchMedia) {
-                return window.matchMedia('(prefers-color-scheme: dark)').matches;
-            }
-
-            return false;
-        };
-
-        // 初始化主题状态
-        setIsDark(getThemeFromDOM());
-
-        // 监听主题变化
-        const handleStorageChange = (e: StorageEvent) => {
-            if (e.key === 'theme') {
-                setIsDark(e.newValue === 'dark');
-            }
-        };
-
-        // 监听DOM变化
-        const observer = new MutationObserver(() => {
-            const newIsDark = getThemeFromDOM();
-            setIsDark(newIsDark);
-        });
-
-        // 观察body和html的属性变化
-        observer.observe(document.body, {
-            attributes: true,
-            attributeFilter: ['data-theme', 'class']
-        });
-
-        observer.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ['data-theme', 'class']
-        });
-
-        window.addEventListener('storage', handleStorageChange);
-
-        // 清理函数
-        return () => {
-            observer.disconnect();
-            window.removeEventListener('storage', handleStorageChange);
-        };
-    }, []);
-
-    return { isDark };
-};
 
 interface EmploymentHistoryCardProps {
     id: string;
@@ -127,7 +48,7 @@ const EmploymentHistoryCard: React.FC<EmploymentHistoryCardProps> = ({ id, name,
     useEffect(() => {
         setCollapsedAllItems(flexiResumeStore.collapsedMap.get(name));
     }, [id, flexiResumeStore.collapsedMap.get(name)]);
- 
+
     const headHtml = checkConvertMarkdownToHtml(content_head || "");
     const html = checkConvertMarkdownToHtml(content || "");
     return (
@@ -146,12 +67,14 @@ const EmploymentHistoryCard: React.FC<EmploymentHistoryCardProps> = ({ id, name,
                     </ContentWithLine>
                 )
             }
-            {safeList.map((history, index) => {
-                return <EmploymentHistoryItem key={index} index={index} {...history}
-                    collapsed={collapsedItems[index] || false}
-                    onToggleCollapse={() => toggleCollapse(index)}
-                />
-            })}
+            <ContentWithLine isDark={isDark}>
+                {safeList.map((history, index) => {
+                    return <EmploymentHistoryItem key={index} index={index} {...history}
+                        collapsed={collapsedItems[index] || false}
+                        onToggleCollapse={() => toggleCollapse(index)}
+                    />
+                })}
+            </ContentWithLine>
         </>
     );
 };
@@ -175,7 +98,7 @@ const EmploymentHistoryCard: React.FC<EmploymentHistoryCardProps> = ({ id, name,
 //         if (itemHeights[index] !== validHeight) {
 //             itemHeights[index] = validHeight;
 //             setContainerHeight(itemHeights.reduce((a, b) => a + b, 0));
-//             console.log("containerHeight",containerHeight)
+//             logEmploymentHistoryCard("containerHeight",containerHeight)
 //             requestAnimationFrame(() => {
 //                 listRef.current?.resetAfterIndex(index);
 //             });

@@ -1,16 +1,22 @@
-import React, { useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import React, { useEffect, useCallback } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { formatResumeFilename, getCurrentPositionName } from '../utils/Tools';
+
 import flexiResumeStore from '../store/Store';
+import { extractRoleTitle, formatTabLabelWithConfig } from '../utils/TabFormatter';
 import { useTheme } from '../theme';
+import { enhancedAudioPlayer } from '../utils/EnhancedAudioPlayer';
+import { pageDataCache } from '../utils/MemoryManager';
+import { getLogger } from '../utils/Logger';
+const logTabs = getLogger('Tabs');
 
 const borderColor = `#aaa`;
 const minWidth = `${920}px`;
 
 const TabsWrapper = styled.nav.withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
-})<{ isDark?: boolean }>`
+}) <{ isDark?: boolean }>`
   /* 移动端样式 - 修复横向溢出问题 */
   padding: 0 10px; /* 适当的左右padding */
   position: relative;
@@ -84,7 +90,7 @@ const TabsWrapper = styled.nav.withConfig({
 
 const TabLink = styled(NavLink).withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
-})<{ isDark?: boolean }>`
+}) <{ isDark?: boolean }>`
   /* 基础样式 */
   text-decoration: none;
   color: ${props => props.isDark ? 'var(--color-text-primary)' : 'black'};
@@ -96,7 +102,7 @@ const TabLink = styled(NavLink).withConfig({
   border-left: 1px solid ${props => props.isDark ? 'var(--color-border-medium)' : borderColor};
   transition: background-color 0.3s, border 0.3s, color 0.3s, transform 0.2s;
   box-shadow: 0 0 10px ${props => props.isDark ? 'var(--color-shadow-medium)' : 'rgba(0, 0, 0, 0.1)'};
-  background-color: ${props => props.isDark ? 'var(--color-card)' : '#fff'};
+  background-color: ${props => props.isDark ? 'var(--color-background)' : 'var(--color-background)'};
   white-space: nowrap;
   flex-shrink: 0;
   box-sizing: border-box;
@@ -106,7 +112,7 @@ const TabLink = styled(NavLink).withConfig({
   font-size: 12px;
   font-weight: 500;
   min-width: fit-content;
-  max-width: 100px; /* 减小最大宽度 */
+  max-width: 140px; /* 增加最大宽度以容纳头像 */
   overflow: hidden;
   text-overflow: ellipsis;
 
@@ -114,11 +120,11 @@ const TabLink = styled(NavLink).withConfig({
   @media (max-width: 480px) {
     padding: 4px 6px;
     font-size: 11px;
-    max-width: 80px;
+    max-width: 120px; /* 增加超小屏幕的最大宽度 */
   }
 
   &:hover, &.active {
-    background-color: ${props => props.isDark ? 'var(--color-surface)' : '#f0f0f0'};
+    background-color: ${props => props.isDark ? 'var(--color-surface)' : 'var(--color-primary)'};
     border-color: ${props => props.isDark ? 'var(--color-primary)' : '#333'}; /* 激活状态时显示边框颜色 */
     border-top: 2px solid ${props => props.isDark ? 'var(--color-primary)' : '#333'}; /* 激活状态显示顶部边框 */
     color: ${props => props.isDark ? 'var(--color-primary)' : 'inherit'};
@@ -142,23 +148,127 @@ const TabLink = styled(NavLink).withConfig({
     border-left: 0px solid ${props => props.isDark ? 'var(--color-border-medium)' : borderColor};
 
     &:hover, &.active {
-      background-color: ${props => props.isDark ? 'var(--color-surface)' : '#f0f0f0'};
+      background-color: ${props => props.isDark ? 'var(--color-surface)' : 'var(--color-surface)'};
       border-right: 2px solid ${props => props.isDark ? 'var(--color-primary)' : '#333'}; /* 激活状态显示右侧边框 */
       color: ${props => props.isDark ? 'var(--color-primary)' : 'inherit'};
     }
   }
 `;
 
+const TabAvatar = styled.img`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--color-border-light);
+  flex-shrink: 0; /* 防止头像被压缩 */
+
+  @media (max-width: 480px) {
+    width: 16px;
+    height: 16px;
+  }
+
+  @media (min-width: 768px) {
+    width: 24px;
+    height: 24px;
+  }
+`;
+
+const TabText = styled.span`
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap; /* 防止文字换行 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (max-width: 480px) {
+    font-size: 0.85em; /* 小屏幕时稍微减小字体 */
+  }
+`;
+
+const TabContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row; /* 始终使用水平布局，头像在左侧 */
+  gap: 6px; /* 头像和文字之间的间距 */
+
+  /* 确保在所有屏幕尺寸下都是水平布局 */
+  @media (max-width: 767px) {
+    gap: 4px; /* 小屏幕时减小间距 */
+  }
+
+  @media (max-width: 480px) {
+    gap: 3px; /* 超小屏幕时进一步减小间距 */
+  }
+`;
+
 /**
  * 显示简历页签
  *
- * @return {*} 
+ * @return {*}
  */
 const Tabs: React.FC = () => {
   const data = flexiResumeStore.data;
   const tabs = flexiResumeStore.tabs;
   const { isDark } = useTheme();
-  const location = useLocation(); // 移到组件顶部，确保 Hooks 顺序一致
+  const location = useLocation();
+  const navigate = useNavigate(); // 使用React Router的导航
+
+  // 预加载页签数据
+  const preloadTabData = useCallback(async (url: string) => {
+    const cacheKey = `preload-${url}`;
+
+    if (pageDataCache.has(cacheKey)) {
+      // 调试日志已移除: console.log(`📦 [DEBUG] 数据已预加载: ${url}`);
+      return;
+    }
+
+    try {
+      // 调试日志已移除: console.log(`🔄 [DEBUG] 开始预加载数据: ${url}`);
+      const positionName = url.replace('/', '');
+
+      // 预加载位置数据到缓存 
+      pageDataCache.set(cacheKey, true);
+      // 调试日志已移除: console.log(`✅ [DEBUG] 数据预加载完成: ${url}`);
+    } catch (error) {
+      // 调试日志已移除: console.error(`❌ [DEBUG] 数据预加载失败: ${url}`, error);
+    }
+  }, []);
+
+  // 处理页签悬停事件，触发预加载
+  const handleTabHover = useCallback((url: string) => {
+    // 延迟预加载，避免快速滑过时的不必要请求
+    const timer = setTimeout(() => {
+      preloadTabData(url);
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [preloadTabData]);
+
+  // 处理页签点击事件，播放音频并进行SPA导航
+  const handleTabClick = useCallback(async (url: string, event: React.MouseEvent) => {
+    // 调试日志已移除: console.log(`🎵 [DEBUG] 页签点击事件触发: ${url}`);
+
+    // 阻止默认的链接行为
+    event.preventDefault();
+
+    // 立即进行导航，不等待音频播放完成
+    // 调试日志已移除: console.log(`🚀 [DEBUG] 立即SPA导航到: ${url}`);
+    navigate(url);
+
+    // 异步播放音频，不阻塞导航
+    setTimeout(async () => {
+      try {
+        enhancedAudioPlayer.settings.requireUserInteraction = false;
+        enhancedAudioPlayer.stopAllSFX();
+        await enhancedAudioPlayer.switchToTabRandomly(url);
+        // 调试日志已移除: console.log(`🎵 [DEBUG] 页签音频播放请求发送成功: ${url}`);
+      } catch (error) {
+        // 调试日志已移除: console.error(`❌ [DEBUG] 页签音频播放失败: ${url}`, error);
+      }
+    }, 0);
+  }, [navigate]);
 
   useEffect(() => {
     if (!tabs.length) {
@@ -167,7 +277,7 @@ const Tabs: React.FC = () => {
     }
 
     const currentPosition = getCurrentPositionName(location);
-    const headerInfo = Object.assign({}, data?.header_info, { position: currentPosition });
+    const headerInfo = Object.assign({}, data?.header_info);
     const title = formatResumeFilename(data?.header_info?.resume_name_format || `{position}-{name}-{age}-{location}`, headerInfo);
 
     // 更新页面标题，确保不为空
@@ -179,12 +289,61 @@ const Tabs: React.FC = () => {
     return null;
   }
 
+  // 获取角色数据
+  const getCharacterData = (url: string) => {
+    const positionKey = url.replace('/', '');
+    const positionData = data?.expected_positions?.[positionKey];
+    return positionData?.header_info;
+  };
+
   return (
     <TabsWrapper data-testid="navigation-tabs" isDark={isDark}>
       {
-        tabs.map(([position, url], index) => (
-          <TabLink key={url} className="no-link-icon" to={url} isDark={isDark}>{position}</TabLink>
-        ))
+        tabs.map(([position, url, b, avatarStr], index) => {
+          const characterData = getCharacterData(url);
+          const characterName = characterData?.name || position;
+          const avatar = characterData?.avatar || avatarStr; 
+          // console.log(`🔍 [DEBUG] 当前位置: ${position} ${characterData?.position}  `);
+          // 调试信息
+          // 调试日志已移除: console.log('Tab debug:', { url, characterData, avatar, characterName, roleTitle });
+
+          return (
+            <TabLink
+              key={url}
+              className="no-link-icon"
+              to={url}
+              isDark={isDark}
+              onMouseEnter={() => {
+                // 调试日志已移除: console.log(`🔄 [DEBUG] TabLink悬停事件触发: ${url}`);
+                const cleanup = handleTabHover(url);
+                // 清理函数会在组件卸载或下次悬停时调用
+                return cleanup;
+              }}
+              onClick={(e) => {
+                // 调试日志已移除: console.log(`🎵 [DEBUG] TabLink点击事件触发: ${url}`);
+                // 使用优化后的SPA导航处理函数
+                handleTabClick(url, e);
+              }}
+            >
+              <TabContent>
+                {avatar && (
+                  <TabAvatar
+                    src={avatar}
+                    alt={characterName}
+                    onError={(e) => {
+                      logTabs.extend('error')('Avatar load error:', avatar, e);
+                      e.currentTarget.style.display = 'none';
+                    }}
+                    onLoad={() => {
+                      logTabs('Avatar loaded successfully:', avatar);
+                    }}
+                  />
+                )}
+                <TabText>{position}</TabText>
+              </TabContent>
+            </TabLink>
+          );
+        })
       }
     </TabsWrapper>
   );

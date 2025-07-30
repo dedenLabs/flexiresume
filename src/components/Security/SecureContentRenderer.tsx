@@ -10,8 +10,6 @@ import { securityConfig } from '../../config/SecurityConfig';
 
 // 全局安全配置 - 从环境变量读取
 const GLOBAL_SECURITY_CONFIG = {
-  // 是否全局禁用安全过滤（生产环境应为false）
-  disableSanitization: import.meta.env.VITE_DISABLE_SANITIZATION === 'true' || false,
   // 开发环境默认启用更多安全警告
   enableSecurityWarnings: import.meta.env.DEV || import.meta.env.VITE_ENABLE_SECURITY_WARNINGS === 'true'
 };
@@ -40,10 +38,6 @@ export interface SecureContentRendererProps {
   onSecurityEvent?: (event: any) => void;
   /** 是否显示安全警告 */
   showSecurityWarnings?: boolean;
-  /** 是否禁用安全过滤（谨慎使用，仅在信任内容时启用） */
-  disableSanitization?: boolean;
-  /** 信任的内容区域标识（用于特定区域放行） */
-  trustedZone?: boolean;
 }
 
 /**
@@ -59,9 +53,7 @@ export const SecureContentRenderer: React.FC<SecureContentRendererProps> = ({
   className = '',
   onError,
   onSecurityEvent,
-  showSecurityWarnings = false,
-  disableSanitization = GLOBAL_SECURITY_CONFIG.disableSanitization,
-  trustedZone = false
+  showSecurityWarnings = false
 }) => {
   const [processedContent, setProcessedContent] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -127,20 +119,8 @@ export const SecureContentRenderer: React.FC<SecureContentRendererProps> = ({
           break;
 
         case 'html':
-          // 如果禁用安全过滤或在信任区域，跳过HTML清理
-          if (disableSanitization || trustedZone) {
-            // 在信任区域时仍然记录安全事件，但不进行清理
-            if (onSecurityEvent) {
-              onSecurityEvent({
-                type: 'trusted_zone_bypass',
-                details: 'HTML sanitization bypassed in trusted zone',
-                contentLength: processed.length
-              });
-            }
-            // 保持原始HTML内容
-          } else {
-            processed = SecurityUtils.sanitizeHTML(processed);
-          }
+          // 始终进行HTML安全清理，确保安全性
+          processed = SecurityUtils.sanitizeHTML(processed);
           break;
 
         case 'text':
@@ -244,7 +224,7 @@ export const SecureContentRenderer: React.FC<SecureContentRendererProps> = ({
   }
 
   return (
-    <div className={`secure-content-renderer ${className}`}>
+    <div className={`secure-content-renderer ${className}` }>
       {/* 安全警告 */}
       {showSecurityWarnings && securityWarnings.length > 0 && (
         <div className="security-warnings">

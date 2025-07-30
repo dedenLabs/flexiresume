@@ -5,7 +5,9 @@ import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
 import { calculateWorkDuration } from '../../utils/Tools';
 import { EmploymentHistoryItemProps } from '../../types/IFlexiResume';
 import SkillRenderer from '../skill/SkillRenderer';
+import { useSafeTheme } from '../../utils/ThemeUtils';
 import { SecureContentRenderer } from '../Security/SecureContentRenderer';
+import { ContentWithLine } from '../timeline/TimelineStyles';
 
 
 const Card = styled.section` 
@@ -34,13 +36,15 @@ const CardHeaderInfo = styled.div`
 const PositionSeparator = styled.span`
   margin: 0 0.5rem;
   font-weight: normal;
-  color: #aaa; /* 分隔符颜色 */
+  color: var(--color-text-disabled);
+  transition: color 0.3s ease;
 `;
 
 const CardHeaderWorkTime = styled.span`
   font-size: 0.75rem;
-  color: #888;
+  color: var(--color-text-secondary);
   white-space: nowrap;
+  transition: color 0.3s ease;
 //   font-weight: bold;
 `;
 
@@ -66,6 +70,7 @@ const EmploymentHistoryItem: React.FC<EmploymentHistoryItemProps> = ({
     collapsed,
     onToggleCollapse,
 }) => {
+    const { isDark } = useSafeTheme();
     // 将 content 转换为 HTML, 获取到可以实时更新数据并渲染的html结构数据
     const markdownContent = checkConvertMarkdownToHtml(description);
     return (
@@ -80,18 +85,21 @@ const EmploymentHistoryItem: React.FC<EmploymentHistoryItemProps> = ({
                     {start_time} - {end_time} ({calculateWorkDuration(start_time, end_time)})
                 </CardHeaderWorkTime>
             </CardHeader>
+
             {!collapsed && (
                 <CardBody>
                     {/* <ReactMarkdown>
                         {description}
                     </ReactMarkdown> */}
                     <SkillRenderer>
-                        <SecureContentRenderer
-                            content={markdownContent}
-                            contentType="html"
-                            className="markdown-content"
-                            trustedZone={false}
-                        />
+                        <ContentWithLine isDark={isDark}>
+                            <SecureContentRenderer
+                                content={markdownContent}
+                                contentType="html"
+                                className="markdown-content"
+                                trustedZone={false}
+                            />
+                        </ContentWithLine>
                     </SkillRenderer>
                 </CardBody>
             )}

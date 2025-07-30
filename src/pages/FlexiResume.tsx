@@ -15,13 +15,14 @@ import {
   recordRouteChangeTime,
   recordComponentMetric
 } from '../utils/PerformanceMonitor';
+import { enhancedAudioPlayer } from '../utils/EnhancedAudioPlayer';
 import EducationHistoryCard from '../components/education_history/EducationHistoryCard';
 import TimelineContainer from '../components/timeline/TimelineContainer';
 import { SkeletonResume } from '../components/SkeletonComponents';
-import debug from 'debug';
+import { getLogger } from '../utils/Logger';
 
 // Debug logger
-const debugResume = debug('app:resume');
+const debugResume = getLogger('FlexiResume');
 import SEOHead from '../components/SEOHead';
 
 interface FlexiResumeProps {
@@ -123,6 +124,13 @@ const FlexiResume: React.FC<FlexiResumeProps> = ({ path }) => {
         if (previousPathRef.current && previousPathRef.current !== path) {
           const routeChangeTime = performance.now() - dataLoadStartTime;
           recordRouteChangeTime(previousPathRef.current, path, routeChangeTime);
+
+          // 播放路径对应的角色音频（随机选择）
+          try {
+            await enhancedAudioPlayer.switchToTabRandomly(path);
+          } catch (error) {
+            debugResume('Failed to play path audio:', error);
+          }
         }
 
         await updateCurrentResumeStore(postionName);
@@ -229,7 +237,7 @@ const FlexiResume: React.FC<FlexiResumeProps> = ({ path }) => {
                 <Section key={i} title={m.name} {...args}>
                   <TimelineCard id={key} {...args} />
                 </Section>
-              );
+              ); 
             default:
               return (
                 <Section key={i} title={m.name} {...args}>

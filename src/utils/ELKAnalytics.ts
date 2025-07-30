@@ -5,11 +5,11 @@
  * 将数据发送到本地ELK Stack进行分析
  */
 
-import { analyticsConfig } from '../config/AnalyticsConfig';
-import debug from 'debug';
+import { analyticsConfig } from '../config/AnalyticsConfig'; 
+import { getLogger } from './Logger';
 
 // Debug logger
-const debugELK = debug('app:elk');
+const debugELK = getLogger('elk');
 
 export interface ELKEvent {
   timestamp: string;

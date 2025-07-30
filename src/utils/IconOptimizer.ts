@@ -7,7 +7,10 @@
  * @date 2024-12-27
  */
 
-import React from 'react';
+import React from 'react'; 
+import { getLogger } from './Logger';
+
+const logIconOptimizer = getLogger('IconOptimizer');
 
 // 预定义常用图标，避免动态导入
 export const COMMON_ICONS = {
@@ -45,7 +48,7 @@ export const loadIcon = async (iconName: keyof typeof COMMON_ICONS): Promise<Rea
     
     return IconComponent;
   } catch (error) {
-    console.error(`Failed to load icon: ${iconName}`, error);
+    logIconOptimizer.extend('error')(`Failed to load icon: ${iconName}`, error);
     // 返回一个空的占位符组件
     return () => null;
   }
@@ -103,9 +106,9 @@ export const preloadCommonIcons = async () => {
     await Promise.all(
       iconNames.map(iconName => loadIcon(iconName))
     );
-    console.log('Common icons preloaded successfully');
+    logIconOptimizer('Common icons preloaded successfully');
   } catch (error) {
-    console.error('Failed to preload icons:', error);
+    logIconOptimizer.extend('error')('Failed to preload icons:', error);
   }
 };
 

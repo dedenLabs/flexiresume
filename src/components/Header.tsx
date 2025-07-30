@@ -68,8 +68,55 @@ const InfoWrapper = styled.div`
 `;
 
 const Name = styled.h1`
-  font-size: 1.5rem;  
+  font-size: 1.5rem;
   letter-spacing: 0.5rem;
+  margin: 0;
+  display: inline-block;
+`;
+
+// 名字和主页链接的响应式容器
+const NameAndHomeContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+
+  /* 当空间不足时，主页链接会换行 */
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  /* 使用容器查询来检测可用空间 */
+  @container (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+`;
+
+// 主页链接组件
+const HomePageGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 1rem;
+  white-space: nowrap;
+
+  /* 在小屏幕上保持紧凑 */
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 const Position = styled.h2`
   font-size: 1rem;  
@@ -98,7 +145,7 @@ const Avatar = styled.img`
 `;
 const QRCodeContener = styled.div.withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
-})<{ isDark?: boolean }>`
+}) <{ isDark?: boolean }>`
     // margin: 0 0.4rem;
     width: 6.5rem;
     height: 6.5rem;
@@ -129,27 +176,28 @@ const Vline = styled.em`
     width: 1.5px;
     height: 0.8rem;
     vertical-align: middle;
-    background: #aaa;
+    background: var(--color-border-medium);
+    transition: background 0.3s ease;
 `;
 const Icon = styled.img.withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
-})<{ isDark?: boolean }>`
+}) <{ isDark?: boolean }>`
     margin: 0 0.4rem;
     width: 1rem;
     height: 1rem;
     /* 使用filter来改变SVG颜色 */
     filter: ${props => props.isDark
-        ? 'brightness(0) saturate(100%) invert(65%) sepia(11%) saturate(297%) hue-rotate(181deg) brightness(93%) contrast(87%)' // 浅灰色 #a0aec0
-        : 'brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(95%) contrast(85%)'   // 深灰色 #888
-    };
+    ? 'brightness(0) saturate(100%) invert(65%) sepia(11%) saturate(297%) hue-rotate(181deg) brightness(93%) contrast(87%)' // 浅灰色 #a0aec0
+    : 'brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(95%) contrast(85%)'   // 深灰色 #888
+  };
     transition: filter 0.3s ease;
 
     /* 悬停效果 */
     &:hover {
         filter: ${props => props.isDark
-            ? 'brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(187deg) brightness(119%) contrast(86%)' // 蓝色 #4a9eff
-            : 'brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(187deg) brightness(119%) contrast(86%)'  // 蓝色 #3498db
-        };
+    ? 'brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(187deg) brightness(119%) contrast(86%)' // 蓝色 #4a9eff
+    : 'brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(187deg) brightness(119%) contrast(86%)'  // 蓝色 #3498db
+  };
     }
 `;
 
@@ -168,7 +216,7 @@ const GenderIcon = styled.img.withConfig({
  `}
 `;
 const IconStyle = { fontSize: "1rem", margin: '0 0.4rem' };
- 
+
 
 /**
  * 渲染通讯方式组件
@@ -237,28 +285,33 @@ const Header: React.FC<HeaderProps> = ({
               size={150}
               width="100%"
               height="100%"
-              fgColor={isDark ? "#1a202c" : "#000000"}
-              bgColor={isDark ? "#e2e8f0" : "#ffffff"}
+              fgColor={isDark ? "var(--color-text-primary)" : "var(--color-text-primary)"}
+              bgColor={isDark ? "var(--color-card)" : "var(--color-card)"}
             />
             {qrcode_msg}
           </QRCodeContener> : null}
           <Avatar qrcode={qrcode ? 1 : 0} src={replaceCDNBaseURL(avatar)} />
-          <Name>{name}
-            {/* {is_male == 1 ? <AiOutlineMan style={{ color: '#3ea8da' }} /> : <AiOutlineWoman style={{ color: 'pink' }} />} */}
-            <GenderIcon src={/*这个图标比react-icons的厚实好看*/is_male == 1 ? icon_male : icon_woman} isMale={is_male} />
-            {home_page ? (
-              <>
-                {/* <Details> */}
-                <IoHome style={IconStyle} /><a className="no-link-icon" href={home_page} style={{
-                  // all: "initial", //清空所有样式
-                  fontSize: "1rem",
-                  letterSpacing: "0rem" // 重新设置字母间距
-                }}>{home_page}</a>
-                {/* <Vline /> */}
-                {/* </Details> */}
-              </>
-            ) : null}
-          </Name>
+                    {/* 名字和主页链接的响应式布局容器 - 实现TODO需求 */}
+          <NameAndHomeContainer>
+            <Name>
+              {name}
+              {/* {is_male == 1 ? <AiOutlineMan style={{ color: '#3ea8da' }} /> : <AiOutlineWoman style={{ color: 'pink' }} />} */}
+              <GenderIcon src={/*这个图标比react-icons的厚实好看*/is_male == 1 ? icon_male : icon_woman} isMale={is_male} />
+            </Name>
+            
+            {/* 主页链接组 - 当空间足够时与Name同行，否则换行 */}
+            {home_page && (
+              <HomePageGroup>
+                <IoHome style={IconStyle} />
+                <a 
+                  className="no-link-icon" 
+                  href={home_page}
+                >
+                  {home_page}
+                </a>
+              </HomePageGroup>
+            )}
+          </NameAndHomeContainer>
           <Position>{position}-{location} {expected_salary}</Position>
 
           <Details>

@@ -10,6 +10,9 @@ import { baiduAnalytics } from '../../utils/BaiduAnalytics';
 import { googleAnalytics } from '../../utils/GoogleAnalytics';
 import { elkAnalytics } from '../../utils/ELKAnalytics';
 import { analyticsConfig } from '../../config/AnalyticsConfig';
+import { getLogger } from '../../utils/Logger';
+
+const logAnalyticsTest = getLogger('AnalyticsTest');
 
 interface AnalyticsStatus {
   baidu: any;
@@ -49,8 +52,10 @@ const AnalyticsTestPanel: React.FC = () => {
         page_path: '/test-page'
       });
       elkAnalytics.trackPageView('Test Page', '/test-page');
+      logAnalyticsTest('✅ Page view test completed');
       addTestResult('✅ Page view test completed');
     } catch (error) {
+      logAnalyticsTest.extend('error')('❌ Page view test failed:', error);
       addTestResult(`❌ Page view test failed: ${error}`);
     }
   };
@@ -60,8 +65,10 @@ const AnalyticsTestPanel: React.FC = () => {
       baiduAnalytics.trackSkillClick('React', 'Frontend');
       googleAnalytics.trackSkillClick('React', 'Frontend');
       elkAnalytics.trackSkillClick('React', 'Frontend');
+      logAnalyticsTest('✅ Skill click test completed');
       addTestResult('✅ Skill click test completed');
     } catch (error) {
+      logAnalyticsTest.extend('error')('❌ Skill click test failed:', error);
       addTestResult(`❌ Skill click test failed: ${error}`);
     }
   };
@@ -71,8 +78,10 @@ const AnalyticsTestPanel: React.FC = () => {
       baiduAnalytics.trackProjectView('FlexiResume', 'Web Application');
       googleAnalytics.trackProjectView('FlexiResume', 'Web Application');
       elkAnalytics.trackProjectView('FlexiResume', 'Web Application');
+      logAnalyticsTest('✅ Project view test completed');
       addTestResult('✅ Project view test completed');
     } catch (error) {
+      logAnalyticsTest.extend('error')('❌ Project view test failed:', error);
       addTestResult(`❌ Project view test failed: ${error}`);
     }
   };
@@ -82,8 +91,10 @@ const AnalyticsTestPanel: React.FC = () => {
       baiduAnalytics.trackContactClick('email');
       googleAnalytics.trackContactClick('email', 'test@example.com');
       elkAnalytics.trackContactClick('email', 'test@example.com');
+      logAnalyticsTest('✅ Contact click test completed');
       addTestResult('✅ Contact click test completed');
     } catch (error) {
+      logAnalyticsTest.extend('error')('❌ Contact click test failed:', error);
       addTestResult(`❌ Contact click test failed: ${error}`);
     }
   };
@@ -93,8 +104,10 @@ const AnalyticsTestPanel: React.FC = () => {
       baiduAnalytics.trackLanguageSwitch('zh', 'en');
       googleAnalytics.trackLanguageSwitch('zh', 'en');
       elkAnalytics.trackLanguageSwitch('zh', 'en');
+      logAnalyticsTest('✅ Language switch test completed');
       addTestResult('✅ Language switch test completed');
     } catch (error) {
+      logAnalyticsTest.extend('error')('❌ Language switch test failed:', error);
       addTestResult(`❌ Language switch test failed: ${error}`);
     }
   };
@@ -104,8 +117,10 @@ const AnalyticsTestPanel: React.FC = () => {
       baiduAnalytics.trackThemeSwitch('light', 'dark');
       googleAnalytics.trackThemeSwitch('light', 'dark');
       elkAnalytics.trackThemeSwitch('light', 'dark');
+      logAnalyticsTest('✅ Theme switch test completed');
       addTestResult('✅ Theme switch test completed');
     } catch (error) {
+      logAnalyticsTest.extend('error')('❌ Theme switch test failed:', error);
       addTestResult(`❌ Theme switch test failed: ${error}`);
     }
   };
@@ -115,8 +130,10 @@ const AnalyticsTestPanel: React.FC = () => {
       baiduAnalytics.trackError('test_error', 'This is a test error');
       googleAnalytics.trackError('test_error', 'This is a test error', false);
       elkAnalytics.trackError('test_error', 'This is a test error', undefined, 'AnalyticsTestPanel');
+      logAnalyticsTest('✅ Error tracking test completed');
       addTestResult('✅ Error tracking test completed');
     } catch (error) {
+      logAnalyticsTest.extend('error')('❌ Error tracking test failed:', error);
       addTestResult(`❌ Error tracking test failed: ${error}`);
     }
   };

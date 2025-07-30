@@ -11,10 +11,10 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../theme';
 import { useI18n } from '../i18n';
-import debug from 'debug';
+import { getLogger } from '../utils/Logger';
 
-// Debug logger
-const debugPDF = debug('app:pdf');
+const logPDFDownloader = getLogger('PDFDownloader');
+const debugPDF = getLogger('pdf');
 
 var isDarkTheme = false;
 /**
@@ -83,19 +83,19 @@ const DownloaderButton = styled.button.withConfig({
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: ${props => props.isDark ? 'rgba(45, 55, 72, 0.9)' : 'rgba(255, 255, 255, 0.9)'};
-  border: 1px solid ${props => props.isDark ? 'rgba(74, 85, 104, 0.6)' : '#e0e0e0'};
+  background: ${props => props.isDark ? 'var(--color-surface)' : 'var(--color-card)'};
+  border: 1px solid ${props => props.isDark ? 'var(--color-border-medium)' : 'var(--color-border-light)'};
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  color: ${props => props.isDark ? '#e2e8f0' : '#333'};
+  color: ${props => props.isDark ? 'var(--color-text-primary)' : 'var(--color-text-primary)'};
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
 
   &:hover {
-    background: ${props => props.isDark ? 'rgba(45, 55, 72, 1)' : 'rgba(255, 255, 255, 1)'};
-    border-color: ${props => props.isDark ? '#4a9eff' : '#3498db'};
-    box-shadow: 0 2px 8px ${props => props.isDark ? 'rgba(74, 158, 255, 0.3)' : 'rgba(52, 152, 219, 0.2)'};
+    background: var(--color-card);
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 8px var(--color-shadow-medium);
   }
 
   &:active {
@@ -125,10 +125,10 @@ const DropdownMenu = styled.div.withConfig({
   bottom: 100%;
   right: 0;
   margin-bottom: 4px;
-  background: ${props => props.isDark ? 'rgba(26, 32, 44, 0.95)' : 'white'};
-  border: 1px solid ${props => props.isDark ? 'rgba(45, 55, 72, 0.8)' : '#e0e0e0'};
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
   border-radius: 6px;
-  box-shadow: 0 -4px 12px ${props => props.isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'};
+  box-shadow: 0 -4px 12px var(--color-shadow-medium);
   backdrop-filter: blur(10px);
   z-index: 1000;
   min-width: 160px;
@@ -148,7 +148,7 @@ const DropdownItem = styled.button.withConfig({
   padding: 12px 16px;
   border: none;
   background: transparent;
-  color: ${props => props.isDark ? '#e2e8f0' : '#333'};
+  color: var(--color-text-primary);
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -166,8 +166,8 @@ const DropdownItem = styled.button.withConfig({
   }
 
   &:hover {
-    background: ${props => props.isDark ? 'rgba(45, 55, 72, 0.8)' : '#f8f9fa'};
-    color: ${props => props.isDark ? '#4a9eff' : '#3498db'};
+    background: var(--color-card);
+    color: var(--color-primary);
   }
 
   &:disabled {
@@ -270,16 +270,16 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
             }
         `;
       document.head.appendChild(style);
-      console.log('已禁用深色模式背景滤镜');
+      logPDFDownloader('已禁用深色模式背景滤镜');
     } else {
-      console.log('已恢复深色模式背景滤镜');
+      logPDFDownloader('已恢复深色模式背景滤镜');
     }
   }
 
 
   const generatePDF = async (colorMode: 'color' | 'grayscale' | 'original') => {
     if (isGenerating) return; 
-    // console.log('isDarkTheme:'+isDarkTheme)
+    // logPDFDownloader('isDarkTheme:'+isDarkTheme)
     setIsGenerating(true);
     setIsOpen(false);
 

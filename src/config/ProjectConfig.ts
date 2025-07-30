@@ -97,6 +97,11 @@ export const defaultProjectConfig: ProjectConfig = {
     showPerformanceMonitor: import.meta.env.DEV || false,
     verboseLogging: import.meta.env.DEV || false,
   },
+
+  tabs: {
+    labelFormat: import.meta.env.VITE_TAB_LABEL_FORMAT || "{position}",
+    labelSeparator: import.meta.env.VITE_TAB_LABEL_SEPARATOR || " / ",
+  },
 };
 
 /**
@@ -283,11 +288,20 @@ export interface ProjectConfig {
   debug: {
     /** 是否启用调试模式 / Whether to enable debug mode */
     enabled: boolean;
-    
+
     /** 是否显示性能监控 / Whether to show performance monitoring */
     showPerformanceMonitor: boolean;
-    
+
     /** 是否启用详细日志 / Whether to enable verbose logging */
     verboseLogging: boolean;
+  };
+
+  /** 页签配置 / Tabs configuration */
+  tabs: {
+    /** 页签标签格式模板 / Tab label format template */
+    labelFormat: string;
+
+    /** 页签标签分隔符 / Tab label separator */
+    labelSeparator: string;
   };
 }

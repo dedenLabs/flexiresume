@@ -56,77 +56,77 @@ export interface ThemeColors {
   };
 }
 
-// 浅色主题
+// 浅色主题 - 西游记古典风格
 const lightTheme: ThemeColors = {
-  primary: '#3498db',
-  secondary: '#2c3e50',
-  accent: '#e74c3c',
-  
-  background: '#ffffff',
-  surface: '#f8f9fa',
-  card: '#ffffff',
-  
+  primary: '#D4AF37',        // 金色 - 象征佛法和功德
+  secondary: '#8B4513',      // 棕色 - 象征大地和稳重
+  accent: '#DC143C',         // 深红色 - 象征力量和热情
+
+  background: '#FFF8DC',     // 米色背景 - 古典纸张色
+  surface: '#F5F5DC',       // 米白色表面 - 古典书卷色
+  card: '#FFFAF0',          // 花白色卡片 - 古典宣纸色
+
   text: {
-    primary: '#2c3e50',
-    secondary: '#7f8c8d',
-    disabled: '#bdc3c7',
-    inverse: '#ffffff'
+    primary: '#2F4F4F',     // 深灰绿色 - 古典墨色
+    secondary: '#696969',   // 暗灰色 - 古典副文本
+    disabled: '#A9A9A9',    // 浅灰色 - 禁用文本
+    inverse: '#FFFAF0'      // 反色文本
   },
-  
+
   border: {
-    light: '#ecf0f1',
-    medium: '#bdc3c7',
-    dark: '#95a5a6'
+    light: '#F0E68C',       // 卡其色浅边框 - 古典装饰
+    medium: '#DAA520',      // 金棒色中边框 - 如意金箍棒
+    dark: '#B8860B'         // 深金色边框 - 古典金属
   },
-  
+
   status: {
-    success: '#27ae60',
-    warning: '#f39c12',
-    error: '#e74c3c',
-    info: '#3498db'
+    success: '#228B22',     // 森林绿 - 象征生机和成功
+    warning: '#FF8C00',     // 深橙色 - 象征警示和火焰
+    error: '#B22222',       // 火砖红 - 象征危险和战斗
+    info: '#4682B4'         // 钢蓝色 - 象征智慧和冷静
   },
-  
+
   shadow: {
-    light: 'rgba(0, 0, 0, 0.05)',
-    medium: 'rgba(0, 0, 0, 0.1)',
-    dark: 'rgba(0, 0, 0, 0.2)'
+    light: 'rgba(212, 175, 55, 0.1)',   // 金色阴影
+    medium: 'rgba(139, 69, 19, 0.15)',  // 棕色阴影
+    dark: 'rgba(47, 79, 79, 0.2)'       // 深色阴影
   }
 };
 
-// 深色主题 - 护眼优化版本
+// 深色主题 - 西游记夜晚风格
 const darkTheme: ThemeColors = {
-  primary: '#4a9eff',        // 更柔和的蓝色
-  secondary: '#e2e8f0',      // 更温和的浅色
-  accent: '#ff6b6b',         // 更柔和的红色
+  primary: '#FFD700',        // 金色 - 夜晚的月光金辉
+  secondary: '#F0E68C',      // 卡其色 - 夜晚的温暖光芒
+  accent: '#FF6347',         // 番茄红 - 夜晚的火焰色彩
 
-  background: '#0f1419',     // 更深的背景，减少眼部疲劳
-  surface: '#1a202c',       // 温和的表面色
-  card: '#2d3748',          // 更舒适的卡片背景
+  background: '#1C1C1C',     // 深炭色背景 - 夜晚的深邃
+  surface: '#2F2F2F',       // 深灰色表面 - 夜晚的山石
+  card: '#3A3A3A',          // 深灰卡片 - 夜晚的洞穴
 
   text: {
-    primary: '#e2e8f0',     // 柔和的主文本色
-    secondary: '#a0aec0',   // 温和的次要文本色
-    disabled: '#718096',    // 适中的禁用文本色
-    inverse: '#1a202c'      // 反色文本
+    primary: '#F5DEB3',     // 小麦色主文本 - 夜晚的温暖光线
+    secondary: '#D2B48C',   // 棕褐色次要文本 - 夜晚的柔和光
+    disabled: '#808080',    // 灰色禁用文本 - 夜晚的阴影
+    inverse: '#1C1C1C'      // 反色文本
   },
 
   border: {
-    light: '#2d3748',       // 更柔和的浅边框
-    medium: '#4a5568',      // 适中的边框色
-    dark: '#718096'         // 深边框色
+    light: '#4A4A4A',       // 深灰浅边框 - 夜晚的轮廓
+    medium: '#696969',      // 暗灰中边框 - 夜晚的分界
+    dark: '#8B7D6B'         // 深棕边框 - 夜晚的古铜
   },
 
   status: {
-    success: '#48bb78',     // 护眼的成功色
-    warning: '#ed8936',     // 温和的警告色
-    error: '#f56565',       // 柔和的错误色
-    info: '#4299e1'         // 舒适的信息色
+    success: '#32CD32',     // 酸橙绿 - 夜晚的生机
+    warning: '#FFA500',     // 橙色 - 夜晚的火光警示
+    error: '#FF4500',       // 橙红色 - 夜晚的危险火焰
+    info: '#87CEEB'         // 天蓝色 - 夜晚的星空智慧
   },
 
   shadow: {
-    light: 'rgba(0, 0, 0, 0.1)',    // 更轻的阴影
-    medium: 'rgba(0, 0, 0, 0.25)',  // 适中的阴影
-    dark: 'rgba(0, 0, 0, 0.4)'      // 深阴影
+    light: 'rgba(255, 215, 0, 0.1)',    // 金色轻阴影
+    medium: 'rgba(255, 215, 0, 0.2)',   // 金色中阴影
+    dark: 'rgba(0, 0, 0, 0.4)'          // 深色重阴影
   }
 };
 

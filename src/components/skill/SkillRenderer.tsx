@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import SkillItem from './SkillItem';
 import MermaidLazyChart from '../mermaid/MermaidLazyChart';
-import { getLogger } from '../../utils/Tools';
+import { mermaidDataManager } from '../../utils/MermaidDataManager';
+import { getLogger } from '../../utils/Logger';
 
 const logger = getLogger('SkillRenderer');
 
@@ -132,15 +133,8 @@ const useTheme = () => {
     return isDark;
 };
 
-/**
- * 向后兼容的主题hook
- * @deprecated 推荐直接使用 useTheme
- * @returns 包含isDark属性的对象
- */
-export const useSafeTheme = () => {
-    const isDark = useTheme();
-    return { isDark };
-};
+// 导出统一的主题hook
+export { useSafeTheme } from '../../utils/ThemeUtils';
 
 /**
  * SkillRenderer 组件
@@ -233,16 +227,27 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
 
         let processedCount = 0;
 
-        // 处理普通Mermaid占位符
+        // 处理普通Mermaid占位符（现在只需要data-mermaid-id）
         const placeholders = containerRef.current.querySelectorAll(
-            '.mermaid-placeholder[data-mermaid-chart][data-mermaid-id]'
+            '.mermaid-placeholder[data-mermaid-id]'
         );
 
+        logger('🔍 SkillRenderer发现Mermaid占位符:', placeholders.length);
+
         placeholders.forEach((placeholder) => {
-            const chart = placeholder.getAttribute('data-mermaid-chart');
             const chartId = placeholder.getAttribute('data-mermaid-id');
 
-            if (!chart || !chartId) return;
+            if (!chartId) return;
+
+            // 从内存中获取图表数据
+            const chart = mermaidDataManager.getChart(chartId);
+
+            logger('🔍 处理Mermaid占位符:', { chartId, hasChart: !!chart });
+
+            if (!chart) {
+                logger(`未找到图表数据: ${chartId}`);
+                return;
+            }
 
             try {
                 const container = document.createElement('div');
@@ -269,19 +274,25 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
             }
         });
 
-        // 处理懒加载Mermaid占位符
+        // 处理懒加载Mermaid占位符（现在只需要data-mermaid-id）
         const lazyPlaceholders = containerRef.current.querySelectorAll(
-            '.mermaid-lazy-placeholder[data-mermaid-chart][data-mermaid-id]'
+            '.mermaid-lazy-placeholder[data-mermaid-id]'
         );
 
         lazyPlaceholders.forEach((placeholder) => {
-            const encodedChart = placeholder.getAttribute('data-mermaid-chart');
             const chartId = placeholder.getAttribute('data-mermaid-id');
 
-            if (!encodedChart || !chartId) return;
+            if (!chartId) return;
+
+            // 从内存中获取图表数据
+            const chart = mermaidDataManager.getChart(chartId);
+
+            if (!chart) {
+                logger(`未找到懒加载图表数据: ${chartId}`);
+                return;
+            }
 
             try {
-                const chart = decodeURIComponent(encodedChart);
                 const container = document.createElement('div');
                 const id = generateUniqueId('mermaid-lazy', chartId);
 
@@ -295,7 +306,7 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
                     <MermaidLazyChart
                         chart={chart}
                         id={chartId}
-                        placeholderHeight="300px"
+                        placeholderHeight="auto"
                     />
                 );
 

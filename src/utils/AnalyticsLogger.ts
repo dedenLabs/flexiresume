@@ -5,10 +5,12 @@
  * 为简历项目提供统计数据收集和发送功能
  */
 
-import debug from 'debug';
+import { getLogger } from "./Logger";
+
+ 
 
 // Debug logger
-const debugAnalytics = debug('app:analytics');
+const debugAnalytics = getLogger('analytics');
 
 interface AnalyticsEvent {
   timestamp: string;

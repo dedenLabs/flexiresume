@@ -1,0 +1,79 @@
+/**
+ * 现代黑体 字体配置
+ * 
+ * 现代简洁的中文字体
+ * 
+ * @author FlexiResume Team
+ * @date 2025-07-29
+ */
+
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: local('Noto Sans SC'), local('NotoSansSC'),
+       url('./noto-sans-sc-300.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Noto Sans SC'), local('NotoSansSC'),
+       url('./noto-sans-sc-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local('Noto Sans SC'), local('NotoSansSC'),
+       url('./noto-sans-sc-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Noto Sans SC'), local('NotoSansSC'),
+       url('./noto-sans-sc-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Noto Sans SC'), local('NotoSansSC'),
+       url('./noto-sans-sc-700.woff2') format('woff2');
+}
+
+/* 现代黑体 专用样式类 */
+.font-modern_sans {
+  font-family: 'Noto Sans SC', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.6;
+  font-feature-settings: 'liga' 1, 'kern' 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* 标题样式 */
+.font-modern_sans-title {
+  font-family: 'Noto Sans SC', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  line-height: 1.5;
+}
+
+/* 正文样式 */
+.font-modern_sans-body {
+  font-family: 'Noto Sans SC', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.6;
+}

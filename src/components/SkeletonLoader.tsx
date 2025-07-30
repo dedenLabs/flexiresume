@@ -1,17 +1,27 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useSafeTheme } from '../utils/ThemeUtils';
+import {
+  SkeletonAvatar,
+  SkeletonTitle,
+  SkeletonText,
+  SkeletonCard
+} from './SkeletonComponents';
 
-const SkeletonWrapper = styled.div`
+// 使用SkeletonComponents中的统一动画，无需重复定义
+
+const SkeletonWrapper = styled.div<{ isDark?: boolean }>`
   /* 响应式宽度设计 - 匹配实际简历布局 */
   width: 100%;
   max-width: 800px;
   min-width: 320px; /* 最小宽度确保移动端可用 */
   padding: 20px;
   margin: 0 auto; /* 居中显示 */
-  background: #fff;
+  background: ${props => props.isDark ? 'var(--color-card)' : 'var(--color-surface)'};
   border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 15px var(--color-shadow-medium);
   box-sizing: border-box;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 
   /* 移动端适配 */
   @media (max-width: 768px) {
@@ -28,58 +38,53 @@ const SkeletonHeader = styled.div`
   gap: 20px;
 `;
 
-const SkeletonAvatar = styled.div`
+// 使用SkeletonComponents中的SkeletonAvatar，自定义尺寸
+const LocalSkeletonAvatar = styled(SkeletonAvatar)`
   width: 80px;
   height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
 `;
 
 const SkeletonInfo = styled.div`
   flex: 1;
 `;
 
-const SkeletonTitle = styled.div`
+// 使用SkeletonComponents中的SkeletonTitle，自定义尺寸
+const LocalSkeletonTitle = styled(SkeletonTitle)`
   height: 32px;
   width: 200px;
   margin-bottom: 12px;
-  border-radius: 6px;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
 `;
 
-const SkeletonText = styled.div<{ width?: string; height?: string }>`
-  height: ${props => props.height || '16px'};
-  width: ${props => props.width || '100%'};
+// 使用SkeletonComponents中的SkeletonText
+const LocalSkeletonText = styled(SkeletonText)`
   margin: 8px 0;
-  border-radius: 4px;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
 `;
 
 const SkeletonSection = styled.div`
   margin: 30px 0;
 `;
 
-const SkeletonSectionTitle = styled.div`
+const SkeletonSectionTitle = styled.div<{ isDark?: boolean }>`
   height: 24px;
   width: 150px;
   margin-bottom: 20px;
   border-radius: 6px;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: ${props => props.isDark
+    ? 'linear-gradient(90deg, var(--color-border-medium) 25%, var(--color-border-dark) 50%, var(--color-border-medium) 75%)'
+    : 'linear-gradient(90deg, var(--color-border-light) 25%, var(--color-border-medium) 50%, var(--color-border-light) 75%)'
+  };
   background-size: 200% 100%;
-  animation: loading 1.5s infinite;
+  animation: ${shimmer} 1.5s infinite;
+  transition: background 0.3s ease;
 `;
 
-const SkeletonCard = styled.div`
+const SkeletonCard = styled.div<{ isDark?: boolean }>`
   padding: 20px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid ${props => props.isDark ? 'var(--color-border-medium)' : 'var(--color-border-light)'};
   border-radius: 8px;
   margin-bottom: 16px;
+  background: ${props => props.isDark ? 'var(--color-card)' : 'var(--color-surface)'};
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 `;
 
 /**
@@ -87,69 +92,72 @@ const SkeletonCard = styled.div`
  *
  * 提供更真实的简历加载体验，尺寸和布局与实际简历保持一致
  * 支持响应式设计，在不同设备上都有良好的显示效果
+ * 完全支持主题切换，自动适配明暗模式
  */
 const SkeletonLoader: React.FC = () => {
+  const { isDark } = useSafeTheme();
+
   return (
-    <SkeletonWrapper>
+    <SkeletonWrapper isDark={isDark}>
       {/* 头部骨架 - 个人信息区域 */}
       <SkeletonHeader>
-        <SkeletonAvatar />
+        <LocalSkeletonAvatar isDark={isDark} />
         <SkeletonInfo>
-          <SkeletonTitle />
-          <SkeletonText width="70%" />
-          <SkeletonText width="50%" />
-          <SkeletonText width="60%" />
-          <SkeletonText width="45%" />
+          <LocalSkeletonTitle isDark={isDark} />
+          <LocalSkeletonText width="70%" isDark={isDark} />
+          <LocalSkeletonText width="50%" isDark={isDark} />
+          <LocalSkeletonText width="60%" isDark={isDark} />
+          <LocalSkeletonText width="45%" isDark={isDark} />
         </SkeletonInfo>
       </SkeletonHeader>
 
       {/* 个人优势骨架 */}
       <SkeletonSection>
-        <SkeletonSectionTitle />
-        <SkeletonCard>
-          <SkeletonText width="95%" />
-          <SkeletonText width="88%" />
-          <SkeletonText width="92%" />
-          <SkeletonText width="85%" />
-          <SkeletonText width="90%" />
+        <SkeletonSectionTitle isDark={isDark} />
+        <SkeletonCard isDark={isDark}>
+          <LocalSkeletonText width="95%" isDark={isDark} />
+          <LocalSkeletonText width="88%" isDark={isDark} />
+          <LocalSkeletonText width="92%" isDark={isDark} />
+          <LocalSkeletonText width="85%" isDark={isDark} />
+          <LocalSkeletonText width="90%" isDark={isDark} />
         </SkeletonCard>
       </SkeletonSection>
 
       {/* 技能栈骨架 */}
       <SkeletonSection>
-        <SkeletonSectionTitle />
-        <SkeletonCard>
-          <SkeletonText width="75%" />
-          <SkeletonText width="65%" />
-          <SkeletonText width="80%" />
-          <SkeletonText width="70%" />
+        <SkeletonSectionTitle isDark={isDark} />
+        <SkeletonCard isDark={isDark}>
+          <LocalSkeletonText width="75%" isDark={isDark} />
+          <LocalSkeletonText width="65%" isDark={isDark} />
+          <LocalSkeletonText width="80%" isDark={isDark} />
+          <LocalSkeletonText width="70%" isDark={isDark} />
         </SkeletonCard>
       </SkeletonSection>
 
       {/* 工作经历骨架 */}
       <SkeletonSection>
-        <SkeletonSectionTitle />
-        <SkeletonCard>
-          <SkeletonText width="55%" />
-          <SkeletonText width="93%" />
-          <SkeletonText width="87%" />
-          <SkeletonText width="91%" />
+        <SkeletonSectionTitle isDark={isDark} />
+        <SkeletonCard isDark={isDark}>
+          <LocalSkeletonText width="55%" isDark={isDark} />
+          <LocalSkeletonText width="93%" isDark={isDark} />
+          <LocalSkeletonText width="87%" isDark={isDark} />
+          <LocalSkeletonText width="91%" isDark={isDark} />
         </SkeletonCard>
-        <SkeletonCard>
-          <SkeletonText width="48%" />
-          <SkeletonText width="89%" />
-          <SkeletonText width="84%" />
-          <SkeletonText width="88%" />
+        <SkeletonCard isDark={isDark}>
+          <LocalSkeletonText width="48%" isDark={isDark} />
+          <LocalSkeletonText width="89%" isDark={isDark} />
+          <LocalSkeletonText width="84%" isDark={isDark} />
+          <LocalSkeletonText width="88%" isDark={isDark} />
         </SkeletonCard>
       </SkeletonSection>
 
       {/* 项目经历骨架 */}
       <SkeletonSection>
-        <SkeletonSectionTitle />
-        <SkeletonCard>
-          <SkeletonText width="60%" />
-          <SkeletonText width="95%" />
-          <SkeletonText width="90%" />
+        <SkeletonSectionTitle isDark={isDark} />
+        <SkeletonCard isDark={isDark}>
+          <LocalSkeletonText width="60%" isDark={isDark} />
+          <LocalSkeletonText width="95%" isDark={isDark} />
+          <LocalSkeletonText width="90%" isDark={isDark} />
         </SkeletonCard>
       </SkeletonSection>
     </SkeletonWrapper>

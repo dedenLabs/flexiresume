@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>西游记角色测试页面</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        .character-card {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #ffd700;
+        }
+        .character-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .character-title {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        .test-link {
+            display: inline-block;
+            background: #ffd700;
+            color: #333;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        .test-link:hover {
+            background: #ffed4e;
+            transform: translateY(-2px);
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .status.completed {
+            background: #10b981;
+            color: white;
+        }
+        .status.pending {
+            background: #f59e0b;
+            color: white;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .description {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐒 西游记团队简历测试</h1>
+        <div class="description">
+            点击下方链接测试每个角色的简历页面是否正常工作
+        </div>
+        
+        <div class="character-card">
+            <div class="character-name">🧘 唐僧 (陈玄奘)</div>
+            <div class="character-title">高级项目经理 / 团队领导</div>
+            <div>14年大型项目管理经验，专注于跨文化、长周期、高风险项目的规划与执行</div>
+            <a href="/xuanzang" class="test-link">查看简历</a>
+            <span class="status completed">已完成</span>
+        </div>
+        
+        <div class="character-card">
+            <div class="character-name">🐒 孙悟空</div>
+            <div class="character-title">首席技术专家 / 问题解决专家</div>
+            <div>拥有500+年技术积累的资深技术专家，专精于复杂问题解决和技术创新</div>
+            <a href="/wukong" class="test-link">查看简历</a>
+            <span class="status completed">已完成</span>
+        </div>
+        
+        <div class="character-card">
+            <div class="character-name">🐷 猪八戒 (猪悟能)</div>
+            <div class="character-title">业务拓展经理 / 后勤保障专家</div>
+            <div>具有天庭管理背景的业务拓展专家，擅长人际关系维护和资源整合</div>
+            <a href="/bajie" class="test-link">查看简历</a>
+            <span class="status completed">已完成</span>
+        </div>
+        
+        <div class="character-card">
+            <div class="character-name">🏺 沙僧 (沙悟净)</div>
+            <div class="character-title">高级运维工程师 / 质量保证专家</div>
+            <div>具有军事背景的资深运维工程师，800年基础工作经验积累</div>
+            <a href="/wujing" class="test-link">查看简历</a>
+            <span class="status completed">已完成</span>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3);">
+            <p>🎯 <strong>测试说明</strong>：点击"查看简历"链接，如果能正常显示对应角色的简历页面，说明功能正常</p>
+            <p>📝 如果遇到问题，请检查控制台错误信息</p>
+        </div>
+    </div>
+</body>
+</html>

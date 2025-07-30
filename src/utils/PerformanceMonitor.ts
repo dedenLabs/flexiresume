@@ -15,8 +15,8 @@
  * @updated 2024-12-27 - 增强性能监控功能
  */
 
-import React from 'react';
-import { getLogger } from './Tools';
+import React from 'react'; 
+import { getLogger } from './Logger';
 
 const logger = getLogger('PerformanceMonitor');
 

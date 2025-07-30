@@ -1,4 +1,7 @@
 import { useEffect } from 'react';
+import { getLogger } from '../utils/Logger';
+
+const logUseCDNInterceptor = getLogger('UseCDNInterceptor');
 const useCDNInterceptor = () => {
     useEffect(() => {
         // Service Worker 拦截逻辑
@@ -7,12 +10,12 @@ const useCDNInterceptor = () => {
                 navigator.serviceWorker.register('sw.js'
                     // , { scope: '/' }
                 )
-                    .then(reg => console.log('CDN 拦截已启用 (Service Worker)'))
+                    .then(reg => logUseCDNInterceptor('CDN 拦截已启用 (Service Worker)'))
                     .catch((e) => {
-                        console.error(e);
+                        logUseCDNInterceptor.extend('error')(e);
                     });
             } catch (e) {
-                console.error(e);
+                logUseCDNInterceptor.extend('error')(e);
             }
         };
 

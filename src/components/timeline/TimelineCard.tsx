@@ -5,18 +5,25 @@ import TimelineContainer from './TimelineContainer';
 import flexiResumeStore from '../../store/Store';
 import { logCollapse, useCollapser, watchTitleCollapser } from '../../utils/Tools';
 import { checkConvertMarkdownToHtml } from '../../utils/ParseAndReplaceSkills';
-import { ContentWithLine, Node } from './TimelineStyles';
+import { Node } from './TimelineStyles';
+import { ContentWithLineWrapper } from './ContentWithLineWrapper';
 import { useTheme } from '../../theme';
 import SkillRenderer from '../skill/SkillRenderer';
 import { SecureContentRenderer } from '../Security/SecureContentRenderer';
 import TimelineNode from './TimelineNode';
 
-interface TimelineCardProps { id: string }
+interface TimelineCardProps {
+  id: string;
+  name: string;
+  showLine?: boolean; // 是否显示线条
+  data: any;
+}
 
 const TimelineWrapper = styled(motion.div)`
   margin: 0px 2px;
   display: inline-block;
   max-width: 100%;
+  width: 100%;
 `;
 
 
@@ -25,7 +32,7 @@ const TimelineWrapper = styled(motion.div)`
  *
  * @returns React元素，渲染技能卡片。
  */
-const TimelineCard: React.FC<TimelineCardProps> = ({ id, name, data }) => {
+const TimelineCard: React.FC<TimelineCardProps> = ({ id, name, showLine = true, data }) => {
     const { isDark } = useTheme();
     const { list, content, content_head } = data;
     // 定义折叠状态，组别折叠状态默认全部展开 
@@ -36,16 +43,15 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ id, name, data }) => {
         <TimelineWrapper isDark={isDark}>
             {
                 !collapsedItems[0] && content_head && (
-                    <ContentWithLine isDark={isDark}>
+                    <ContentWithLineWrapper isDark={isDark} showLine={showLine}>
                         <SkillRenderer>
                             <SecureContentRenderer
                                 content={headHtml}
                                 contentType="html"
                                 className="markdown-content"
-                                trustedZone={false}
                             />
                         </SkillRenderer>
-                    </ContentWithLine>
+                    </ContentWithLineWrapper>
                 )
             }
 
@@ -53,16 +59,15 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ id, name, data }) => {
 
             {
                 !collapsedItems[0] && content && (
-                    <ContentWithLine isDark={isDark}>
+                    <ContentWithLineWrapper isDark={isDark} showLine={showLine}>
                         <SkillRenderer>
                             <SecureContentRenderer
                                 content={html}
                                 contentType="html"
                                 className="markdown-content"
-                                trustedZone={false}
                             />
                         </SkillRenderer>
-                    </ContentWithLine>
+                    </ContentWithLineWrapper>
                 )
             }
 

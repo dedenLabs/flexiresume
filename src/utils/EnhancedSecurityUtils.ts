@@ -6,12 +6,12 @@
  * Provides comprehensive XSS protection, data validation, and security monitoring
  */
 
-import DOMPurify from 'dompurify';
-import debug from 'debug';
+import DOMPurify from 'dompurify'; 
 import { SecurityUtils } from './SecurityUtils';
+import { getLogger } from './Logger';
 
 // Debug logger
-const debugEnhancedSecurity = debug('app:enhanced-security');
+const debugEnhancedSecurity = getLogger('enhanced-security');
 
 /**
  * 增强的XSS防护配置
@@ -97,7 +97,7 @@ export class EnhancedSecurityUtils {
   private securityEvents: SecurityEvent[] = [];
   private rateLimitMap = new Map<string, number[]>();
 
-  private constructor() {}
+  private constructor() { }
 
   static getInstance(): EnhancedSecurityUtils {
     if (!EnhancedSecurityUtils.instance) {
@@ -253,7 +253,7 @@ export class EnhancedSecurityUtils {
 
     try {
       const urlObj = new URL(url, window.location.origin);
-      
+
       // 协议检查
       if (!ENHANCED_XSS_CONFIG.ALLOWED_PROTOCOLS.includes(urlObj.protocol)) {
         return false;
@@ -402,7 +402,7 @@ export class EnhancedSecurityUtils {
    */
   private static logSecurityEvent(event: Omit<SecurityEvent, 'timestamp' | 'userAgent' | 'url'>): void {
     const instance = EnhancedSecurityUtils.getInstance();
-    
+
     const fullEvent: SecurityEvent = {
       ...event,
       timestamp: Date.now(),
@@ -496,91 +496,91 @@ export class EnhancedSecurityUtils {
       recommendations
     };
   }
-}
 
-/**
- * 速率限制检查
- */
-static checkRateLimit(key: string, maxRequests: number = 100, timeWindow: number = 60000): boolean {
-  const instance = EnhancedSecurityUtils.getInstance();
-  const now = Date.now();
-  const windowStart = now - timeWindow;
+  /**
+   * 速率限制检查
+   */
+  static checkRateLimit(key: string, maxRequests: number = 100, timeWindow: number = 60000): boolean {
+    const instance = EnhancedSecurityUtils.getInstance();
+    const now = Date.now();
+    const windowStart = now - timeWindow;
 
-  // 获取或创建请求记录
-  if (!instance.rateLimitMap.has(key)) {
-    instance.rateLimitMap.set(key, []);
+    // 获取或创建请求记录
+    if (!instance.rateLimitMap.has(key)) {
+      instance.rateLimitMap.set(key, []);
+    }
+
+    const requests = instance.rateLimitMap.get(key)!;
+
+    // 清理过期的请求记录
+    const validRequests = requests.filter(timestamp => timestamp > windowStart);
+    instance.rateLimitMap.set(key, validRequests);
+
+    // 检查是否超出限制
+    if (validRequests.length >= maxRequests) {
+      this.logSecurityEvent({
+        type: SecurityEventType.RATE_LIMIT_EXCEEDED,
+        severity: 'medium',
+        message: `Rate limit exceeded for key: ${key}`,
+        details: { key, requests: validRequests.length, maxRequests, timeWindow }
+      });
+      return false;
+    }
+
+    // 记录当前请求
+    validRequests.push(now);
+    instance.rateLimitMap.set(key, validRequests);
+
+    return true;
   }
 
-  const requests = instance.rateLimitMap.get(key)!;
-
-  // 清理过期的请求记录
-  const validRequests = requests.filter(timestamp => timestamp > windowStart);
-  instance.rateLimitMap.set(key, validRequests);
-
-  // 检查是否超出限制
-  if (validRequests.length >= maxRequests) {
+  /**
+   * 内容安全策略违规检测
+   */
+  static detectCSPViolation(violationReport: any): void {
     this.logSecurityEvent({
-      type: SecurityEventType.RATE_LIMIT_EXCEEDED,
-      severity: 'medium',
-      message: `Rate limit exceeded for key: ${key}`,
-      details: { key, requests: validRequests.length, maxRequests, timeWindow }
+      type: SecurityEventType.SECURITY_VIOLATION,
+      severity: 'high',
+      message: 'Content Security Policy violation detected',
+      details: violationReport
     });
-    return false;
   }
 
-  // 记录当前请求
-  validRequests.push(now);
-  instance.rateLimitMap.set(key, validRequests);
+  /**
+   * 检测可疑的用户行为
+   */
+  static detectSuspiciousBehavior(behavior: {
+    rapidClicks?: number;
+    unusualNavigation?: boolean;
+    suspiciousInput?: boolean;
+    automatedBehavior?: boolean;
+  }): void {
+    const suspiciousIndicators = [];
 
-  return true;
-}
+    if (behavior.rapidClicks && behavior.rapidClicks > 10) {
+      suspiciousIndicators.push('rapid_clicking');
+    }
 
-/**
- * 内容安全策略违规检测
- */
-static detectCSPViolation(violationReport: any): void {
-  this.logSecurityEvent({
-    type: SecurityEventType.SECURITY_VIOLATION,
-    severity: 'high',
-    message: 'Content Security Policy violation detected',
-    details: violationReport
-  });
-}
+    if (behavior.unusualNavigation) {
+      suspiciousIndicators.push('unusual_navigation');
+    }
 
-/**
- * 检测可疑的用户行为
- */
-static detectSuspiciousBehavior(behavior: {
-  rapidClicks?: number;
-  unusualNavigation?: boolean;
-  suspiciousInput?: boolean;
-  automatedBehavior?: boolean;
-}): void {
-  const suspiciousIndicators = [];
+    if (behavior.suspiciousInput) {
+      suspiciousIndicators.push('suspicious_input');
+    }
 
-  if (behavior.rapidClicks && behavior.rapidClicks > 10) {
-    suspiciousIndicators.push('rapid_clicking');
-  }
+    if (behavior.automatedBehavior) {
+      suspiciousIndicators.push('automated_behavior');
+    }
 
-  if (behavior.unusualNavigation) {
-    suspiciousIndicators.push('unusual_navigation');
-  }
-
-  if (behavior.suspiciousInput) {
-    suspiciousIndicators.push('suspicious_input');
-  }
-
-  if (behavior.automatedBehavior) {
-    suspiciousIndicators.push('automated_behavior');
-  }
-
-  if (suspiciousIndicators.length > 0) {
-    this.logSecurityEvent({
-      type: SecurityEventType.SUSPICIOUS_CONTENT,
-      severity: 'medium',
-      message: 'Suspicious user behavior detected',
-      details: { indicators: suspiciousIndicators, behavior }
-    });
+    if (suspiciousIndicators.length > 0) {
+      this.logSecurityEvent({
+        type: SecurityEventType.SUSPICIOUS_CONTENT,
+        severity: 'medium',
+        message: 'Suspicious user behavior detected',
+        details: { indicators: suspiciousIndicators, behavior }
+      });
+    }
   }
 }
 

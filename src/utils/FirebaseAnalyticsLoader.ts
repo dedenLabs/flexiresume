@@ -7,6 +7,9 @@
  */
 
 import { analyticsConfig } from '../config/AnalyticsConfig';
+import { getLogger } from './Logger';
+
+const logFirebaseAnalyticsLoader = getLogger('FirebaseAnalyticsLoader');
 
 interface FirebaseConfig {
   apiKey: string;
@@ -65,7 +68,7 @@ export class FirebaseAnalyticsLoader {
     try {
       // 检查是否在浏览器环境
       if (typeof window === 'undefined') {
-        console.warn('[FirebaseLoader] Not in browser environment');
+        logFirebaseAnalyticsLoader.extend('warn')('[FirebaseLoader] Not in browser environment');
         return null;
       }
 
@@ -74,7 +77,7 @@ export class FirebaseAnalyticsLoader {
         return this.firebaseSDK;
       }
 
-      console.log('[FirebaseLoader] Loading Firebase SDK from CDN...');
+      logFirebaseAnalyticsLoader('[FirebaseLoader] Loading Firebase SDK from CDN...');
 
       // 动态加载Firebase App SDK
       const firebaseAppScript = document.createElement('script');
@@ -110,16 +113,16 @@ export class FirebaseAnalyticsLoader {
           const sdk = (window as any).__firebaseSDK;
           if (sdk) {
             this.firebaseSDK = sdk;
-            console.log('[FirebaseLoader] Firebase SDK loaded successfully');
+            logFirebaseAnalyticsLoader('[FirebaseLoader] Firebase SDK loaded successfully');
             resolve(sdk);
           } else {
-            console.error('[FirebaseLoader] Firebase SDK not found on window');
+            logFirebaseAnalyticsLoader.extend('error')('[FirebaseLoader] Firebase SDK not found on window');
             resolve(null);
           }
         };
 
         const handleError = () => {
-          console.error('[FirebaseLoader] Failed to load Firebase SDK');
+          logFirebaseAnalyticsLoader.extend('error')('[FirebaseLoader] Failed to load Firebase SDK');
           resolve(null);
         };
 
@@ -129,7 +132,7 @@ export class FirebaseAnalyticsLoader {
         // 超时处理
         setTimeout(() => {
           window.removeEventListener('firebaseSDKLoaded', handleLoad);
-          console.error('[FirebaseLoader] Firebase SDK load timeout');
+          logFirebaseAnalyticsLoader.extend('error')('[FirebaseLoader] Firebase SDK load timeout');
           resolve(null);
         }, 10000);
       });
@@ -138,7 +141,7 @@ export class FirebaseAnalyticsLoader {
       return await loadPromise;
 
     } catch (error) {
-      console.error('[FirebaseLoader] Error loading Firebase SDK:', error);
+      logFirebaseAnalyticsLoader.extend('error')('[FirebaseLoader] Error loading Firebase SDK:', error);
       return null;
     }
   }
@@ -150,7 +153,7 @@ export class FirebaseAnalyticsLoader {
     const config = analyticsConfig.getGoogleConfig();
     
     if (!config.enabled) {
-      console.log('[FirebaseLoader] Firebase Analytics disabled in config');
+      logFirebaseAnalyticsLoader('[FirebaseLoader] Firebase Analytics disabled in config');
       return null;
     }
 
@@ -166,7 +169,7 @@ export class FirebaseAnalyticsLoader {
 
     // 验证必要的配置
     if (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.measurementId) {
-      console.warn('[FirebaseLoader] Firebase configuration incomplete:', {
+      logFirebaseAnalyticsLoader.extend('warn')('[FirebaseLoader] Firebase configuration incomplete:', {
         hasApiKey: !!firebaseConfig.apiKey,
         hasProjectId: !!firebaseConfig.projectId,
         hasMeasurementId: !!firebaseConfig.measurementId
@@ -207,7 +210,7 @@ export class FirebaseAnalyticsLoader {
    */
   private async _doInitialize(): Promise<boolean> {
     try {
-      console.log('[FirebaseLoader] Initializing Firebase Analytics...');
+      logFirebaseAnalyticsLoader('[FirebaseLoader] Initializing Firebase Analytics...');
 
       // 获取配置
       const config = this.getFirebaseConfig();
@@ -224,22 +227,22 @@ export class FirebaseAnalyticsLoader {
       // 检查浏览器支持
       const supported = await sdk.isSupported();
       if (!supported) {
-        console.warn('[FirebaseLoader] Firebase Analytics not supported in this browser');
+        logFirebaseAnalyticsLoader.extend('warn')('[FirebaseLoader] Firebase Analytics not supported in this browser');
         return false;
       }
 
       // 初始化Firebase App
       this.app = sdk.initializeApp(config);
-      console.log('[FirebaseLoader] Firebase App initialized');
+      logFirebaseAnalyticsLoader('[FirebaseLoader] Firebase App initialized');
 
       // 初始化Analytics
       this.analytics = sdk.getAnalytics(this.app);
-      console.log('[FirebaseLoader] Firebase Analytics initialized');
+      logFirebaseAnalyticsLoader('[FirebaseLoader] Firebase Analytics initialized');
 
       return true;
 
     } catch (error) {
-      console.error('[FirebaseLoader] Firebase initialization failed:', error);
+      logFirebaseAnalyticsLoader.extend('error')('[FirebaseLoader] Firebase initialization failed:', error);
       return false;
     }
   }
@@ -249,7 +252,7 @@ export class FirebaseAnalyticsLoader {
    */
   async logEvent(eventName: string, eventParams?: Record<string, any>): Promise<void> {
     if (!await this.initialize()) {
-      console.warn('[FirebaseLoader] Firebase not initialized, skipping event:', eventName);
+      logFirebaseAnalyticsLoader.extend('warn')('[FirebaseLoader] Firebase not initialized, skipping event:', eventName);
       return;
     }
 
@@ -259,11 +262,11 @@ export class FirebaseAnalyticsLoader {
         
         const config = analyticsConfig.getGoogleConfig();
         if (config.debug) {
-          console.log('[FirebaseLoader] Event logged:', { eventName, eventParams });
+          logFirebaseAnalyticsLoader('[FirebaseLoader] Event logged:', { eventName, eventParams });
         }
       }
     } catch (error) {
-      console.error('[FirebaseLoader] Failed to log event:', error);
+      logFirebaseAnalyticsLoader.extend('error')('[FirebaseLoader] Failed to log event:', error);
     }
   }
 
@@ -272,7 +275,7 @@ export class FirebaseAnalyticsLoader {
    */
   async setUserProperties(properties: Record<string, any>): Promise<void> {
     if (!await this.initialize()) {
-      console.warn('[FirebaseLoader] Firebase not initialized, skipping user properties');
+      logFirebaseAnalyticsLoader.extend('warn')('[FirebaseLoader] Firebase not initialized, skipping user properties');
       return;
     }
 
@@ -282,11 +285,11 @@ export class FirebaseAnalyticsLoader {
         
         const config = analyticsConfig.getGoogleConfig();
         if (config.debug) {
-          console.log('[FirebaseLoader] User properties set:', properties);
+          logFirebaseAnalyticsLoader('[FirebaseLoader] User properties set:', properties);
         }
       }
     } catch (error) {
-      console.error('[FirebaseLoader] Failed to set user properties:', error);
+      logFirebaseAnalyticsLoader.extend('error')('[FirebaseLoader] Failed to set user properties:', error);
     }
   }
 
@@ -295,7 +298,7 @@ export class FirebaseAnalyticsLoader {
    */
   async setUserId(userId: string): Promise<void> {
     if (!await this.initialize()) {
-      console.warn('[FirebaseLoader] Firebase not initialized, skipping user ID');
+      logFirebaseAnalyticsLoader.extend('warn')('[FirebaseLoader] Firebase not initialized, skipping user ID');
       return;
     }
 
@@ -305,11 +308,11 @@ export class FirebaseAnalyticsLoader {
         
         const config = analyticsConfig.getGoogleConfig();
         if (config.debug) {
-          console.log('[FirebaseLoader] User ID set:', userId);
+          logFirebaseAnalyticsLoader('[FirebaseLoader] User ID set:', userId);
         }
       }
     } catch (error) {
-      console.error('[FirebaseLoader] Failed to set user ID:', error);
+      logFirebaseAnalyticsLoader.extend('error')('[FirebaseLoader] Failed to set user ID:', error);
     }
   }
 
@@ -318,7 +321,7 @@ export class FirebaseAnalyticsLoader {
    */
   async setCurrentScreen(screenName: string): Promise<void> {
     if (!await this.initialize()) {
-      console.warn('[FirebaseLoader] Firebase not initialized, skipping screen tracking');
+      logFirebaseAnalyticsLoader.extend('warn')('[FirebaseLoader] Firebase not initialized, skipping screen tracking');
       return;
     }
 
@@ -328,11 +331,11 @@ export class FirebaseAnalyticsLoader {
         
         const config = analyticsConfig.getGoogleConfig();
         if (config.debug) {
-          console.log('[FirebaseLoader] Current screen set:', screenName);
+          logFirebaseAnalyticsLoader('[FirebaseLoader] Current screen set:', screenName);
         }
       }
     } catch (error) {
-      console.error('[FirebaseLoader] Failed to set current screen:', error);
+      logFirebaseAnalyticsLoader.extend('error')('[FirebaseLoader] Failed to set current screen:', error);
     }
   }
 

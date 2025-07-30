@@ -6,10 +6,11 @@
  * Manages preloading of large third-party libraries to reduce loading time on first use
  */
 
-import { getProjectConfig, isDebugEnabled } from '../config/ProjectConfig';
-import debug from 'debug'; 
-// Debug logger
-const debugPreloader = debug('app:preloader');
+import { getProjectConfig, isDebugEnabled } from '../config/ProjectConfig'; 
+import { getLogger } from './Logger';
+
+const logLibraryPreloader = getLogger('LibraryPreloader');
+const debugPreloader = getLogger('preloader');
 
 // 库加载状态管理
 interface LibraryState {
@@ -145,7 +146,7 @@ class LibraryPreloader {
         state.error = error.message;
         
         if (isDebugEnabled()) {
-          console.warn(`[LibraryPreloader] ${name} 预加载失败:`, error);
+          logLibraryPreloader.extend('warn')(`[LibraryPreloader] ${name} 预加载失败:`, error);
         }
         
         throw error;

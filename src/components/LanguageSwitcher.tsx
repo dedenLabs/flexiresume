@@ -31,19 +31,19 @@ const SwitcherButton = styled.button.withConfig({
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: ${props => props.isDark ? 'rgba(45, 55, 72, 0.9)' : 'rgba(255, 255, 255, 0.9)'};
-  border: 1px solid ${props => props.isDark ? 'rgba(74, 85, 104, 0.6)' : '#e0e0e0'};
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  color: ${props => props.isDark ? '#e2e8f0' : '#333'};
+  color: var(--color-text-primary);
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
 
   &:hover {
-    background: ${props => props.isDark ? 'rgba(45, 55, 72, 1)' : 'rgba(255, 255, 255, 1)'};
-    border-color: ${props => props.isDark ? '#4a9eff' : '#3498db'};
-    box-shadow: 0 2px 8px ${props => props.isDark ? 'rgba(74, 158, 255, 0.3)' : 'rgba(52, 152, 219, 0.2)'};
+    background: var(--color-card);
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 8px var(--color-shadow-medium);
   }
 
   &:active {
@@ -67,10 +67,10 @@ const DropdownMenu = styled.div.withConfig({
   bottom: 100%;
   right: 0;
   margin-bottom: 4px;
-  background: ${props => props.isDark ? 'rgba(26, 32, 44, 0.95)' : 'white'};
-  border: 1px solid ${props => props.isDark ? 'rgba(45, 55, 72, 0.8)' : '#e0e0e0'};
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
   border-radius: 6px;
-  box-shadow: 0 -4px 12px ${props => props.isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'};
+  box-shadow: 0 -4px 12px var(--color-shadow-medium);
   backdrop-filter: blur(10px);
   z-index: 1000;
   min-width: 120px;
@@ -90,11 +90,11 @@ const DropdownItem = styled.button.withConfig({
   padding: 12px 16px;
   border: none;
   background: ${props => props.isActive
-    ? (props.isDark ? 'rgba(45, 55, 72, 0.8)' : '#f8f9fa')
+    ? 'var(--color-card)'
     : 'transparent'};
   color: ${props => props.isActive
-    ? (props.isDark ? '#4a9eff' : '#3498db')
-    : (props.isDark ? '#e2e8f0' : '#333')};
+    ? 'var(--color-primary)'
+    : 'var(--color-text-primary)'};
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -108,12 +108,12 @@ const DropdownItem = styled.button.withConfig({
   }
 
   &:hover {
-    background: ${props => props.isDark ? 'rgba(45, 55, 72, 0.8)' : '#f8f9fa'};
-    color: ${props => props.isDark ? '#4a9eff' : '#3498db'};
+    background: var(--color-card);
+    color: var(--color-primary);
   }
 
   &:active {
-    background: ${props => props.isDark ? 'rgba(45, 55, 72, 1)' : '#e9ecef'};
+    background: var(--color-surface);
   }
 `;
 
@@ -121,7 +121,7 @@ const CheckIcon = styled.span.withConfig({
   shouldForwardProp: (prop) => prop !== 'visible' && prop !== 'isDark',
 })<{ visible: boolean; isDark: boolean }>`
   opacity: ${props => props.visible ? 1 : 0};
-  color: ${props => props.isDark ? '#48bb78' : '#27ae60'};
+  color: var(--color-status-success);
   font-weight: bold;
   margin-left: auto;
 `;

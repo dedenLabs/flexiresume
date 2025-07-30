@@ -23,13 +23,122 @@
 
 ## 📋 Project Overview
 
-### 💡 Project Origin
+### User Flow Chart
+```mermaid
+graph TD
+    Start[👤 User visits the website]
+    
+    %% Initial loading process
+    Start --> Loading[⏳ Page loading]
+    Loading --> SkeletonScreen[💀 Skeleton screen display]
+    SkeletonScreen --> DataLoad[📊 Data loading]
+    DataLoad --> CDNCheck[🌐 CDN health check]
+    CDNCheck --> ResourceLoad[📦 Resource loading]
+    ResourceLoad --> PageReady[✅ Page ready]
+    
+    %% Main features process
+    PageReady --> MainFeatures{🎯 Main features}
+    
+    %% Resume browsing process
+    MainFeatures --> ViewResume[📄 Browse resume]
+    ViewResume --> ScrollContent[📜 Scroll through content]
+    ScrollContent --> ViewCharts[📊 View charts]
+    ViewCharts --> ExpandChart[🔍 Expand chart]
+    ExpandChart --> ZoomChart[🔎 Zoom chart]
+    
+    %% Language switching process
+    MainFeatures --> SwitchLanguage[🌐 Switch language]
+    SwitchLanguage --> SelectLanguage{Select language}
+    SelectLanguage --> Chinese[🇨🇳 Chinese]
+    SelectLanguage --> English[🇺🇸 English]
+    Chinese --> ReloadData[🔄 Reload data]
+    English --> ReloadData
+    ReloadData --> UpdateUI[🎨 Update interface]
+    UpdateUI --> PageReady
+    
+    %% Theme switching process
+    MainFeatures --> SwitchTheme[🎨 Switch theme]
+    SwitchTheme --> SelectTheme{Select theme}
+    SelectTheme --> LightMode[☀️ Light mode]
+    SelectTheme --> DarkMode[🌙 Dark mode]
+    LightMode --> UpdateTheme[🎭 Update theme style]
+    DarkMode --> UpdateTheme
+    UpdateTheme --> SavePreference[💾 Save preferences]
+    SavePreference --> PageReady
+    
+    %% PDF download process
+    MainFeatures --> DownloadPDF[📄 Download PDF]
+    DownloadPDF --> SelectPDFMode{Select PDF mode}
+    SelectPDFMode --> OriginalPDF[📱 Original PDF]
+    SelectPDFMode --> ColorPDF[🎨 Color PDF]
+    SelectPDFMode --> GrayscalePDF[⚫ Grayscale PDF]
+    
+    OriginalPDF --> GeneratePDF[⚙️ Generate PDF]
+    ColorPDF --> GeneratePDF
+    GrayscalePDF --> GeneratePDF
+    
+    GeneratePDF --> OpenPrintWindow[🖨️ Open print window]
+    OpenPrintWindow --> UserPrint[👤 User prints/saves]
+    UserPrint --> ClosePrintWindow[❌ Close print window]
+    ClosePrintWindow --> PageReady
+    
+    %% Position switching process
+    MainFeatures --> SwitchPosition[💼 Switch position]
+    SwitchPosition --> SelectPosition{Select position}
+    SelectPosition --> AIEngineer[🤖 AI engineer]
+    SelectPosition --> GameDev[🎮 Game developer]
+    SelectPosition --> CTO[👔 CTO]
+    SelectPosition --> EXT[👔 Extended position...]
+     
+    AIEngineer --> FilterContent
+    GameDev --> FilterContent 
+    CTO --> FilterContent
+    EXT --> FilterContent[🔍 Filter related content]
+    
+    FilterContent --> HighlightSkills[✨ Highlight relevant skills]
+    HighlightSkills --> UpdateLayout[📐 Update layout]
+    UpdateLayout --> PageReady
+    
+    %% Chart interaction process
+    MainFeatures --> InteractChart[📊 Chart interaction]
+    InteractChart --> ClickChart[👆 Click chart]
+    ClickChart --> EnlargeChart[🔍 Enlarge chart]
+    EnlargeChart --> PanZoom[🖱️ Pan and zoom]
+    PanZoom --> CloseChart[❌ Close chart]
+    CloseChart --> PageReady
+    
+    %% Error handling process
+    DataLoad --> LoadError{❌ Load error?}
+    LoadError --> ShowError[⚠️ Show error message]
+    LoadError --> PageReady
+    ShowError --> RetryLoad[🔄 Retry load]
+    RetryLoad --> DataLoad
+    
+    %% Performance monitoring process
+    PageReady --> MonitorPerformance[📈 Performance monitoring]
+    MonitorPerformance --> CollectMetrics[📊 Collect metrics]
+    CollectMetrics --> SendAnalytics[📤 Send analytics]
+    SendAnalytics --> BaiduAnalytics[📊 Baidu analytics]
+    SendAnalytics --> GoogleAnalytics[📊 Google analytics]
+    SendAnalytics --> ELKAnalytics[📊 ELK analytics]
+    
+    %% Style definitions
+    classDef startEnd fill:#4caf50,stroke:#388e3c,stroke-width:3px,color:#ffffff
+    classDef process fill:#2196f3,stroke:#1976d2,stroke-width:2px,color:#ffffff
+    classDef decision fill:#ff9800,stroke:#f57c00,stroke-width:2px,color:#ffffff
+    classDef feature fill:#9c27b0,stroke:#7b1fa2,stroke-width:2px,color:#ffffff
+    classDef error fill:#f44336,stroke:#d32f2f,stroke-width:2px,color:#ffffff
+    classDef analytics fill:#607d8b,stroke:#455a64,stroke-width:2px,color:#ffffff
+    
+    class Start,PageReady startEnd
+    class Loading,SkeletonScreen,DataLoad,CDNCheck,ResourceLoad,ReloadData,UpdateUI,UpdateTheme,SavePreference,GeneratePDF,OpenPrintWindow,ClosePrintWindow,FilterContent,HighlightSkills,UpdateLayout,EnlargeChart,PanZoom,CloseChart,CollectMetrics process
+    class MainFeatures,SelectLanguage,SelectTheme,SelectPDFMode,SelectPosition,LoadError decision
+    class ViewResume,ScrollContent,ViewCharts,ExpandChart,ZoomChart,SwitchLanguage,SwitchTheme,DownloadPDF,SwitchPosition,InteractChart,ClickChart feature
+    class ShowError,RetryLoad error
+    class MonitorPerformance,SendAnalytics,BaiduAnalytics,GoogleAnalytics,ELKAnalytics analytics
+```
 
-During the job-hunting process, I found that even for positions requiring **1-3 years of experience**, my resume was frequently marked as "not suitable" or "experience mismatched." After deep reflection, I realized:
 
-> **Resumes need to be personalized based on specific job requirements**, allowing recruiters to quickly find the information they need.
-
-Based on this need, I developed FlexiResume —— a **highly customizable, extensible smart resume generation tool**.
 
 ### 🎯 Project Vision
 

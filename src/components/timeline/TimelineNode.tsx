@@ -8,10 +8,11 @@ import TimelineContainer from './TimelineContainer';
 import flexiResumeStore from '../../store/Store';
 import CollapseIcon from './CollapseIcon';
 import { SecureContentRenderer } from '../Security/SecureContentRenderer';
-import { getLogger, logCollapse } from '../../utils/Tools';
+import { logCollapse } from '../../utils/Tools';
 import { Node, CategoryTitle, CategoryBody, Content, ContentWithLine } from './TimelineStyles';
 import { useTheme } from '../../theme';
 import SkillRenderer from '../skill/SkillRenderer';
+import { getLogger } from '../../utils/Logger';
 
 const log = getLogger('TimelineNode');
 
@@ -73,7 +74,7 @@ const TimelineNode: React.FC<{ category: TimelineNodeProps }> = ({ id: parentId,
   const html = checkConvertMarkdownToHtml(category.content || "");
 
   // 调试信息 - 可以在开发时启用
-  // console.log(`TimelineNode ${category.name}:`, {
+  // logTimelineNode(`TimelineNode ${category.name}:`, {
   //   content_head: category.content_head,
   //   content: category.content,
   //   headHtml: headHtml,

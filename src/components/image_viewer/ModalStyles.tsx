@@ -13,10 +13,13 @@ export const ModalStyle = styled.div`
 `
 
 export const ModalImageStyle = styled.img`
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 90%;
+    max-height: 90%;
     transition: transform 0.3s ease;
-    cursor: pointer; 
+    cursor: pointer;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 `
 
 export const CloseButton = styled.div`

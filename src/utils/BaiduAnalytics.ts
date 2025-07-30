@@ -5,7 +5,10 @@
  * 基于用户提供的百度统计代码进行封装
  */
 
-import { analyticsConfig } from '../config/AnalyticsConfig';
+import { analyticsConfig } from '../config/AnalyticsConfig'; 
+import { getLogger } from './Logger';
+
+const logBaiduAnalytics = getLogger('BaiduAnalytics');
 
 declare global {
   interface Window {
@@ -41,12 +44,12 @@ export class BaiduAnalytics {
     const config = analyticsConfig.getBaiduConfig();
     
     if (!config.enabled) {
-      console.info('[BaiduAnalytics] Disabled by configuration');
+      logBaiduAnalytics('[BaiduAnalytics] Disabled by configuration');
       return;
     }
 
     if (this.isInitialized) {
-      console.log('[BaiduAnalytics] Already initialized');
+      logBaiduAnalytics('[BaiduAnalytics] Already initialized');
       return;
     }
 
@@ -68,7 +71,7 @@ export class BaiduAnalytics {
       this.isInitialized = true;
       
       if (config.debug) {
-        console.log('[BaiduAnalytics] Initialized successfully with site ID:', this.siteId);
+        logBaiduAnalytics('[BaiduAnalytics] Initialized successfully with site ID:', this.siteId);
       }
 
       // 自动跟踪页面访问
@@ -77,7 +80,7 @@ export class BaiduAnalytics {
       }
 
     } catch (error) {
-      console.error('[BaiduAnalytics] Initialization failed:', error);
+      logBaiduAnalytics.extend('error')('[BaiduAnalytics] Initialization failed:', error);
     }
   }
 
@@ -93,7 +96,7 @@ export class BaiduAnalytics {
     
     const config = analyticsConfig.getBaiduConfig();
     if (config.debug) {
-      console.log('[BaiduAnalytics] Page view tracked:', { pagePath, title });
+      logBaiduAnalytics('[BaiduAnalytics] Page view tracked:', { pagePath, title });
     }
   }
 
@@ -106,7 +109,7 @@ export class BaiduAnalytics {
     const { category, action, label, value } = event;
 
     if (!category || !action) {
-      console.warn('[BaiduAnalytics] Category and action are required for event tracking');
+      logBaiduAnalytics.extend('warn')('[BaiduAnalytics] Category and action are required for event tracking');
       return;
     }
 
@@ -118,7 +121,7 @@ export class BaiduAnalytics {
 
     const config = analyticsConfig.getBaiduConfig();
     if (config.debug) {
-      console.log('[BaiduAnalytics] Event tracked:', event);
+      logBaiduAnalytics('[BaiduAnalytics] Event tracked:', event);
     }
   }
 
@@ -213,7 +216,7 @@ export class BaiduAnalytics {
     if (!this.isReady()) return;
 
     if (index < 1 || index > 5) {
-      console.warn('[BaiduAnalytics] Custom variable index must be between 1 and 5');
+      logBaiduAnalytics.extend('warn')('[BaiduAnalytics] Custom variable index must be between 1 and 5');
       return;
     }
 
@@ -221,7 +224,7 @@ export class BaiduAnalytics {
 
     const config = analyticsConfig.getBaiduConfig();
     if (config.debug) {
-      console.log('[BaiduAnalytics] Custom variable set:', { index, name, value, scope });
+      logBaiduAnalytics('[BaiduAnalytics] Custom variable set:', { index, name, value, scope });
     }
   }
 
@@ -233,7 +236,7 @@ export class BaiduAnalytics {
     
     if (!this.isInitialized || !config.enabled) {
       if (config.debug) {
-        console.log('[BaiduAnalytics] Not ready:', { 
+        logBaiduAnalytics('[BaiduAnalytics] Not ready:', { 
           initialized: this.isInitialized, 
           enabled: config.enabled 
         });
@@ -242,7 +245,7 @@ export class BaiduAnalytics {
     }
 
     if (!window._hmt) {
-      console.warn('[BaiduAnalytics] _hmt object not available');
+      logBaiduAnalytics.extend('warn')('[BaiduAnalytics] _hmt object not available');
       return false;
     }
 

@@ -5,15 +5,15 @@
 
 import React from 'react';
 import { remark } from 'remark';
-import html from 'remark-html';
-import debug from 'debug';
+import html from 'remark-html'; 
 import { SecurityUtils } from './SecurityUtils';
 import { remarkQRCodeLazyLoad, remarkVideoLazyLoad, remarkImagesLazyLoad, remarkMermaidLazyLoad } from './ParseAndReplaceSkills';
 import { replaceVariables } from './Tools';
 import flexiResumeStore from '../store/Store';
 
 // Debug logger
-const debugMarkdown = debug('app:markdown');
+import { getLogger } from './Logger';
+const debugMarkdown = getLogger('markdown');
 
 /**
  * 安全的Markdown处理配置

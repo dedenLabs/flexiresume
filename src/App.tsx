@@ -8,12 +8,13 @@ import EnhancedErrorBoundary from './components/EnhancedErrorBoundary';
 import { SkeletonResume } from './components/SkeletonComponents';
 import { I18nProvider } from './i18n';
 import { ThemeProvider } from './theme';
+import { FontProvider } from './hooks/useFont';
 import ControlPanel from './components/ControlPanel';
 import DevelopmentNoticeLoader from './components/DevelopmentNoticeLoader';
 import {
   getCurrentLanguageData,
   addLanguageChangeListener,
-  getCurrentLanguage, 
+  getCurrentLanguage,
   // preloadAllLanguages
 } from './data/DataLoader';
 import { IFlexiResume } from './data/types/IFlexiResume';
@@ -27,11 +28,19 @@ import { baiduAnalytics } from './utils/BaiduAnalytics';
 import { googleAnalytics } from './utils/GoogleAnalytics';
 import { elkAnalytics } from './utils/ELKAnalytics';
 import { analyticsConfig } from './config/AnalyticsConfig';
-import debug from 'debug';
+import { formatTabLabelWithConfig } from './utils/TabFormatter';
+import { getLogger } from './utils/Logger';
+// import { FontPerformanceMonitor } from './components/FontPerformanceMonitor';
 
 // Debug logger
-const debugApp = debug('app:main');
+const debugApp = getLogger('main');
 
+type ITab = [
+  string, // 标签名称
+  string, // 路由路径
+  boolean, // 是否为首页
+  string? // 头像URL
+];
 /**
  * 懒加载FlexiResume组件
  * 使用React.lazy实现代码分割，减少初始包大小
@@ -46,9 +55,23 @@ const FlexiResume = lazy(() => import('./pages/FlexiResume'));
 const initializeTabs = (data: IFlexiResume) => {
   return Object.keys(data.expected_positions)
     .filter((key) => !data.expected_positions[key].hidden) // 过滤掉hidden为true的标签
-    .map((key) =>
-      [data.expected_positions[key].header_info?.position, "/" + key, !!data.expected_positions[key].is_home_page, !!data.expected_positions[key].is_home_page]
-    );
+    .map((key) => {
+      const positionData = data.expected_positions[key];
+      const headerInfo = positionData.header_info;
+
+      // 使用配置化的标签格式
+      const formattedLabel = formatTabLabelWithConfig({
+        name: headerInfo?.name,
+        position: headerInfo?.position
+      });
+
+      return [
+        formattedLabel,
+        "/" + key,
+        !!positionData.is_home_page,
+        headerInfo?.avatar
+      ] as ITab;
+    });
 };
 
 /**
@@ -72,8 +95,8 @@ const getAllRoutes = (data: IFlexiResume) => {
  * @param tabs 页签数组
  * @returns 默认路径
  */
-const getDefaultPath = (tabs: any[]) => {
-  return tabs.find(([, , isHomePage]) => isHomePage)?.[1] || "/";
+const getDefaultPath = (tabs: ITab[]) => {
+  return tabs.find(([, , isHomePage]) => isHomePage)?.[1] || tabs[0][1] || "/";
 };
 
 /**
@@ -267,46 +290,49 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <I18nProvider>
-        <EnhancedErrorBoundary level="page" maxRetries={3}>
-          <ImageViewerProvider >
-            <GlobalStyle />
-            <DevelopmentNoticeLoader />
-            <ControlPanel collapsible={true} />
-            <Router basename={originData.header_info.route_base_name}>
-              <Tabs /> {/* 页签导航栏 */}
-            <Routes>
-              {/* 为所有页面（包括隐藏页面）生成路由 */}
-              {
-                allRoutes.map((route, i) => (
-                  <Route key={i} path={route.path} element={
-                    <EnhancedErrorBoundary level="section" maxRetries={2}>
-                      <Suspense fallback={<SkeletonResume />}>
-                        <FlexiResume path={route.path} />
-                      </Suspense>
-                    </EnhancedErrorBoundary>
-                  } />
-                ))
-              }
-              {/* 添加对 .html 后缀路由的支持 - 重定向到无后缀版本 */}
-              {
-                allRoutes.map((route, i) => {
-                  const htmlPath = route.path + '.html';
-                  return (
-                    <Route
-                      key={`html-${i}`}
-                      path={htmlPath}
-                      element={<Navigate to={route.path} replace />}
-                    />
-                  );
-                })
-              }
-              <Route path="/" element={<Navigate to={defaultPath} />} />
-            </Routes>
-            </Router>
-          </ImageViewerProvider >
-        </EnhancedErrorBoundary>
-      </I18nProvider>
+      <FontProvider>
+        <I18nProvider>
+          <EnhancedErrorBoundary level="page" maxRetries={3}>
+            <ImageViewerProvider >
+              <GlobalStyle />
+              <ControlPanel collapsible={true} />
+              <Router basename={originData.header_info.route_base_name}>
+                <Tabs /> {/* 页签导航栏 */}
+                <Routes>
+                  {/* 为所有页面（包括隐藏页面）生成路由 */}
+                  {
+                    allRoutes.map((route, i) => (
+                      <Route key={i} path={route.path} element={
+                        <EnhancedErrorBoundary level="section" maxRetries={2}>
+                          <Suspense fallback={<SkeletonResume />}>
+                            <FlexiResume path={route.path} />
+                          </Suspense>
+                        </EnhancedErrorBoundary>
+                      } />
+                    ))
+                  }
+                  {/* 添加对 .html 后缀路由的支持 - 重定向到无后缀版本 */}
+                  {
+                    allRoutes.map((route, i) => {
+                      const htmlPath = route.path + '.html';
+                      return (
+                        <Route
+                          key={`html-${i}`}
+                          path={htmlPath}
+                          element={<Navigate to={route.path} replace />}
+                        />
+                      );
+                    })
+                  }
+                  <Route path="/" element={<Navigate to={defaultPath} />} />
+                </Routes>
+              </Router>
+              <DevelopmentNoticeLoader />
+              {/* <FontPerformanceMonitor /> */}
+            </ImageViewerProvider >
+          </EnhancedErrorBoundary>
+        </I18nProvider>
+      </FontProvider>
     </ThemeProvider>
   );
 }

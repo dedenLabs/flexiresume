@@ -5,10 +5,12 @@
  * 支持百度统计和ELK Stack双重方案
  */
 
-import debug from 'debug';
+import { getLogger } from "../utils/Logger";
+
+ 
 
 // Debug logger
-const debugAnalyticsConfig = debug('app:analytics-config');
+const debugAnalyticsConfig = getLogger('analytics-config');
 
 export interface BaiduAnalyticsConfig {
   enabled: boolean;

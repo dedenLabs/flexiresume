@@ -119,7 +119,7 @@ test.describe('SkillItem渲染验证', () => {
     }
   });
 
-  test('SecureContentRenderer的trustedZone模式应该正常工作', async ({ page }) => {
+  test('SecureContentRenderer应该正常工作并进行安全过滤', async ({ page }) => {
     // 等待页面完全加载
     await page.waitForTimeout(3000);
 

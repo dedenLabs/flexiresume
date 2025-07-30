@@ -1,0 +1,87 @@
+/**
+ * 汉仪尚巍手书W 字体配置 - 优化版
+ * 
+ * 汉仪尚巍手书体，现代手写风格，具有个性化特色
+ * 使用Ma Shan Zheng作为替代字体，提供更好的加载性能
+ * 
+ * @author FlexiResume Team
+ * @date 2025-07-29
+ */
+
+/* 使用Google Fonts的Ma Shan Zheng作为汉仪尚巍手书W的替代 */
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
+
+/* 汉仪尚巍手书W字体定义 - 单一定义，避免重复 */
+@font-face {
+  font-family: 'HYShangWeiShouShuW';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  /* 优先使用本地字体，然后回退到Google Fonts */
+  src: local('HYShangWeiShouShuW'), 
+       local('Ma Shan Zheng'),
+       url('https://fonts.gstatic.com/s/mashanzheng/v10/NaPecZTRCLxvwo41b4gvzkXaRMTsDIRSfr0.woff2') format('woff2'),
+       local('STKaiti'), 
+       local('KaiTi'), 
+       local('SimKai');
+}
+
+/* 汉仪尚巍手书W 专用样式类 */
+.font-hanyi-shangwei {
+  font-family: 'HYShangWeiShouShuW', 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  font-feature-settings: 'liga' 1, 'kern' 1;
+  text-rendering: optimizeLegibility;
+  
+  /* 字体加载优化 */
+  font-display: swap;
+  
+  /* 防止字体闪烁 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 标题样式 */
+.font-hanyi-shangwei-title {
+  font-family: 'HYShangWeiShouShuW', 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.7;
+  font-display: swap;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 正文样式 */
+.font-hanyi-shangwei-body {
+  font-family: 'HYShangWeiShouShuW', 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  font-display: swap;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 字体预加载提示 */
+.font-hanyi-shangwei-preload {
+  font-family: 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  visibility: hidden;
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+}
+
+/* 字体加载状态指示 */
+.font-loading .font-hanyi-shangwei {
+  font-family: 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  opacity: 0.8;
+}
+
+.font-loaded .font-hanyi-shangwei {
+  font-family: 'HYShangWeiShouShuW', 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}

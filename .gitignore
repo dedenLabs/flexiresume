@@ -14,6 +14,7 @@ docs/images
 scp-commit.sh
 
 node_modules
+downloads
 dist
 dist-ssr
 *.local

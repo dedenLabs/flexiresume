@@ -6,7 +6,10 @@
  */
 
 import { analyticsConfig } from '../config/AnalyticsConfig';
-import { firebaseAnalyticsLoader } from './FirebaseAnalyticsLoader';
+import { firebaseAnalyticsLoader } from './FirebaseAnalyticsLoader'; 
+import { getLogger } from './Logger';
+
+const logGoogleAnalytics = getLogger('GoogleAnalytics');
 
 // Firebase Analytics类型定义
 interface FirebaseApp {
@@ -65,17 +68,17 @@ export class GoogleAnalytics {
     const config = analyticsConfig.getGoogleConfig();
     
     if (!config.enabled) {
-      console.info('[GoogleAnalytics] Disabled by configuration');
+      logGoogleAnalytics('[GoogleAnalytics] Disabled by configuration');
       return;
     }
 
     if (!config.measurementId) {
-      console.warn('[GoogleAnalytics] Measurement ID not provided');
+      logGoogleAnalytics.extend('warn')('[GoogleAnalytics] Measurement ID not provided');
       return;
     }
 
     if (this.isInitialized) {
-      console.log('[GoogleAnalytics] Already initialized');
+      logGoogleAnalytics('[GoogleAnalytics] Already initialized');
       return;
     }
 
@@ -86,7 +89,7 @@ export class GoogleAnalytics {
       if (await this.initializeWithFirebase()) {
         this.isInitialized = true;
         if (config.debug) {
-          console.log('[GoogleAnalytics] Initialized with Firebase Analytics');
+          logGoogleAnalytics('[GoogleAnalytics] Initialized with Firebase Analytics');
         }
         return;
       }
@@ -95,7 +98,7 @@ export class GoogleAnalytics {
       if (await this.initializeWithGtag()) {
         this.isInitialized = true;
         if (config.debug) {
-          console.log('[GoogleAnalytics] Initialized with gtag.js');
+          logGoogleAnalytics('[GoogleAnalytics] Initialized with gtag.js');
         }
         return;
       }
@@ -103,7 +106,7 @@ export class GoogleAnalytics {
       throw new Error('Failed to initialize with any method');
 
     } catch (error) {
-      console.error('[GoogleAnalytics] Initialization failed:', error);
+      logGoogleAnalytics.extend('error')('[GoogleAnalytics] Initialization failed:', error);
     }
   }
 
@@ -112,7 +115,7 @@ export class GoogleAnalytics {
    */
   private async initializeWithFirebase(): Promise<boolean> {
     try {
-      console.log('[GoogleAnalytics] Initializing with Firebase Analytics Loader...');
+      logGoogleAnalytics('[GoogleAnalytics] Initializing with Firebase Analytics Loader...');
 
       // 使用新的Firebase动态加载器
       const success = await firebaseAnalyticsLoader.initialize();
@@ -121,14 +124,14 @@ export class GoogleAnalytics {
         // 标记为已初始化，但不直接持有analytics实例
         // 所有Firebase操作都通过firebaseAnalyticsLoader进行
         this.analytics = {} as any; // 占位符，表示Firebase已初始化
-        console.log('[GoogleAnalytics] Firebase Analytics initialized via dynamic loader');
+        logGoogleAnalytics('[GoogleAnalytics] Firebase Analytics initialized via dynamic loader');
         return true;
       } else {
-        console.warn('[GoogleAnalytics] Firebase Analytics initialization failed');
+        logGoogleAnalytics.extend('warn')('[GoogleAnalytics] Firebase Analytics initialization failed');
         return false;
       }
     } catch (error) {
-      console.warn('[GoogleAnalytics] Firebase initialization failed:', error);
+      logGoogleAnalytics.extend('warn')('[GoogleAnalytics] Firebase initialization failed:', error);
       return false;
     }
   }
@@ -161,7 +164,7 @@ export class GoogleAnalytics {
         document.head.appendChild(script);
       });
     } catch (error) {
-      console.warn('[GoogleAnalytics] gtag.js initialization failed:', error);
+      logGoogleAnalytics.extend('warn')('[GoogleAnalytics] gtag.js initialization failed:', error);
       return false;
     }
   }
@@ -187,7 +190,7 @@ export class GoogleAnalytics {
         import(/* @vite-ignore */ firebaseAnalytics).then(({ logEvent }) => {
           logEvent(this.analytics!, 'page_view', eventData);
         }).catch(error => {
-          console.warn('[GoogleAnalytics] Firebase analytics import failed:', error);
+          logGoogleAnalytics.extend('warn')('[GoogleAnalytics] Firebase analytics import failed:', error);
         });
       } else if (window.gtag) {
         // 使用gtag.js
@@ -195,10 +198,10 @@ export class GoogleAnalytics {
       }
 
       if (config.debug) {
-        console.log('[GoogleAnalytics] Page view tracked:', eventData);
+        logGoogleAnalytics('[GoogleAnalytics] Page view tracked:', eventData);
       }
     } catch (error) {
-      console.error('[GoogleAnalytics] Page view tracking failed:', error);
+      logGoogleAnalytics.extend('error')('[GoogleAnalytics] Page view tracking failed:', error);
     }
   }
 
@@ -212,7 +215,7 @@ export class GoogleAnalytics {
     const { action, category, label, value, custom_parameters } = event;
 
     if (!action) {
-      console.warn('[GoogleAnalytics] Event action is required');
+      logGoogleAnalytics.extend('warn')('[GoogleAnalytics] Event action is required');
       return;
     }
 
@@ -234,7 +237,7 @@ export class GoogleAnalytics {
       if (this.analytics) {
         // 使用Firebase Analytics动态加载器
         firebaseAnalyticsLoader.logEvent(action, eventData).catch(error => {
-          console.warn('[GoogleAnalytics] Firebase analytics event failed:', error);
+          logGoogleAnalytics.extend('warn')('[GoogleAnalytics] Firebase analytics event failed:', error);
         });
       } else if (window.gtag) {
         // 使用gtag.js
@@ -242,10 +245,10 @@ export class GoogleAnalytics {
       }
 
       if (config.debug) {
-        console.log('[GoogleAnalytics] Event tracked:', { action, ...eventData });
+        logGoogleAnalytics('[GoogleAnalytics] Event tracked:', { action, ...eventData });
       }
     } catch (error) {
-      console.error('[GoogleAnalytics] Event tracking failed:', error);
+      logGoogleAnalytics.extend('error')('[GoogleAnalytics] Event tracking failed:', error);
     }
   }
 
@@ -368,7 +371,7 @@ export class GoogleAnalytics {
         firebaseAnalyticsLoader.setUserProperties({
           [propertyName]: propertyValue
         }).catch(error => {
-          console.warn('[GoogleAnalytics] Firebase analytics user property failed:', error);
+          logGoogleAnalytics.extend('warn')('[GoogleAnalytics] Firebase analytics user property failed:', error);
         });
       } else if (window.gtag) {
         // 使用gtag.js
@@ -380,10 +383,10 @@ export class GoogleAnalytics {
       }
 
       if (config.debug) {
-        console.log('[GoogleAnalytics] User property set:', { propertyName, propertyValue });
+        logGoogleAnalytics('[GoogleAnalytics] User property set:', { propertyName, propertyValue });
       }
     } catch (error) {
-      console.error('[GoogleAnalytics] Set user property failed:', error);
+      logGoogleAnalytics.extend('error')('[GoogleAnalytics] Set user property failed:', error);
     }
   }
 
@@ -395,7 +398,7 @@ export class GoogleAnalytics {
     
     if (!this.isInitialized || !config.enabled) {
       if (config.debug) {
-        console.log('[GoogleAnalytics] Not ready:', { 
+        logGoogleAnalytics('[GoogleAnalytics] Not ready:', { 
           initialized: this.isInitialized, 
           enabled: config.enabled 
         });
@@ -404,7 +407,7 @@ export class GoogleAnalytics {
     }
 
     if (!this.analytics && !window.gtag) {
-      console.warn('[GoogleAnalytics] No analytics instance available');
+      logGoogleAnalytics.extend('warn')('[GoogleAnalytics] No analytics instance available');
       return false;
     }
 

@@ -6,7 +6,10 @@
  * Simple and easy-to-use Google Analytics integration with parameter extraction and configuration
  */
 
-import { analyticsConfig } from '../config/AnalyticsConfig';
+import { analyticsConfig } from '../config/AnalyticsConfig'; 
+import { getLogger } from './Logger';
+
+const logUniversalGoogleAnalytics = getLogger('UniversalGoogleAnalytics');
 
 interface UniversalGAConfig {
   measurementId: string;
@@ -62,17 +65,17 @@ export class UniversalGoogleAnalytics {
       this.config = this.getConfig(config);
       
       if (!this.config.enabled) {
-        console.info('[UniversalGA] Disabled by configuration');
+        logUniversalGoogleAnalytics('[UniversalGA] Disabled by configuration');
         return false;
       }
 
       if (!this.config.measurementId) {
-        console.warn('[UniversalGA] Measurement ID not provided');
+        logUniversalGoogleAnalytics.extend('warn')('[UniversalGA] Measurement ID not provided');
         return false;
       }
 
       if (this.isInitialized) {
-        console.log('[UniversalGA] Already initialized');
+        logUniversalGoogleAnalytics('[UniversalGA] Already initialized');
         return true;
       }
 
@@ -86,7 +89,7 @@ export class UniversalGoogleAnalytics {
         this.isInitialized = true;
         
         if (this.config.debug) {
-          console.log('[UniversalGA] Initialized successfully with ID:', this.measurementId);
+          logUniversalGoogleAnalytics('[UniversalGA] Initialized successfully with ID:', this.measurementId);
         }
         
         return true;
@@ -95,7 +98,7 @@ export class UniversalGoogleAnalytics {
       return false;
 
     } catch (error) {
-      console.error('[UniversalGA] Initialization failed:', error);
+      logUniversalGoogleAnalytics.extend('error')('[UniversalGA] Initialization failed:', error);
       return false;
     }
   }
@@ -138,13 +141,13 @@ export class UniversalGoogleAnalytics {
       
       script.onload = () => {
         if (this.config?.debug) {
-          console.log('[UniversalGA] gtag.js script loaded');
+          logUniversalGoogleAnalytics('[UniversalGA] gtag.js script loaded');
         }
         resolve(true);
       };
       
       script.onerror = () => {
-        console.error('[UniversalGA] Failed to load gtag.js script');
+        logUniversalGoogleAnalytics.extend('error')('[UniversalGA] Failed to load gtag.js script');
         resolve(false);
       };
 
@@ -205,10 +208,10 @@ export class UniversalGoogleAnalytics {
       window.gtag('event', 'page_view', eventData);
       
       if (this.config?.debug) {
-        console.log('[UniversalGA] Page view tracked:', eventData);
+        logUniversalGoogleAnalytics('[UniversalGA] Page view tracked:', eventData);
       }
     } catch (error) {
-      console.error('[UniversalGA] Page view tracking failed:', error);
+      logUniversalGoogleAnalytics.extend('error')('[UniversalGA] Page view tracking failed:', error);
     }
   }
 
@@ -221,7 +224,7 @@ export class UniversalGoogleAnalytics {
     const { action, category, label, value, custom_parameters } = event;
 
     if (!action) {
-      console.warn('[UniversalGA] Event action is required');
+      logUniversalGoogleAnalytics.extend('warn')('[UniversalGA] Event action is required');
       return;
     }
 
@@ -243,10 +246,10 @@ export class UniversalGoogleAnalytics {
       window.gtag('event', action, eventData);
       
       if (this.config?.debug) {
-        console.log('[UniversalGA] Event tracked:', { action, ...eventData });
+        logUniversalGoogleAnalytics('[UniversalGA] Event tracked:', { action, ...eventData });
       }
     } catch (error) {
-      console.error('[UniversalGA] Event tracking failed:', error);
+      logUniversalGoogleAnalytics.extend('error')('[UniversalGA] Event tracking failed:', error);
     }
   }
 
@@ -264,10 +267,10 @@ export class UniversalGoogleAnalytics {
       });
 
       if (this.config?.debug) {
-        console.log('[UniversalGA] User property set:', { propertyName, propertyValue });
+        logUniversalGoogleAnalytics('[UniversalGA] User property set:', { propertyName, propertyValue });
       }
     } catch (error) {
-      console.error('[UniversalGA] Set user property failed:', error);
+      logUniversalGoogleAnalytics.extend('error')('[UniversalGA] Set user property failed:', error);
     }
   }
 
@@ -283,10 +286,10 @@ export class UniversalGoogleAnalytics {
       });
 
       if (this.config?.debug) {
-        console.log('[UniversalGA] User ID set:', userId);
+        logUniversalGoogleAnalytics('[UniversalGA] User ID set:', userId);
       }
     } catch (error) {
-      console.error('[UniversalGA] Set user ID failed:', error);
+      logUniversalGoogleAnalytics.extend('error')('[UniversalGA] Set user ID failed:', error);
     }
   }
 
@@ -296,7 +299,7 @@ export class UniversalGoogleAnalytics {
   private isReady(): boolean {
     if (!this.isInitialized || !this.config?.enabled) {
       if (this.config?.debug) {
-        console.log('[UniversalGA] Not ready:', { 
+        logUniversalGoogleAnalytics('[UniversalGA] Not ready:', { 
           initialized: this.isInitialized, 
           enabled: this.config?.enabled 
         });
@@ -305,7 +308,7 @@ export class UniversalGoogleAnalytics {
     }
 
     if (!window.gtag) {
-      console.warn('[UniversalGA] gtag not available');
+      logUniversalGoogleAnalytics.extend('warn')('[UniversalGA] gtag not available');
       return false;
     }
 

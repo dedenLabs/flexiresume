@@ -3,11 +3,13 @@
  * 提供XSS防护、数据验证、内容清理等安全功能
  */
 
-import DOMPurify from 'dompurify';
-import debug from 'debug';
+import DOMPurify from 'dompurify';  
+import { getLogger } from './Logger';
+
 
 // Debug logger
-const debugSecurity = debug('app:security');
+const logSecurityUtils = getLogger('SecurityUtils');
+const debugSecurity = getLogger('security');
 
 /**
  * XSS防护配置
@@ -28,7 +30,7 @@ const XSS_CONFIG = {
   ALLOWED_ATTR: [
     'href', 'src', 'alt', 'title', 'class', 'id',
     'width', 'height', 'style', 'align',
-    'controls', 'onplay',
+    'controls', 'onplay', 'onpause','onclick',
     'target', 'rel',
     // SVG相关属性
     'viewBox', 'xmlns', 'd', 'fill', 'stroke', 'stroke-width',
@@ -39,7 +41,7 @@ const XSS_CONFIG = {
     // Mermaid相关属性
     'data-mermaid-chart', 'data-mermaid-id',
     // 其他安全的data属性
-    'data-testid', 'data-content-hash', 'data-observer-attached'
+    'data-testid', 'data-content-hash', 'data-observer-attached', 'loading'
   ],
 
   // 允许的协议
@@ -97,7 +99,7 @@ export class SecurityUtils {
     }
 
     try {
-      return DOMPurify.sanitize(html, {
+      let opt = {
         ALLOWED_TAGS: XSS_CONFIG.ALLOWED_TAGS,
         ALLOWED_ATTR: XSS_CONFIG.ALLOWED_ATTR,
         ALLOWED_URI_REGEXP: XSS_CONFIG.ALLOWED_URI_REGEXP,
@@ -113,10 +115,77 @@ export class SecurityUtils {
         ALLOW_UNKNOWN_PROTOCOLS: false,
         // 移除空属性
         ALLOW_EMPTY_ATTR: false
-      });
+      };
+      // 提取Mermaid相关属性
+      const dataMermaidCharts = html.match(/data-mermaid-chart="[^"]*"/g) || [];
+      const dataMermaidIds = html.match(/data-mermaid-id="[^"]*"/g) || [];
+
+      let result = DOMPurify.sanitize(html, opt);
+
+      // 检查是否有Mermaid属性被异常清理
+      const resultMermaidCharts = result.match(/data-mermaid-chart="[^"]*"/g) || [];
+      const resultMermaidIds = result.match(/data-mermaid-id="[^"]*"/g) || [];
+
+      if (dataMermaidCharts.length !== resultMermaidCharts.length ||
+        dataMermaidIds.length !== resultMermaidIds.length) {
+
+        logSecurityUtils('🔧 SecurityUtils: 检测到Mermaid属性被清理，正在修复...', {
+          originalCharts: dataMermaidCharts.length,
+          resultCharts: resultMermaidCharts.length,
+          originalIds: dataMermaidIds.length,
+          resultIds: resultMermaidIds.length
+        });
+
+        // 修复被清理的Mermaid属性
+        result = this.restoreMermaidAttributes(result, dataMermaidCharts, dataMermaidIds);
+      }
+
+      return result;
+
     } catch (error) {
       debugSecurity('HTML sanitization failed: %O', error);
       return '';
+    }
+  }
+
+  /**
+   * 修复被DOMPurify清理的Mermaid属性
+   */
+  private static restoreMermaidAttributes(
+    html: string,
+    originalCharts: string[],
+    originalIds: string[]
+  ): string {
+    try {
+      // 创建临时DOM来处理
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+
+      // 查找所有可能的Mermaid占位符
+      const placeholders = tempDiv.querySelectorAll('.mermaid-placeholder, .mermaid-lazy-placeholder');
+
+      let chartIndex = 0;
+      let idIndex = 0;
+
+      placeholders.forEach((placeholder) => {
+        // 只恢复data-mermaid-id属性（图表数据现在存储在内存中）
+        if (idIndex < originalIds.length && !placeholder.hasAttribute('data-mermaid-id')) {
+          const idAttr = originalIds[idIndex];
+          const idValue = idAttr.match(/data-mermaid-id="([^"]*)"/)?.[1];
+          if (idValue) {
+            placeholder.setAttribute('data-mermaid-id', idValue);
+            idIndex++;
+          }
+        }
+      });
+
+      const restoredHtml = tempDiv.innerHTML;
+      // 调试日志已移除: console.log('✅ SecurityUtils: Mermaid属性修复完成');
+      return restoredHtml;
+
+    } catch (error) {
+      logSecurityUtils.extend('error')('❌ SecurityUtils: Mermaid属性修复失败:', error);
+      return html; // 返回原始结果
     }
   }
 

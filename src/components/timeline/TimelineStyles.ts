@@ -1,3 +1,4 @@
+import React from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../theme';
 
@@ -22,8 +23,8 @@ export const CategoryBody = styled.span`
 
 // 内容容器 - 带有左侧线条的内容区域
 export const ContentWithLine = styled.div.withConfig({
-  shouldForwardProp: (prop) => prop !== 'isDark',
-})<{ isDark?: boolean }>`
+  shouldForwardProp: (prop) => !['isDark', 'showLine'].includes(prop),
+})<{ isDark?: boolean; showLine?: boolean }>`
   position: relative;
   margin-left: 0.5rem; /* 与主线条对齐 */
   padding-left: 1rem; /* 为线条留出空间 */
@@ -42,6 +43,7 @@ export const ContentWithLine = styled.div.withConfig({
     background: ${props => props.isDark ? 'var(--color-border-medium)' : '#ccc'};
     transition: background 0.3s ease;
     z-index: 0; /* 确保线条在内容之下，但仍然可见 */
+    display: ${props => props.showLine === false ? 'none' : 'block'};
   }
 
   /* 第一个ContentWithLine的特殊处理 */
@@ -109,6 +111,8 @@ export const ContentWithLine = styled.div.withConfig({
     }
   }
 `;
+
+
 
 // Timeline 节点
 export const Node = styled.div.withConfig({

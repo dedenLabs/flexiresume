@@ -4,7 +4,10 @@
  */
 
 import { SecurityUtils, ValidationRules } from './SecurityUtils';
-import type { IFlexiResume } from '../types/FlexiResumeTypes';
+import type { IFlexiResume } from '../types/FlexiResumeTypes'; 
+import { getLogger } from './Logger';
+
+const logDataValidator = getLogger('DataValidator');
 
 /**
  * 验证结果接口
@@ -233,7 +236,7 @@ export class DataValidator {
       };
 
     } catch (error) {
-      console.error('Data validation failed:', error);
+      logDataValidator.extend('error')('Data validation failed:', error);
       return {
         isValid: false,
         errors: [{

@@ -21,15 +21,121 @@
 ---
 
 ## 📋 项目简介
+### 🧩用户流程图
+```mermaid
+graph TD
+    Start[👤 用户访问网站]
+    
+    %% 初始加载流程
+    Start --> Loading[⏳ 页面加载中]
+    Loading --> SkeletonScreen[💀 骨架屏显示]
+    SkeletonScreen --> DataLoad[📊 数据加载]
+    DataLoad --> CDNCheck[🌐 CDN健康检查]
+    CDNCheck --> ResourceLoad[📦 资源加载]
+    ResourceLoad --> PageReady[✅ 页面就绪]
+    
+    %% 主要功能流程
+    PageReady --> MainFeatures{🎯 主要功能}
+    
+    %% 简历浏览流程
+    MainFeatures --> ViewResume[📄 浏览简历]
+    ViewResume --> ScrollContent[📜 滚动查看内容]
+    ScrollContent --> ViewCharts[📊 查看图表]
+    ViewCharts --> ExpandChart[🔍 展开图表]
+    ExpandChart --> ZoomChart[🔎 缩放图表]
+    
+    %% 语言切换流程
+    MainFeatures --> SwitchLanguage[🌐 切换语言]
+    SwitchLanguage --> SelectLanguage{选择语言}
+    SelectLanguage --> Chinese[🇨🇳 中文]
+    SelectLanguage --> English[🇺🇸 English]
+    Chinese --> ReloadData[🔄 重新加载数据]
+    English --> ReloadData
+    ReloadData --> UpdateUI[🎨 更新界面]
+    UpdateUI --> PageReady
+    
+    %% 主题切换流程
+    MainFeatures --> SwitchTheme[🎨 切换主题]
+    SwitchTheme --> SelectTheme{选择主题}
+    SelectTheme --> LightMode[☀️ 浅色模式]
+    SelectTheme --> DarkMode[🌙 深色模式]
+    LightMode --> UpdateTheme[🎭 更新主题样式]
+    DarkMode --> UpdateTheme
+    UpdateTheme --> SavePreference[💾 保存偏好设置]
+    SavePreference --> PageReady
+    
+    %% PDF下载流程
+    MainFeatures --> DownloadPDF[📄 下载PDF]
+    DownloadPDF --> SelectPDFMode{选择PDF模式}
+    SelectPDFMode --> OriginalPDF[📱 原版PDF]
+    SelectPDFMode --> ColorPDF[🎨 彩色PDF]
+    SelectPDFMode --> GrayscalePDF[⚫ 黑白PDF]
+    
+    OriginalPDF --> GeneratePDF[⚙️ 生成PDF]
+    ColorPDF --> GeneratePDF
+    GrayscalePDF --> GeneratePDF
+    
+    GeneratePDF --> OpenPrintWindow[🖨️ 打开打印窗口]
+    OpenPrintWindow --> UserPrint[👤 用户打印/保存]
+    UserPrint --> ClosePrintWindow[❌ 关闭打印窗口]
+    ClosePrintWindow --> PageReady
+    
+    %% 职位切换流程
+    MainFeatures --> SwitchPosition[💼 切换职位]
+    SwitchPosition --> SelectPosition{选择职位}
+    SelectPosition --> AIEngineer[🤖 AI工程师]
+    SelectPosition --> GameDev[🎮 游戏开发]
+    SelectPosition --> CTO[👔 CTO]
+    SelectPosition --> EXT[👔 扩展职位...]
+     
+    AIEngineer --> FilterContent
+    GameDev --> FilterContent 
+    CTO --> FilterContent
+    EXT --> FilterContent[🔍 筛选相关内容]
+    
+    FilterContent --> HighlightSkills[✨ 高亮相关技能]
+    HighlightSkills --> UpdateLayout[📐 更新布局]
+    UpdateLayout --> PageReady
+    
+    %% 图表交互流程
+    MainFeatures --> InteractChart[📊 图表交互]
+    InteractChart --> ClickChart[👆 点击图表]
+    ClickChart --> EnlargeChart[🔍 放大图表]
+    EnlargeChart --> PanZoom[🖱️ 平移缩放]
+    PanZoom --> CloseChart[❌ 关闭图表]
+    CloseChart --> PageReady
+    
+    %% 错误处理流程
+    DataLoad --> LoadError{❌ 加载错误?}
+    LoadError --> ShowError[⚠️ 显示错误信息]
+    LoadError --> PageReady
+    ShowError --> RetryLoad[🔄 重试加载]
+    RetryLoad --> DataLoad
+    
+    %% 性能监控流程
+    PageReady --> MonitorPerformance[📈 性能监控]
+    MonitorPerformance --> CollectMetrics[📊 收集指标]
+    CollectMetrics --> SendAnalytics[📤 发送统计]
+    SendAnalytics --> BaiduAnalytics[📊 百度统计]
+    SendAnalytics --> GoogleAnalytics[📊 谷歌统计]
+    SendAnalytics --> ELKAnalytics[📊 ELK统计]
+    
+    %% 样式定义
+    classDef startEnd fill:#4caf50,stroke:#388e3c,stroke-width:3px,color:#ffffff
+    classDef process fill:#2196f3,stroke:#1976d2,stroke-width:2px,color:#ffffff
+    classDef decision fill:#ff9800,stroke:#f57c00,stroke-width:2px,color:#ffffff
+    classDef feature fill:#9c27b0,stroke:#7b1fa2,stroke-width:2px,color:#ffffff
+    classDef error fill:#f44336,stroke:#d32f2f,stroke-width:2px,color:#ffffff
+    classDef analytics fill:#607d8b,stroke:#455a64,stroke-width:2px,color:#ffffff
+    
+    class Start,PageReady startEnd
+    class Loading,SkeletonScreen,DataLoad,CDNCheck,ResourceLoad,ReloadData,UpdateUI,UpdateTheme,SavePreference,GeneratePDF,OpenPrintWindow,ClosePrintWindow,FilterContent,HighlightSkills,UpdateLayout,EnlargeChart,PanZoom,CloseChart,CollectMetrics process
+    class MainFeatures,SelectLanguage,SelectTheme,SelectPDFMode,SelectPosition,LoadError decision
+    class ViewResume,ScrollContent,ViewCharts,ExpandChart,ZoomChart,SwitchLanguage,SwitchTheme,DownloadPDF,SwitchPosition,InteractChart,ClickChart feature
+    class ShowError,RetryLoad error
+    class MonitorPerformance,SendAnalytics,BaiduAnalytics,GoogleAnalytics,ELKAnalytics analytics
 
-### 💡 项目起源
-
-在求职过程中，我发现即使对于一些 **1-3年经验的职位**，我的简历仍被多次标记为"不合适"或"经验有差异"。经过深入思考，我意识到：
-
-> **简历需要根据职位的具体需求进行个性化调整**，让招聘方能快速找到他们需要的信息。
-
-基于这一需求，我开发了 FlexiResume —— 一个 **高度自定义、可扩展的智能简历生成工具**。
-
+```
 ### 🎯 项目愿景
 
 FlexiResume 致力于为求职者提供一个灵活、高效的简历生成平台，帮助用户：

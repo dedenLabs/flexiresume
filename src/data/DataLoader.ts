@@ -7,14 +7,14 @@
  * @author 陈剑
  * @date 2024-12-27
  */
-
-import debug from 'debug';
+ 
 import { IFlexiResume } from "../types/IFlexiResume";
 import { getProjectConfig } from "../config/ProjectConfig";
 import { cdnManager } from "../utils/CDNManager";
+import { getLogger } from '../utils/Logger';
 
 // Debug logger
-const debugDataLoader = debug('app:dataloader');
+const debugDataLoader = getLogger('dataloader');
 
 /**
  * 支持的语言列表

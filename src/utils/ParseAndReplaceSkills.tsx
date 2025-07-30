@@ -4,33 +4,45 @@ import SkillItem from '../components/skill/SkillItem'; // 根据 SkillItem 的�
 import ReactMarkdown from 'react-markdown';
 import { remark } from 'remark';
 import html from 'remark-html';
-import debug from 'debug';
+import { mermaidDataManager } from './MermaidDataManager';
+import { visit } from 'unist-util-visit';
+import flexiResumeStore from '../store/Store';
+import { replaceCDNBaseURL, replaceVariables } from './Tools';
+import { QRCodeSVG } from 'qrcode.react';
 
 // Debug logger
-const debugParse = debug('app:parse-skills');
+import { getLogger } from './Logger';
+import { generateUniqueId } from './hash';
+import { globalCache } from './MemoryManager';
+const logMarkdown = getLogger(`Markdown`);
+const debugParse = getLogger('parse-skills');
 
 /**
  * 服务器端渲染的Mermaid占位符组件
  * 在客户端会被真正的MermaidChart组件替换
+ * 使用内存存储而不是DOM属性存储图表数据
  */
 const MermaidPlaceholder: React.FC<{ chart: string; id: string }> = ({ chart, id }) => {
+    // 将图表数据存储到内存中
+    mermaidDataManager.setChartData(id, chart, false);
+
     return (
         <div
             className="mermaid-placeholder"
-            data-mermaid-chart={chart}
             data-mermaid-id={id}
             style={{
                 padding: '20px',
-                backgroundColor: '#f6f8fa',
-                border: '1px solid #d1d9e0',
+                backgroundColor: 'var(--color-surface)',
+                border: '1px solid var(--color-border-light)',
                 borderRadius: '8px',
                 textAlign: 'center',
-                color: '#666',
+                color: 'var(--color-text-secondary)',
                 margin: '16px 0',
                 minHeight: '100px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                transition: 'background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease'
             }}
         >
             <div>
@@ -124,11 +136,7 @@ const loadAdvancedSyntaxHighlighter = async (language: string) => {
     // 这部分代码被禁用，以减少包大小
     return null;
 };
-import { visit } from 'unist-util-visit';
-import flexiResumeStore from '../store/Store';
-import { getLogger, replaceCDNBaseURL, replaceVariables } from './Tools';
-import { QRCodeSVG } from 'qrcode.react';
-const logMarkdown = getLogger(`Markdown`);
+
 
 interface Skill {
     name: string;
@@ -154,7 +162,7 @@ export const parseAndReplaceSkills = (text: string, useHtml = false): string | R
     const skillNames: string[] = skills.map(([skill]) =>
         skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // 将特殊字符全部转义
     );
-    // console.log(`(${skillNames.join('|')})`)
+    // debugParse(`(${skillNames.join('|')})`)
     const skillRegex = new RegExp(`(${skillNames.join('|')})`, 'gui');
     if (useHtml) {
         const result = text.replace(skillRegex, (part: string, index: number) => {
@@ -188,7 +196,7 @@ export function remarkVideoLazyLoad() {
     return (tree) => {
         // 遍历 AST 节点，查找视频链接
         visit(tree, 'link', (node, index, parent) => {
-            // console.log(`检查链接是否包含视频 URL:`,node.url,node.children[0].value);
+            // debugParse(`检查链接是否包含视频 URL:`,node.url,node.children[0].value);
             // 检查链接是否包含视频 URL
             if (videoFormats.some(format => node.url.endsWith(format))) {
                 // 替换成 HTML 视频标签
@@ -310,10 +318,13 @@ export function remarkImagesLazyLoad() {
             // 添加懒加载属性
             node.data.hProperties.loading = 'lazy';
             node.data.hProperties.src = originalUrl;
-            // console.log(originalUrl)
+            // debugParse(originalUrl)
             // 为每个图片添加一个点击事件
-            node.data.hProperties.onClick = `$handleImageClick('${originalUrl}')`; // 使用openModal函数打开图片
-            node.data.hProperties.style = 'cursor: pointer;'; // 鼠标悬停时显示指针 
+            // 调试日志已移除: console.log('🖼️ [DEBUG] 为图片添加点击事件:', originalUrl);
+            // 使用自定义属性存储图片URL，而不是直接设置onclick
+            node.data.hProperties['data-image-url'] = originalUrl;
+            node.data.hProperties.className = (node.data.hProperties.className || '') + ' clickable-image';
+            node.data.hProperties.style = 'cursor: pointer;'; // 鼠标悬停时显示指针
 
 
             // // 修改图片外层结构，包裹在 div 中
@@ -325,20 +336,24 @@ export function remarkImagesLazyLoad() {
             //     node.value = ` 
             //         <img src="${originalUrl}" alt="${altText}" onclick="window.$handleImageClick('${originalUrl}')" loading="lazy" style="${node?.data?.hProperties?.style || 'cursor: pointer;'}" />
             //   `;
-            //   console.log(node.value);
+            //   debugParse(node.value);
         });
 
 
         visit(tree, 'html', (node) => {
             const imgRegex = /<img[^>]+src="([^"]+)"[^>]*>/g;
             if (imgRegex.test(node.value) == false) return;
-
             const parser = new DOMParser();
             const doc = parser.parseFromString(node.value, 'text/html');
+            // debugger
             doc.querySelectorAll('img').forEach(img => {
                 const originalSrc = img.getAttribute('src');
-                img.setAttribute('src', replaceCDNBaseURL(originalSrc));
-                img.setAttribute('onclick', `window.$handleImageClick('${originalSrc}')`);
+                const processedSrc = replaceCDNBaseURL(originalSrc);
+                img.setAttribute('src', processedSrc);
+                // 调试日志已移除: console.log('🖼️ [DEBUG] 为HTML图片添加点击事件:', processedSrc);
+                // 使用自定义属性存储图片URL，而不是直接设置onclick
+                img.setAttribute('data-image-url', processedSrc);
+                img.className = (img.className || '') + ' clickable-image';
                 img.style.cursor = 'pointer';
                 if (!img.hasAttribute('loading')) {
                     img.setAttribute('loading', 'lazy');
@@ -370,12 +385,12 @@ export function remarkQRCodeLazyLoad() {
                     size={size}
                     style={{
                         maxWidth: "100%",
-                        background: isDark ? '#e2e8f0' : '#ffffff',
+                        background: 'var(--color-card)',
                         borderRadius: '8px',
                         padding: '8px'
                     }}
-                    fgColor={isDark ? "#1a202c" : "#000000"}
-                    bgColor={isDark ? "#e2e8f0" : "#ffffff"}
+                    fgColor="var(--color-text-primary)"
+                    bgColor="var(--color-card)"
                 />;
                 const rendered = ReactDOMServer.renderToStaticMarkup(tsx).toString();
                 logMarkdown(`二维码`, `url:${url} size:${size} isDark:${isDark} type:${node.type}
@@ -407,9 +422,18 @@ match[2]: ${match[2]}
 *  <div dangerouslySetInnerHTML={{ __html: markdownContent }} />
 */
 export const checkConvertMarkdownToHtml = (content: string) => {
+    const cacheKey = generateUniqueId(content);
     const [htmlContent, setHtmlContent] = React.useState<string>('');
 
     React.useEffect(() => {
+        if (globalCache.has(cacheKey)) {
+            // 刷新数据
+            let html = globalCache.get(cacheKey);
+            // console.log(`📥 [DEBUG] 从缓存中获取HTML内容: ${cacheKey} - ${html}`);
+            // 刷新数据
+            setHtmlContent(html);
+            return;
+        }
         const convertMarkdownToHtml = async () => {
             const result = await remark()
                 .use(remarkQRCodeLazyLoad) // 使用自定义视频插件
@@ -444,9 +468,12 @@ export const checkConvertMarkdownToHtml = (content: string) => {
                         (async () => {
                             // 特殊处理 Mermaid 图表
                             if (lang === 'mermaid') {
+                                debugParse('🎯 发现Mermaid代码块:', { lang, code: code.substring(0, 100) + '...' });
                                 const chartId = `chart-${Date.now()}-${i}`;
                                 const tsx = <MermaidPlaceholder chart={code} id={chartId} />;
-                                return ReactDOMServer.renderToStaticMarkup(tsx);
+                                const markup = ReactDOMServer.renderToStaticMarkup(tsx);
+                                debugParse('🎯 生成Mermaid占位符:', { chartId, markup: markup.substring(0, 200) + '...' });
+                                return markup;
                             }
 
                             // 尝试加载高级语法高亮
@@ -481,7 +508,7 @@ export const checkConvertMarkdownToHtml = (content: string) => {
                         () => renderedCodeBlocks[blockIndex++]
                     );
                 } catch (error) {
-                    console.warn('代码高亮处理失败，使用基础样式:', error);
+                    debugParse.extend('warn')('代码高亮处理失败，使用基础样式:', error);
                     // 降级到基础样式
                     processedContent = processedContent.replace(
                         /<pre>\s*<code\s*(?:class="language-(\w+)")?>([\s\S]*?)<\/code>\s*<\/pre>/g,
@@ -509,10 +536,13 @@ export const checkConvertMarkdownToHtml = (content: string) => {
 
             // 刷新数据
             setHtmlContent(processedContent);
+
+            // console.log(`📥 [DEBUG] 缓存HTML内容: ${cacheKey} - ${processedContent}`);
+            globalCache.set(cacheKey, processedContent);
         };
 
         convertMarkdownToHtml();
-    }, [content]);
+    }, [cacheKey]);
 
     return htmlContent;
 };
@@ -552,6 +582,7 @@ const MermaidLazyPlaceholder: React.FC<{ chart: string; id: string }> = ({ chart
 /**
  * 自定义 remark 插件来处理 .mmd 文件导入
  * 将 .mmd 文件内容转换为懒加载的 Mermaid 图表
+ * 使用内存存储而不是DOM属性存储图表数据
  */
 export function remarkMermaidLazyLoad() {
     return (tree) => {
@@ -562,13 +593,15 @@ export function remarkMermaidLazyLoad() {
                 const chartContent = node.value;
                 const chartId = `lazy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-                // 替换成懒加载占位符
+                // 将图表数据存储到内存中
+                mermaidDataManager.setChartData(chartId, chartContent, true);
+
+                // 替换成懒加载占位符（不包含data-mermaid-chart属性）
                 parent.children[index] = {
                     type: 'html',
                     value: `<div class="mermaid-lazy-placeholder"
-                        data-mermaid-chart="${encodeURIComponent(chartContent)}"
                         data-mermaid-id="${chartId}"
-                        style="padding: 20px; background-color: #f6f8fa; border: 1px solid #e1e4e8; border-radius: 8px; text-align: center; margin: 20px 0; min-height: 200px; display: flex; align-items: center; justify-content: center; color: #6b7280;">
+                        style="padding: 20px; background-color: var(--color-surface); border: 1px solid var(--color-border-light); border-radius: 8px; text-align: center; margin: 20px 0; min-height: 200px; display: flex; align-items: center; justify-content: center; color: var(--color-text-secondary); transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;">
                         <div>
                             <div style="font-size: 24px; margin-bottom: 8px;">📊</div>
                             <div>脑图懒加载中...</div>

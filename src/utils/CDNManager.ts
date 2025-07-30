@@ -6,12 +6,11 @@
  * Unified management of CDN resource loading and health checking
  */
 
-import debug from 'debug';
 import { getCDNConfig, isDebugEnabled } from '../config/ProjectConfig';
 import { cdnHealthChecker, CDNHealthResult } from './CDNHealthChecker';
+import { getLogger } from './Logger';
 
-// Debug logger
-const debugCDN = debug('app:cdn');
+const debugCDN = getLogger('cdn');
 
 /**
  * 本地开发环境检测缓存
@@ -218,7 +217,7 @@ export class CDNManager {
       }
 
     } catch (error) {
-      console.error('[CDN Manager] CDN health check failed:', error);
+      debugCDN.extend('error')('[CDN Manager] CDN health check failed:', error);
     } finally {
       this.isInitialized = true;
       this.initPromise = null;
@@ -287,7 +286,7 @@ export class CDNManager {
         const localUrl = this.buildLocalUrl(resourcePath, localBasePath);
 
         if (isDebugEnabled()) {
-          console.warn(`[CDN Manager] All CDNs failed health check, falling back to local: ${localUrl}`);
+          debugCDN.extend('warn')(`[CDN Manager] All CDNs failed health check, falling back to local: ${localUrl}`);
         }
 
         if (cacheUrls) {
@@ -302,7 +301,7 @@ export class CDNManager {
         const cdnUrl = this.buildCDNUrl(fallbackCDN, resourcePath);
 
         if (isDebugEnabled()) {
-          console.warn(`[CDN Manager] Health check in progress, using first CDN: ${fallbackCDN}`);
+          debugCDN.extend('warn')(`[CDN Manager] Health check in progress, using first CDN: ${fallbackCDN}`);
         }
 
         // 不缓存这个临时URL，等健康检查完成后重新获取
@@ -315,7 +314,7 @@ export class CDNManager {
       const localUrl = this.buildLocalUrl(resourcePath, localBasePath);
 
       if (isDebugEnabled()) {
-        console.warn(`[CDN Manager] No CDN available, falling back to local: ${localUrl}`);
+        debugCDN.extend('warn')(`[CDN Manager] No CDN available, falling back to local: ${localUrl}`);
       }
 
       if (cacheUrls) {
@@ -374,7 +373,7 @@ export class CDNManager {
       return this.projectBasePathCache;
 
     } catch (error) {
-      console.error('获取项目根路径失败:', error);
+      debugCDN.extend('error')('获取项目根路径失败:', error);
 
       // 降级处理：返回当前域名根路径
       const fallbackPath = window.location.origin + '/';
@@ -447,7 +446,7 @@ export class CDNManager {
         }
 
       } catch (error) {
-        console.error(`[CDN Manager] Failed to preload resource: ${resourcePath}`, error);
+        debugCDN.extend('error')(`[CDN Manager] Failed to preload resource: ${resourcePath}`, error);
       }
     });
 

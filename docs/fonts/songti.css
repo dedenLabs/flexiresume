@@ -1,0 +1,61 @@
+/**
+ * 宋体古风 字体配置
+ * 
+ * 宋体风格，具有古典韵味
+ * 
+ * @author FlexiResume Team
+ * @date 2025-07-29
+ */
+
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Noto Serif SC'), local('NotoSerifSC'),
+       url('./noto-serif-sc-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Noto Serif SC'), local('NotoSerifSC'),
+       url('./noto-serif-sc-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Noto Serif SC'), local('NotoSerifSC'),
+       url('./noto-serif-sc-700.woff2') format('woff2');
+}
+
+/* 宋体古风 专用样式类 */
+.font-songti {
+  font-family: 'Noto Serif SC', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.7;
+  font-feature-settings: 'liga' 1, 'kern' 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* 标题样式 */
+.font-songti-title {
+  font-family: 'Noto Serif SC', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.5999999999999999;
+}
+
+/* 正文样式 */
+.font-songti-body {
+  font-family: 'Noto Serif SC', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.7;
+}

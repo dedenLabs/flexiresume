@@ -1,111 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled, { css } from 'styled-components';
+import { useSafeTheme } from '../../utils/ThemeUtils'; 
+import { getLogger } from '../../utils/Logger';
 
-/**
- * 安全地使用主题hook
- * 支持服务器端渲染和客户端渲染
- * 当组件在独立的React根中渲染时，直接从DOM获取主题状态
- */
-const useSafeTheme = () => {
-    const [isDark, setIsDark] = useState(false);
+const logSkillItem = getLogger('SkillItem');
 
-    useEffect(() => {
-        // 在服务器端渲染时，返回默认值
-        if (typeof window === 'undefined') {
-            return;
-        }
 
-        // 直接从DOM获取主题状态，不依赖React Context
-        const getThemeFromDOM = () => {
-            // 方法1: 检查body的data-theme属性
-            const bodyTheme = document.body.getAttribute('data-theme');
-            if (bodyTheme) {
-                return bodyTheme === 'dark';
-            }
-
-            // 方法2: 检查html的data-theme属性
-            const htmlTheme = document.documentElement.getAttribute('data-theme');
-            if (htmlTheme) {
-                return htmlTheme === 'dark';
-            }
-
-            // 方法3: 检查html的class
-            const htmlClasses = document.documentElement.className;
-            if (htmlClasses.includes('dark')) {
-                return true;
-            }
-            if (htmlClasses.includes('light')) {
-                return false;
-            }
-
-            // 方法4: 检查localStorage
-            try {
-                const storedTheme = localStorage.getItem('theme');
-                if (storedTheme) {
-                    return storedTheme === 'dark';
-                }
-            } catch (e) {
-                // localStorage可能不可用
-            }
-
-            // 方法5: 检查系统偏好
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                return true;
-            }
-
-            // 默认返回false（浅色主题）
-            return false;
-        };
-
-        // 初始设置
-        setIsDark(getThemeFromDOM());
-
-        // 监听主题变化
-        const observer = new MutationObserver(() => {
-            setIsDark(getThemeFromDOM());
-        });
-
-        observer.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ['class', 'data-theme']
-        });
-
-        observer.observe(document.body, {
-            attributes: true,
-            attributeFilter: ['class', 'data-theme']
-        });
-
-        // 监听localStorage变化
-        const handleStorageChange = (e: StorageEvent) => {
-            if (e.key === 'theme') {
-                setIsDark(getThemeFromDOM());
-            }
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-
-        // 监听系统主题变化
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        const handleMediaChange = () => {
-            setIsDark(getThemeFromDOM());
-        };
-
-        mediaQuery.addEventListener('change', handleMediaChange);
-
-        return () => {
-            observer.disconnect();
-            window.removeEventListener('storage', handleStorageChange);
-            mediaQuery.removeEventListener('change', handleMediaChange);
-        };
-    }, []);
-
-    return {
-        isDark,
-        mode: isDark ? 'dark' : 'light',
-        colors: {},
-        toggleMode: () => { }
-    };
-};
 
 interface SkillItemProps {
     skill: string;
@@ -116,7 +16,7 @@ interface SkillItemProps {
 
 // 技能等级配置 - 支持深色模式的柔和颜色方案
 const getSkillLevelConfig = (level: number, skill: string, isDark: boolean = false) => {
-    // console.error(`getSkillLevelConfig skillName=${skill}: isDark=${isDark} level=${level}`);
+    // logSkillItem.extend('error')(`getSkillLevelConfig skillName=${skill}: isDark=${isDark} level=${level}`);
     switch (level) {
         case 1: // 了解 - 柔和的蓝色
             return {
@@ -212,7 +112,7 @@ const SkillItem: React.FC<SkillItemProps> = ({ skill, level, animate }) => {
     const config = getSkillLevelConfig(level, skill, isDark);
 
     // 调试信息 - 可以在开发时启用
-    // console.error(`🔍 SkillItem ${skill}: isDark=${isDark}, useSafeTheme result:`, useSafeTheme(), `config:`, config);
+    // logSkillItem.extend('error')(`🔍 SkillItem ${skill}: isDark=${isDark}, useSafeTheme result:`, useSafeTheme(), `config:`, config);
 
     return (
         <CardWrapper {...(animate || {})}>

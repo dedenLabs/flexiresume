@@ -2,16 +2,17 @@ import { Location } from 'react-router-dom';
 import flexiResumeStore from '../store/Store';
 import React, { useState, useEffect } from 'react';
 import { reaction, set } from 'mobx';
-import debug from 'debug';
 import { getCurrentLanguageData } from '../data/DataLoader';
 import { IFlexiResume } from '../types/IFlexiResume';
 import { cdnManager } from './CDNManager';
 import { getCDNConfig, isDebugEnabled, isDevelopment } from '../config/ProjectConfig';
+import { getLogger } from './Logger';
+import { globalCache } from '../utils/MemoryManager';
 
 // Debug loggers
-const debugCache = debug('app:cache');
-const debugCDN = debug('app:cdn');
-const debugTools = debug('app:tools');
+const debugCache = getLogger('cache');
+const debugCDN = getLogger('cdn');
+const debugTools = getLogger('tools');
 
 // 全局数据缓存，用于同步函数访问
 let cachedOriginData: IFlexiResume | null = null;
@@ -68,12 +69,9 @@ export const updateDataCache = async (): Promise<void> => {
     }
 };
 
-/** 获取日志 */
-export function getLogger(moduleName: string) {
-    return debug('app:' + moduleName);
-}
+
 /** 获取折叠面板的日志 */
-export const logCollapse = debug('app:折叠');
+export const logCollapse = getLogger('折叠');
 /** 播放视频时停止其他真正播放的视频 */
 window.stopOtherVideos = function (e) {
     document.querySelectorAll(".remark-video").forEach(video => { if (video !== e.target) video.pause(); });
@@ -167,6 +165,14 @@ export function getCurrentPositionNameByPath(path: string): string {
  * @return {Promise<void>}
  */
 export async function updateCurrentResumeStore(postion: string): Promise<void> {
+    const cacheKey = `preload-finished-${postion}`;
+
+    if (globalCache.has(cacheKey)) {
+        // 调试日志已移除: console.log(`📦 [DEBUG] 数据已预加载: ${url}`); 
+        // 更新当前简历数据
+        flushFlexiResumeStore(globalCache.get(cacheKey));
+        return;
+    }
     // 更新当前位置
     flexiResumeStore.collapsedMap.clear();// 清空折叠信息
 
@@ -183,6 +189,13 @@ export async function updateCurrentResumeStore(postion: string): Promise<void> {
     const newData = assignDeep({}, originData, selectedPositonData, { skill_level: skillsData });
 
     // 更新当前简历数据
+    flushFlexiResumeStore(newData);
+
+    // 预加载位置数据到缓存 
+    globalCache.set(cacheKey, newData);
+}
+
+function flushFlexiResumeStore(newData: any) {
     flexiResumeStore.data = newData as IFlexiResume;
 
     // 技能数值
@@ -192,7 +205,7 @@ export async function updateCurrentResumeStore(postion: string): Promise<void> {
     flexiResumeStore.skills = skills;
 
     // 技能字典对象
-    const skillMap: { [key: string]: number } = {};
+    const skillMap: { [key: string]: number; } = {};
     skills.forEach(([skill, level]) => {
         skillMap[skill.toLocaleLowerCase()] = [skill, level];
     });
@@ -263,20 +276,41 @@ export function calculateWorkDuration(start: string, end: string) {
     // 定义一个解析函数，支持多种日期格式，并处理 "至今" 的情况
     function parseDate(dateStr) {
         // 检查是否为 "至今" 或其他不可解析为数字的字符
-        if (!/^\d+/.test(dateStr)) return [currentYear, currentMonth];
+        if (!/\d/.test(dateStr)) return [currentYear, currentMonth];
 
         // 支持多种分隔符
         const separators = ['.', '/', '-'];
         let year, month;
         for (const sep of separators) {
             if (dateStr.includes(sep)) {
-                [year, month] = dateStr.split(sep).map(Number);
+                const parts = dateStr.split(sep).map(part => {
+                    // 提取数字部分，过滤掉非数字字符
+                    const numbers = part.match(/\d+/);
+                    return numbers ? Number(numbers[0]) : 0;
+                });
+                [year, month] = parts;
                 break;
             }
         }
 
-        // 如果分隔符解析失败，直接尝试转换为数字
-        if (!year || !month) [year, month] = dateStr.match(/\d+/g).map(Number);
+        // 如果分隔符解析失败，直接提取所有数字
+        if (!year || !month) {
+            const numbers = dateStr.match(/\d+/g);
+            if (numbers && numbers.length >= 2) {
+                [year, month] = numbers.map(Number);
+            } else if (numbers && numbers.length === 1) {
+                // 如果只有一个数字，假设是年份，月份设为1
+                year = Number(numbers[0]);
+                month = 1;
+            } else {
+                // 如果没有数字，返回当前年月
+                return [currentYear, currentMonth];
+            }
+        }
+
+        // 确保年份和月份都是有效的数字
+        year = year || currentYear;
+        month = month || 1;
 
         return [year, month];
     }

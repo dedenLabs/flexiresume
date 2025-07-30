@@ -14,7 +14,10 @@
  * @date 2025-01-13
  */
 
-import { isDebugEnabled } from './Tools';
+import { getLogger } from './Logger';
+import { isDebugEnabled } from './Tools'; 
+
+const logLoadingManager = getLogger('LoadingManager');
 
 // 加载任务状态
 export type LoadingTaskStatus = 'pending' | 'loading' | 'success' | 'error' | 'timeout';
@@ -126,14 +129,14 @@ function notifyStateListeners() {
   const state = calculateGlobalState();
   
   if (isDebugEnabled()) {
-    console.log('[LoadingManager] State updated:', state);
+    logLoadingManager('[LoadingManager] State updated:', state);
   }
   
   stateListeners.forEach(listener => {
     try {
       listener(state);
     } catch (error) {
-      console.error('[LoadingManager] Error in state listener:', error);
+      logLoadingManager.extend('error')('[LoadingManager] Error in state listener:', error);
     }
   });
 }
@@ -146,7 +149,7 @@ function notifyTaskListeners(task: LoadingTask) {
     try {
       listener(task);
     } catch (error) {
-      console.error('[LoadingManager] Error in task listener:', error);
+      logLoadingManager.extend('error')('[LoadingManager] Error in task listener:', error);
     }
   });
 }
@@ -190,7 +193,7 @@ function updateTaskStatus(
   }
   
   if (isDebugEnabled()) {
-    console.log(`[LoadingManager] Task ${taskId} updated:`, { status, progress, error });
+    logLoadingManager(`[LoadingManager] Task ${taskId} updated:`, { status, progress, error });
   }
   
   notifyTaskListeners(task);
@@ -222,7 +225,7 @@ export function createLoadingTask(
   tasks.set(taskId, task);
   
   if (isDebugEnabled()) {
-    console.log(`[LoadingManager] Task created: ${taskId} - ${name}`);
+    logLoadingManager(`[LoadingManager] Task created: ${taskId} - ${name}`);
   }
   
   notifyTaskListeners(task);
@@ -277,7 +280,7 @@ export function cancelLoadingTask(taskId: string): void {
     tasks.delete(taskId);
     
     if (isDebugEnabled()) {
-      console.log(`[LoadingManager] Task cancelled: ${taskId}`);
+      logLoadingManager(`[LoadingManager] Task cancelled: ${taskId}`);
     }
     
     notifyStateListeners();
@@ -347,7 +350,7 @@ export function cleanupCompletedTasks(olderThanMs = 60000): void {
   
   if (cleanedCount > 0) {
     if (isDebugEnabled()) {
-      console.log(`[LoadingManager] Cleaned up ${cleanedCount} completed tasks`);
+      logLoadingManager(`[LoadingManager] Cleaned up ${cleanedCount} completed tasks`);
     }
     notifyStateListeners();
   }
@@ -360,7 +363,7 @@ export function clearAllTasks(): void {
   tasks.clear();
   
   if (isDebugEnabled()) {
-    console.log('[LoadingManager] All tasks cleared');
+    logLoadingManager('[LoadingManager] All tasks cleared');
   }
   
   notifyStateListeners();
@@ -384,7 +387,7 @@ export function startAutoCleanup(intervalMs = 300000): void { // 5分钟
   }, intervalMs);
   
   if (isDebugEnabled()) {
-    console.log('[LoadingManager] Auto cleanup started');
+    logLoadingManager('[LoadingManager] Auto cleanup started');
   }
 }
 
@@ -397,7 +400,7 @@ export function stopAutoCleanup(): void {
     cleanupInterval = null;
     
     if (isDebugEnabled()) {
-      console.log('[LoadingManager] Auto cleanup stopped');
+      logLoadingManager('[LoadingManager] Auto cleanup stopped');
     }
   }
 }

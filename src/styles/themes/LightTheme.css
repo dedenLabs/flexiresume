@@ -1,0 +1,231 @@
+/**
+ * 浅色主题样式
+ * 
+ * 定义浅色模式下的所有CSS变量和样式
+ * 
+ * @author FlexiResume Team
+ * @date 2025-07-26
+ */
+
+/* 浅色主题CSS变量定义 */
+:root {
+  /* 主色调 */
+  --color-primary: #D4AF37;
+  --color-secondary: #8B4513;
+  --color-accent: #DC143C;
+
+  /* 背景色 */
+  --color-background: #FFF8DC;
+  --color-surface: #F5F5DC;
+  --color-card: #FFFAF0;
+
+  /* 文字颜色 */
+  --color-text-primary: #2F4F4F;
+  --color-text-secondary: #696969;
+  --color-text-disabled: #A9A9A9;
+  --color-text-inverse: #FFFAF0;
+
+  /* 边框颜色 */
+  --color-border-light: #F0E68C;
+  --color-border-medium: #DAA520;
+  --color-border-dark: #B8860B;
+
+  /* 状态颜色 */
+  --color-status-success: #228B22;
+  --color-status-warning: #FF8C00;
+  --color-status-error: #B22222;
+  --color-status-info: #4682B4;
+
+  /* 状态背景色 - 浅色模式 */
+  --color-status-worse: #fff0f0;    /* 较差的状态背景色 */
+  --color-status-better: #f0fff0;   /* 更好的状态背景色 */
+
+  /* 阴影颜色 */
+  --color-shadow-light: rgba(0, 0, 0, 0.05);
+  --color-shadow-medium: rgba(0, 0, 0, 0.1);
+  --color-shadow-dark: rgba(0, 0, 0, 0.2);
+
+  /* 背景滤镜变量 - 浅色主题（更亮） */
+  --bg-filter-brightness: 1.2;
+  --bg-filter-contrast: 1.1;
+
+  /* 链接颜色变量 - 浅色主题 */
+  --color-link-primary: #0066cc;
+  --color-link-visited: #551a8b;
+  --color-link-hover: #0052a3;
+  --color-link-active: #0066cc;
+
+  /* 扩展的设计系统变量 */
+  /* 字体系统 */
+  --font-family-primary: "Noto Serif SC", "STKaiti", "KaiTi", "Times New Roman", serif;
+  --font-family-secondary: "STKaiti", "KaiTi", "SimKai", "FangSong", serif;
+  --font-family-modern: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "SimHei", sans-serif;
+  --font-family-mono: Consolas, Monaco, "Courier New", monospace;
+
+  /* 字体大小 - 整体放大一号 */
+  --font-size-xs: 14px;    /* 原12px -> 14px */
+  --font-size-sm: 16px;    /* 原14px -> 16px */
+  --font-size-base: 18px;  /* 原16px -> 18px */
+  --font-size-lg: 20px;    /* 原18px -> 20px */
+  --font-size-xl: 22px;    /* 原20px -> 22px */
+  --font-size-2xl: 26px;   /* 原24px -> 26px */
+  --font-size-3xl: 32px;   /* 原30px -> 32px */
+  --font-size-4xl: 38px;   /* 原36px -> 38px */
+
+  /* 字体粗细 */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* 行高 */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* 间距系统 - 增加间距解决密集问题 */
+  --spacing-xs: 6px;     /* 原4px -> 6px */
+  --spacing-sm: 12px;    /* 原8px -> 12px */
+  --spacing-md: 20px;    /* 原16px -> 20px */
+  --spacing-lg: 28px;    /* 原24px -> 28px */
+  --spacing-xl: 36px;    /* 原32px -> 36px */
+  --spacing-xxl: 56px;   /* 原48px -> 56px */
+  --spacing-xxxl: 72px;  /* 原64px -> 72px */
+
+  /* 圆角系统 */
+  --border-radius-none: 0;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --border-radius-full: 50%;
+
+  /* 阴影系统 */
+  --shadow-none: none;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* 动画时长 */
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 1000ms;
+
+  /* 动画缓动 */
+  --easing-linear: linear;
+  --easing-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --easing-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --easing-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* Z-index层级 */
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal: 1040;
+  --z-index-popover: 1050;
+  --z-index-tooltip: 1060;
+  --z-index-toast: 1070;
+}
+
+/* 浅色主题特定样式 */
+:root {
+  /* 背景图片滤镜 - 浅色模式 */
+  .background-image {
+    filter: brightness(var(--bg-filter-brightness)) contrast(var(--bg-filter-contrast));
+  }
+
+  /* 卡片样式 - 浅色模式 */
+  .card-light {
+    background: var(--color-card);
+    border: 1px solid var(--color-border-light);
+    box-shadow: 0 2px 8px var(--color-shadow-light);
+  }
+
+  /* 按钮样式 - 浅色模式 */
+  .button-light {
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    border: 1px solid var(--color-border-medium);
+  }
+
+  .button-light:hover {
+    background: var(--color-secondary);
+    border-color: var(--color-border-dark);
+  }
+
+  /* 输入框样式 - 浅色模式 */
+  .input-light {
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-light);
+  }
+
+  .input-light:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+  }
+
+  /* 链接样式 - 浅色模式 */
+  .link-light {
+    color: var(--color-link-primary);
+  }
+
+  .link-light:visited {
+    color: var(--color-link-visited);
+  }
+
+  .link-light:hover {
+    color: var(--color-link-hover);
+  }
+
+  .link-light:active {
+    color: var(--color-link-active);
+  }
+
+  /* 代码块样式 - 浅色模式 */
+  .code-light {
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-light);
+  }
+
+  /* 表格样式 - 浅色模式 */
+  .table-light {
+    background: var(--color-card);
+    border: 1px solid var(--color-border-light);
+  }
+
+  .table-light th {
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    border-bottom: 2px solid var(--color-border-medium);
+  }
+
+  .table-light td {
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  /* 滚动条样式 - 浅色模式 */
+  .scrollbar-light::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-light::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+
+  .scrollbar-light::-webkit-scrollbar-thumb {
+    background: var(--color-border-medium);
+    border-radius: 4px;
+  }
+
+  .scrollbar-light::-webkit-scrollbar-thumb:hover {
+    background: var(--color-border-dark);
+  }
+}

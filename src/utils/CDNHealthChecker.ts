@@ -7,6 +7,10 @@
  */
 
 import { getCDNConfig, updateCDNConfig, isDebugEnabled } from '../config/ProjectConfig';
+import { getLogger } from './Logger';
+
+
+const logCDNHealthChecker = getLogger('CDNHealthChecker');
 
 export interface CDNHealthResult {
   /** CDN URL */
@@ -86,7 +90,7 @@ export class CDNHealthChecker {
         : `${baseUrl}/${testPath}`;
 
       if (isDebugEnabled()) {
-        console.log(`[CDN Health Check] Testing: ${testUrl}`);
+        logCDNHealthChecker(`[CDN Health Check] Testing: ${testUrl}`);
       }
 
       // 方法1: 使用图片加载检测（避免跨域问题）
@@ -97,7 +101,7 @@ export class CDNHealthChecker {
         }
       } catch (imageError) {
         if (isDebugEnabled()) {
-          console.log(`[CDN Health Check] Image method failed for ${baseUrl}, trying fetch...`);
+          logCDNHealthChecker(`[CDN Health Check] Image method failed for ${baseUrl}, trying fetch...`);
         }
       }
 
@@ -109,7 +113,7 @@ export class CDNHealthChecker {
         }
       } catch (fetchError) {
         if (isDebugEnabled()) {
-          console.log(`[CDN Health Check] HEAD method failed for ${baseUrl}, trying GET...`);
+          logCDNHealthChecker(`[CDN Health Check] HEAD method failed for ${baseUrl}, trying GET...`);
         }
       }
 
@@ -125,7 +129,7 @@ export class CDNHealthChecker {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
       if (isDebugEnabled()) {
-        console.warn(`[CDN Health Check] ${baseUrl}: FAILED - ${errorMessage} (${responseTime}ms)`);
+        logCDNHealthChecker.extend('warn')(`[CDN Health Check] ${baseUrl}: FAILED - ${errorMessage} (${responseTime}ms)`);
       }
 
       return {
@@ -169,7 +173,7 @@ export class CDNHealthChecker {
           const responseTime = Date.now() - startTime;
 
           if (isDebugEnabled()) {
-            console.log(`[CDN Health Check] ${baseUrl}: OK via image (${responseTime}ms)`);
+            logCDNHealthChecker(`[CDN Health Check] ${baseUrl}: OK via image (${responseTime}ms)`);
           }
 
           resolve({
@@ -239,7 +243,7 @@ export class CDNHealthChecker {
       }
 
       if (isDebugEnabled()) {
-        console.log(`[CDN Health Check] ${baseUrl}: ${response.ok ? 'OK' : 'FAILED'} via ${method} (${responseTime}ms)`);
+        logCDNHealthChecker(`[CDN Health Check] ${baseUrl}: ${response.ok ? 'OK' : 'FAILED'} via ${method} (${responseTime}ms)`);
       }
 
       return result;
@@ -271,7 +275,7 @@ export class CDNHealthChecker {
     } = options;
 
     if (isDebugEnabled()) {
-      console.log(`[CDN Health Check] Starting health check for ${cdnConfig.baseUrls.length} CDNs`);
+      logCDNHealthChecker(`[CDN Health Check] Starting health check for ${cdnConfig.baseUrls.length} CDNs`);
     }
 
     this.checkPromise = this.performHealthCheck(cdnConfig.baseUrls, testPath, timeout, concurrent, maxConcurrency);
@@ -288,7 +292,7 @@ export class CDNHealthChecker {
       this.reorderCDNUrls(results);
 
       if (isDebugEnabled()) {
-        console.log('[CDN Health Check] Health check completed:', results);
+        logCDNHealthChecker('[CDN Health Check] Health check completed:', results);
       }
 
       return results;
@@ -348,7 +352,7 @@ export class CDNHealthChecker {
 
     if (!strategy.enabled) {
       if (isDebugEnabled()) {
-        console.log('[CDN Health Check] Sorting strategy disabled, keeping original order');
+        logCDNHealthChecker('[CDN Health Check] Sorting strategy disabled, keeping original order');
       }
       return;
     }
@@ -370,9 +374,9 @@ export class CDNHealthChecker {
       ];
 
       if (isDebugEnabled()) {
-        console.log('[CDN Health Check] Using availability-first strategy');
-        console.log('[CDN Health Check] Available CDNs:', availableCDNs.length);
-        console.log('[CDN Health Check] Unavailable CDNs:', unavailableCDNs.length);
+        logCDNHealthChecker('[CDN Health Check] Using availability-first strategy');
+        logCDNHealthChecker('[CDN Health Check] Available CDNs:', availableCDNs.length);
+        logCDNHealthChecker('[CDN Health Check] Unavailable CDNs:', unavailableCDNs.length);
       }
 
     } else if (strategy.mode === 'speed') {
@@ -396,15 +400,15 @@ export class CDNHealthChecker {
       ];
 
       if (isDebugEnabled()) {
-        console.log('[CDN Health Check] Using speed-first strategy');
-        console.log('[CDN Health Check] Speed weight:', strategy.speedWeight);
-        console.log('[CDN Health Check] Availability weight:', strategy.availabilityWeight);
-        console.log('[CDN Health Check] Sorted by performance:',
+        logCDNHealthChecker('[CDN Health Check] Using speed-first strategy');
+        logCDNHealthChecker('[CDN Health Check] Speed weight:', strategy.speedWeight);
+        logCDNHealthChecker('[CDN Health Check] Availability weight:', strategy.availabilityWeight);
+        logCDNHealthChecker('[CDN Health Check] Sorted by performance:',
           sortedResults.map(r => `${r.url} (${r.responseTime}ms)`));
       }
 
     } else {
-      console.warn('[CDN Health Check] Unknown sorting strategy:', strategy.mode);
+      logCDNHealthChecker.extend('warn')('[CDN Health Check] Unknown sorting strategy:', strategy.mode);
       return;
     }
 
@@ -414,7 +418,7 @@ export class CDNHealthChecker {
     });
 
     if (isDebugEnabled()) {
-      console.log('[CDN Health Check] CDN URLs reordered:', reorderedUrls);
+      logCDNHealthChecker('[CDN Health Check] CDN URLs reordered:', reorderedUrls);
     }
   }
 

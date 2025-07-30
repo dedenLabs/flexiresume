@@ -1,0 +1,149 @@
+/**
+ * 打印样式 - 主题化管理
+ * 
+ * 统一管理打印相关的样式，支持浅色和深色主题
+ * 
+ * @author FlexiResume Team
+ * @date 2025-07-27
+ */
+
+/* 打印样式优化 - 只在激活时生效 */
+@media print {
+  /* 只有当body有print-mode-active类时才应用打印样式 */
+  body.print-mode-active {
+    /* 页面设置 */
+    @page {
+      size: A4;
+      margin: 1cm;
+    }
+
+    /* 重置根元素和body */
+    html, body {
+      width: 100% !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: white !important;
+      background-image: none !important;
+      overflow: visible !important;
+      font-size: 12pt !important;
+      line-height: 1.4 !important;
+      color: black !important;
+    }
+
+    /* 隐藏深色模式背景伪元素 */
+    [data-theme="dark"] body::before {
+      display: none !important;
+    }
+
+    /* 根元素打印优化 */
+    #root {
+      display: block !important;
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: white !important;
+      overflow: visible !important;
+    }
+
+    /* 隐藏不需要打印的元素 */
+    .no-print,
+    .print-hide,
+    button,
+    .control-panel,
+    .floating-controls,
+    nav,
+    .navigation,
+    .tabs,
+    .tab-container,
+    [data-testid="control-panel"],
+    [data-testid="development-notice"],
+    [data-pdf-downloader],
+    .pdf-downloader,
+    .control-button,
+    .floating-button,
+    [class*="control"]:not(.skill-item),
+    [class*="floating"]:not(.skill-item),
+    [class*="button"]:not(.skill-item),
+    [class*="Panel"],
+    [class*="Switcher"],
+    [class*="Downloader"],
+    .fixed,
+    .absolute {
+      display: none !important;
+    }
+
+    /* 打印背景设置 */
+    .print-background {
+      position: relative;
+      background: white !important;
+    }
+
+    .print-background::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      z-index: -1;
+    }
+
+    /* 确保所有文本颜色为黑色 */
+    * {
+      color: black !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      text-shadow: none !important;
+    }
+
+    /* 链接样式 */
+    a {
+      color: black !important;
+      text-decoration: underline !important;
+    }
+
+    /* 分页控制 */
+    .page-break-before {
+      page-break-before: always;
+    }
+
+    .page-break-after {
+      page-break-after: always;
+    }
+
+    .page-break-inside-avoid {
+      page-break-inside: avoid;
+    }
+  }
+}
+
+/* 浅色主题打印样式 */
+[data-theme="light"] {
+  @media print {
+    body.print-mode-active {
+      /* 浅色主题特定的打印样式 */
+      background: white !important;
+      color: black !important;
+    }
+  }
+}
+
+/* 深色主题打印样式 */
+[data-theme="dark"] {
+  @media print {
+    body.print-mode-active {
+      /* 深色主题特定的打印样式 */
+      background: white !important;
+      color: black !important;
+      
+      /* 确保深色主题下的元素在打印时显示为白底黑字 */
+      * {
+        background: transparent !important;
+        color: black !important;
+      }
+    }
+  }
+}

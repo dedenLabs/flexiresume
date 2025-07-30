@@ -14,7 +14,9 @@ import { useTheme } from '../theme';
 import { useI18n } from '../i18n';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeSwitcher from './ThemeSwitcher';
+import FontSwitcher from './FontSwitcher';
 import PDFDownloader from './PDFDownloader';
+import AudioController from './AudioController';
 
 /**
  * 检测屏幕尺寸的Hook
@@ -59,7 +61,7 @@ const useMediaQuery = (breakpoint: number = 768): boolean => {
 
 const PanelContainer = styled.div.withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
-})<{ isDark: boolean }>`
+}) <{ isDark: boolean }>`
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -67,17 +69,17 @@ const PanelContainer = styled.div.withConfig({
   align-items: center;
   gap: 12px;
   padding: 12px;
-  background: ${props => props.isDark ? 'rgba(26, 32, 44, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
-  border: 1px solid ${props => props.isDark ? 'rgba(45, 55, 72, 0.8)' : 'rgba(0, 0, 0, 0.1)'};
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
   border-radius: 12px;
   backdrop-filter: blur(20px);
-  box-shadow: 0 8px 32px ${props => props.isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'};
+  box-shadow: 0 8px 32px var(--color-shadow-medium);
   z-index: 1000;
   transition: all 0.3s ease;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 40px ${props => props.isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.15)'};
+    box-shadow: 0 12px 40px var(--color-shadow-dark);
   }
 
   /* 在打印时隐藏控制面板 */
@@ -95,32 +97,32 @@ const PanelContainer = styled.div.withConfig({
 
 const Divider = styled.div.withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
-})<{ isDark: boolean }>`
+}) <{ isDark: boolean }>`
   width: 1px;
   height: 24px;
-  background: ${props => props.isDark ? 'rgba(74, 85, 104, 0.6)' : 'rgba(0, 0, 0, 0.1)'};
+  background: var(--color-border-light);
   transition: background 0.3s ease;
 `;
 
 const PanelButton = styled.button.withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
-})<{ isDark: boolean }>`
+}) <{ isDark: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 36px;
   height: 36px;
   background: transparent;
-  border: 1px solid ${props => props.isDark ? 'rgba(74, 85, 104, 0.6)' : 'rgba(0, 0, 0, 0.1)'};
+  border: 1px solid var(--color-border-light);
   border-radius: 8px;
   cursor: pointer;
-  color: ${props => props.isDark ? '#e2e8f0' : '#2c3e50'};
+  color: var(--color-text-primary);
   font-size: 16px;
   transition: all 0.3s ease;
 
   &:hover {
-    background: ${props => props.isDark ? 'rgba(45, 55, 72, 0.8)' : 'rgba(0, 0, 0, 0.05)'};
-    border-color: ${props => props.isDark ? 'rgba(113, 128, 150, 0.8)' : 'rgba(0, 0, 0, 0.2)'};
+    background: var(--color-surface);
+    border-color: var(--color-border-medium);
     transform: scale(1.05);
   }
 
@@ -131,7 +133,7 @@ const PanelButton = styled.button.withConfig({
 
 const CollapsiblePanel = styled.div.withConfig({
   shouldForwardProp: (prop) => prop !== 'isCollapsed' && prop !== 'isDark',
-})<{ isCollapsed: boolean; isDark: boolean }>`
+}) <{ isCollapsed: boolean; isDark: boolean }>`
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -151,20 +153,20 @@ const CollapsiblePanel = styled.div.withConfig({
 
 const ToggleButton = styled.button.withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
-})<{ isDark: boolean }>`
+}) <{ isDark: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 48px;
   height: 48px;
-  background: ${props => props.isDark ? 'rgba(26, 32, 44, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
-  border: 1px solid ${props => props.isDark ? 'rgba(45, 55, 72, 0.8)' : 'rgba(0, 0, 0, 0.1)'};
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
   border-radius: 50%;
   cursor: pointer;
-  color: ${props => props.isDark ? '#e2e8f0' : '#2c3e50'};
+  color: var(--color-text-primary);
   font-size: 20px;
   backdrop-filter: blur(20px);
-  box-shadow: 0 4px 16px ${props => props.isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'};
+  box-shadow: 0 4px 16px var(--color-shadow-medium);
   transition: all 0.3s ease;
 
   &:hover {
@@ -179,17 +181,17 @@ const ToggleButton = styled.button.withConfig({
 
 const ExpandedPanel = styled.div.withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
-})<{ isDark: boolean }>`
+}) <{ isDark: boolean }>`
   position: absolute;
   bottom: 100%;
   right: 0;
   margin-bottom: 12px;
   padding: 16px;
-  background: ${props => props.isDark ? 'rgba(26, 32, 44, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
-  border: 1px solid ${props => props.isDark ? 'rgba(45, 55, 72, 0.8)' : 'rgba(0, 0, 0, 0.1)'};
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
   border-radius: 12px;
   backdrop-filter: blur(20px);
-  box-shadow: 0 8px 32px ${props => props.isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'};
+  box-shadow: 0 8px 32px var(--color-shadow-medium);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -205,7 +207,7 @@ const ControlGroup = styled.div`
 
 const ControlLabel = styled.span.withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
-})<{ isDark: boolean }>`
+}) <{ isDark: boolean }>`
   font-size: 14px;
   font-weight: 500;
   color: ${props => props.isDark ? '#e2e8f0' : '#2c3e50'};
@@ -287,6 +289,19 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             <Divider isDark={isDark} />
 
             <ControlGroup>
+              <ControlLabel isDark={isDark}>字体</ControlLabel>
+              <FontSwitcher />
+            </ControlGroup>
+
+            <Divider isDark={isDark} />
+            <ControlGroup>
+              <ControlLabel isDark={isDark}>音乐</ControlLabel>
+              <AudioController />
+            </ControlGroup>
+
+            <Divider isDark={isDark} />
+
+            <ControlGroup>
               <ControlLabel isDark={isDark}>{t.common.downloadPDF}</ControlLabel>
               <PDFDownloader />
             </ControlGroup>
@@ -301,6 +316,10 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       <ThemeSwitcher />
       <Divider isDark={isDark} />
       <LanguageSwitcher />
+      <Divider isDark={isDark} />
+      <FontSwitcher />
+      <Divider isDark={isDark} />
+      <AudioController />
       <Divider isDark={isDark} />
       <PDFDownloader />
     </PanelContainer>

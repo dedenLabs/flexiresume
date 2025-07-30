@@ -177,7 +177,7 @@ const messages = {
     moreInfo: '🔗 更多配置说明请参考: .env.example 文件',
     willGenerate: '🎯 将生成以下职位页面:',
     envConfigs: {
-      'VITE_DISABLE_SANITIZATION': '内容安全过滤控制',
+
       'VITE_BAIDU_ANALYTICS_ID': '百度统计ID',
       'VITE_GA_MEASUREMENT_ID': 'Google Analytics ID'
     }
@@ -200,7 +200,7 @@ const messages = {
     moreInfo: '🔗 For more configuration details, please refer to: .env.example file',
     willGenerate: '🎯 Will generate the following position pages:',
     envConfigs: {
-      'VITE_DISABLE_SANITIZATION': 'Content security filtering control',
+
       'VITE_BAIDU_ANALYTICS_ID': 'Baidu Analytics ID',
       'VITE_GA_MEASUREMENT_ID': 'Google Analytics ID'
     }
@@ -234,7 +234,6 @@ const showBuildTips = (command: string, env: Record<string, string>) => {
 
     // 检查其他重要配置
     const importantEnvs = [
-      { key: 'VITE_DISABLE_SANITIZATION', desc: msg.envConfigs['VITE_DISABLE_SANITIZATION'] },
       { key: 'VITE_BAIDU_ANALYTICS_ID', desc: msg.envConfigs['VITE_BAIDU_ANALYTICS_ID'] },
       { key: 'VITE_GA_MEASUREMENT_ID', desc: msg.envConfigs['VITE_GA_MEASUREMENT_ID'] }
     ];

@@ -15,15 +15,15 @@
  */
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import styled from 'styled-components';
-import debug from 'debug';
+import styled from 'styled-components'; 
 import { useTheme } from '../theme';
 import { useI18n } from '../i18n';
 import { getCurrentNetworkStatus, addNetworkStatusListener } from '../utils/NetworkManager';
+import { getLogger } from '../utils/Logger';
 
 // Debug logger
-const debugErrorBoundary = debug('app:error-boundary');
 import { isDebugEnabled } from '../config/ProjectConfig';
+const debugErrorBoundary = getLogger('error-boundary');
 
 // 错误类型
 export type ErrorType = 'network' | 'chunk' | 'runtime' | 'unknown';

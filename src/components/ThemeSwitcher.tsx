@@ -25,12 +25,12 @@ const SwitcherButton = styled.button.withConfig({
   justify-content: center;
   width: 44px;
   height: 44px;
-  background: ${props => props.isDark ? 'rgba(45, 55, 72, 0.6)' : 'rgba(0, 0, 0, 0.05)'};
-  border: 1px solid ${props => props.isDark ? 'rgba(74, 85, 104, 0.6)' : 'rgba(0, 0, 0, 0.1)'};
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
   border-radius: 50%;
   cursor: pointer;
   font-size: 20px;
-  color: ${props => props.isDark ? '#ed8936' : '#ff6b35'};
+  color: ${props => props.isDark ? 'var(--color-accent)' : 'var(--color-primary)'};
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
   position: relative;

@@ -1,35 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { isDevelopment, isDebugEnabled } from '../config/ProjectConfig';
-import debug from 'debug';
 import { useI18n } from '../i18n';
+import { getLogger } from '../utils/Logger';
 
-
-// Debug logger
-const debugDev = debug('app:development');
+const logDevelopmentNotice = getLogger('DevelopmentNotice');
+const debugDev = getLogger('development');
 
 /**
  * 开发环境提示组件样式
  * 使用shouldForwardProp防止isVisible传递到DOM
  */
-const NoticeContainer = styled.div.withConfig({
-  shouldForwardProp: (prop) => prop !== 'isVisible',
-}) <{ isVisible: boolean }>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 12px 20px;
-  z-index: 10000;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  transform: translateY(${props => props.isVisible ? '0' : '-100%'});
-  transition: transform 0.3s ease-in-out;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-`;
+const NoticeContainer = styled.div``;
 
 const NoticeContent = styled.div`
   max-width: 1200px;
@@ -134,18 +116,44 @@ const DevelopmentNotice: React.FC = () => {
       return;
     }
 
-    // 延迟显示，避免影响页面初始加载
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-      debugDev('Development notice shown');
+    // 等待页面完全渲染后再显示提示
+    const showNotice = () => {
+      // 检查页面是否已经渲染完成
+      const checkPageReady = () => {
+        // 检查关键元素是否存在
+        const resumeContent = document.querySelector('[data-testid="resume-content"]');
+        const header = document.querySelector('header');
+        const tabs = document.querySelector('[data-testid="navigation-tabs"]');
 
-      // 在控制台输出详细信息（用户功能需求，保留console输出）
-      console.group(t.common?.developmentEnvironment || '🚀 FlexiResume 开发环境');
-      console.log(t.common?.developmentTips || '开发环境提示');
-      console.groupEnd();
-    }, 2000);
+        // 检查页面内容是否已加载
+        const hasContent = document.body.textContent && document.body.textContent.length > 1000;
 
-    return () => clearTimeout(timer);
+        return resumeContent && header && tabs && hasContent;
+      };
+
+      if (checkPageReady()) {
+        // 页面已准备好，延迟一小段时间后显示
+        setTimeout(() => {
+          setIsVisible(true);
+          debugDev('Development notice shown after page ready');
+
+          // 在控制台输出详细信息（用户功能需求，保留console输出）
+          console.group(t.common?.developmentEnvironment || '🚀 FlexiResume 开发环境');
+          logDevelopmentNotice(t.common?.developmentTips || '开发环境提示');
+          console.groupEnd();
+        }, 1000);
+      } else {
+        // 页面还未准备好，继续等待
+        setTimeout(showNotice, 500);
+      }
+    };
+
+    // 使用requestIdleCallback优化性能，如果不支持则使用setTimeout
+    if (window.requestIdleCallback) {
+      window.requestIdleCallback(showNotice, { timeout: 5000 });
+    } else {
+      setTimeout(showNotice, 3000);
+    }
   }, []);
 
   /**
@@ -175,7 +183,7 @@ const DevelopmentNotice: React.FC = () => {
   const handleBuildGuide = () => {
     // 用户功能需求，保留console输出
     console.group(t.common?.buildGuide || '构建指南');
-    console.log(t.common?.developmentTips || '开发环境提示');
+    logDevelopmentNotice(t.common?.developmentTips || '开发环境提示');
     console.groupEnd();
 
     // 用户友好的提示窗口
@@ -187,8 +195,9 @@ const DevelopmentNotice: React.FC = () => {
     return null;
   }
 
+  if (!isVisible) return null;
   return (
-    <NoticeContainer isVisible={isVisible} data-testid="development-notice">
+    <NoticeContainer className='development-notice' data-testid="development-notice">
       <NoticeContent>
         <NoticeText data-testid="notice-text">
           <NoticeTitle>

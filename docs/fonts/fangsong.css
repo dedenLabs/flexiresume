@@ -1,0 +1,43 @@
+/**
+ * 仿宋 字体配置
+ * 
+ * 仿宋体，古朴典雅
+ * 
+ * @author FlexiResume Team
+ * @date 2025-07-29
+ */
+
+@font-face {
+  font-family: 'ZCOOL XiaoWei';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('ZCOOL XiaoWei'), local('ZCOOLXiaoWei'),
+       url('./zcool-xiaowei-400.woff2') format('woff2');
+}
+
+/* 仿宋 专用样式类 */
+.font-fangsong {
+  font-family: 'ZCOOL XiaoWei', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  font-feature-settings: 'liga' 1, 'kern' 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* 标题样式 */
+.font-fangsong-title {
+  font-family: 'ZCOOL XiaoWei', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.7;
+}
+
+/* 正文样式 */
+.font-fangsong-body {
+  font-family: 'ZCOOL XiaoWei', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+}

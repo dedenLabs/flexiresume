@@ -14,7 +14,10 @@
  * @date 2025-01-13
  */
 
-import { isDebugEnabled } from '../config/ProjectConfig';
+import { isDebugEnabled } from '../config/ProjectConfig'; 
+import { getLogger } from './Logger';
+
+const logNetworkManager = getLogger('NetworkManager');
 
 // 网络状态类型
 export interface NetworkStatus {
@@ -110,7 +113,7 @@ function updateNetworkStatus() {
     currentNetworkStatus = newStatus;
     
     if (isDebugEnabled()) {
-      console.log('[NetworkManager] Network status updated:', newStatus);
+      logNetworkManager('[NetworkManager] Network status updated:', newStatus);
     }
     
     // 通知所有监听器
@@ -118,7 +121,7 @@ function updateNetworkStatus() {
       try {
         listener(newStatus);
       } catch (error) {
-        console.error('[NetworkManager] Error in network status listener:', error);
+        logNetworkManager.extend('error')('[NetworkManager] Error in network status listener:', error);
       }
     });
   }
@@ -142,7 +145,7 @@ export function initializeNetworkMonitoring() {
   updateNetworkStatus();
   
   if (isDebugEnabled()) {
-    console.log('[NetworkManager] Network monitoring initialized');
+    logNetworkManager('[NetworkManager] Network monitoring initialized');
   }
 }
 
@@ -240,7 +243,7 @@ export async function fetchWithRetry(
       const timeoutId = setTimeout(() => controller.abort(), timeout);
       
       if (isDebugEnabled() && attempt > 0) {
-        console.log(`[NetworkManager] Retry attempt ${attempt} for ${url}`);
+        logNetworkManager(`[NetworkManager] Retry attempt ${attempt} for ${url}`);
       }
       
       // 发送请求
@@ -259,7 +262,7 @@ export async function fetchWithRetry(
       }
       
       if (isDebugEnabled() && attempt > 0) {
-        console.log(`[NetworkManager] Request succeeded after ${attempt} retries`);
+        logNetworkManager(`[NetworkManager] Request succeeded after ${attempt} retries`);
       }
       
       return response;
@@ -278,7 +281,7 @@ export async function fetchWithRetry(
       const delayTime = calculateRetryDelay(attempt, retryConfig);
       
       if (isDebugEnabled()) {
-        console.warn(`[NetworkManager] Request failed, retrying in ${delayTime}ms:`, error.message);
+        logNetworkManager.extend('warn')(`[NetworkManager] Request failed, retrying in ${delayTime}ms:`, error.message);
       }
       
       await delay(delayTime);
@@ -287,7 +290,7 @@ export async function fetchWithRetry(
   
   // 所有重试都失败了
   if (isDebugEnabled()) {
-    console.error(`[NetworkManager] Request failed after ${retryConfig.maxRetries} retries:`, lastError);
+    logNetworkManager.extend('error')(`[NetworkManager] Request failed after ${retryConfig.maxRetries} retries:`, lastError);
   }
   
   throw lastError;
@@ -324,6 +327,6 @@ export function cleanupNetworkMonitoring() {
   networkListeners.clear();
   
   if (isDebugEnabled()) {
-    console.log('[NetworkManager] Network monitoring cleaned up');
+    logNetworkManager('[NetworkManager] Network monitoring cleaned up');
   }
 }

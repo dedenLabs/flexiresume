@@ -61,7 +61,6 @@ const TimelineContainer: React.FC<{
             content={headHtml}
             contentType="html"
             className="timeline-header markdown-content"
-            trustedZone={false}
           />
         )}
 
@@ -76,7 +75,6 @@ const TimelineContainer: React.FC<{
             content={footerHtml}
             contentType="html"
             className="timeline-footer markdown-content"
-            trustedZone={false}
           />
         )}
       </TimelineWrapper>

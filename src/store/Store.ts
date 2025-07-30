@@ -6,7 +6,7 @@ class FlexiResumeStore {
     data: IFlexiResume = {};
 
     // 简历页签
-    tabs: [string, number][] = [];
+    tabs: [string, number, boolean, string][] = [];
 
     // 技能等级对照表
     skillMap: [string, number][] = [];

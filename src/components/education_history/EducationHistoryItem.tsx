@@ -39,14 +39,16 @@ const CardHeaderInfo = styled.div`
 const PositionSeparator = styled.span`
   margin: 0 0.5rem;
   font-weight: normal;
-  color: #aaa; /* 分隔符颜色 */
+  color: var(--color-text-disabled);
+  transition: color 0.3s ease;
 `;
 
 const CardHeaderWorkTime = styled.span`
     font-size: 0.75rem;
-    color: #888; 
+    color: var(--color-text-secondary);
     margin-left: auto; /* 将时间段推到最右侧 */
     white-space: nowrap; /* 防止时间段换行 */
+    transition: color 0.3s ease;
 `;
 
 const SchoolImage = styled.img`

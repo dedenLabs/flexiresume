@@ -1,71 +1,196 @@
 import { createGlobalStyle } from 'styled-components';
 import { replaceCDNBaseURL } from '../utils/Tools';
+import { useTheme, generateCSSVariables } from '../theme';
+// 导入主题管理器，自动加载主题样式
+import './themes/ThemeManager';
+// 导入模块化样式
+import { resetStyles } from './global/reset';
+import { animationStyles } from './global/animations';
+import { utilityStyles } from './global/utilities';
 const maxWidth = `${920}px`;
-const GlobalStyle = createGlobalStyle`
-  /* CSS变量定义 - 浅色主题 */
+
+// 动态GlobalStyle组件，使用主题系统
+const GlobalStyle = createGlobalStyle<{ theme?: any }>`
+  /* 主题CSS变量已抽离到独立文件 */
+  /* 浅色主题: src/styles/themes/LightTheme.css */
+  /* 深色主题: src/styles/themes/DarkTheme.css */
+
+  /* 字体变量 - 优化版，使用汉仪尚巍手书W作为默认字体 */
   :root {
-    --color-primary: #3498db;
-    --color-secondary: #2c3e50;
-    --color-accent: #e74c3c;
+    --font-family-primary: "HYShangWeiShouShuW", "Ma Shan Zheng", "STKaiti", "KaiTi", "SimKai", "FangSong", serif;
+    --font-family-secondary: "Ma Shan Zheng", "Liu Jian Mao Cao", "STKaiti", "KaiTi", "SimKai", "FangSong", serif;
+    --font-family-english: "Times New Roman", "Georgia", serif;
+    --font-family-chinese: "HYShangWeiShouShuW", "Ma Shan Zheng", "STKaiti", "KaiTi", serif;
+    --font-family-calligraphy: "Ma Shan Zheng", "Liu Jian Mao Cao", "STKaiti", "KaiTi", serif;
+    --font-family-decorative: "ZCOOL XiaoWei", "ZCOOL KuaiLe", "Noto Sans SC", sans-serif;
 
-    --color-background: #ffffff;
-    --color-surface: #f8f9fa;
-    --color-card: #ffffff;
-
-    --color-text-primary: #2c3e50;
-    --color-text-secondary: #7f8c8d;
-    --color-text-disabled: #bdc3c7;
-    --color-text-inverse: #ffffff;
-
-    --color-border-light: #ecf0f1;
-    --color-border-medium: #bdc3c7;
-    --color-border-dark: #95a5a6;
-
-    --color-status-success: #27ae60;
-    --color-status-warning: #f39c12;
-    --color-status-error: #e74c3c;
-    --color-status-info: #3498db;
-
-    /* 状态背景色 - 浅色模式 */
-    --color-status-worse: #fff0f0;    /* 较差的状态背景色 */
-    --color-status-better: #f0fff0;   /* 更好的状态背景色 */
-
-    --color-shadow-light: rgba(0, 0, 0, 0.05);
-    --color-shadow-medium: rgba(0, 0, 0, 0.1);
-    --color-shadow-dark: rgba(0, 0, 0, 0.2);
+    /* 字体加载状态变量 */
+    --font-display: swap;
+    --font-loading-opacity: 0.8;
+    --font-loaded-opacity: 1;
   }
 
-  /* CSS变量定义 - 深色主题 - 护眼优化版本 */
-  [data-theme="dark"] {
-    --color-primary: #74b9ff;
-    --color-secondary: #f1f3f4;
-    --color-accent: #fd79a8;
+  /* 动态CSS变量生成 - 兼容主题系统 */
+  ${props => props.theme ? `
+    :root {
+      ${generateCSSVariables(props.theme.colors.light)}
+    }
+    [data-theme="dark"] {
+      ${generateCSSVariables(props.theme.colors.dark)}
+    }
+  ` : ''}
 
-    --color-background: #0f1419;
-    --color-surface: #1a202c;
-    --color-card: #2d3748;
+  /* 优化字体加载 - 只加载默认字体，其他字体按需加载 */
+  @import url('https://fonts.loli.net/css2?family=Ma+Shan+Zheng:wght@400&display=swap'); 
+  
+  /* 备用字体CDN - 如果主CDN失败时使用 */
+  /*@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng:wght@400&display=swap');*/
 
-    --color-text-primary: #f1f3f4; /* 提高文本对比度 */
-    --color-text-secondary: #b2bec3; /* 提高次要文本对比度 */
-    --color-text-disabled: #81ecec; /* 提高禁用文本对比度 */
-    --color-text-inverse: #1a202c;
+  /* 基础样式重置 */
+  ${resetStyles}
 
-    --color-border-light: #2d3748;
-    --color-border-medium: #4a5568;
-    --color-border-dark: #718096;
+  /* 动画样式 */
+  ${animationStyles}
 
-    --color-status-success: #48bb78;
-    --color-status-warning: #ed8936;
-    --color-status-error: #f56565;
-    --color-status-info: #4299e1;
+  /* 工具类样式 */
+  ${utilityStyles}
 
-    /* 状态背景色 - 深色模式 */
-    --color-status-worse: #4a1a1a;    /* 较差的状态背景色 - 深红色调 */
-    --color-status-better: #1a4a1a;   /* 更好的状态背景色 - 深绿色调 */
+  /* 字体类定义 */
+  .font-ancient-chinese {
+    font-family: var(--font-family-chinese);
+  }
 
-    --color-shadow-light: rgba(0, 0, 0, 0.1);
-    --color-shadow-medium: rgba(0, 0, 0, 0.25);
-    --color-shadow-dark: rgba(0, 0, 0, 0.4);
+  .font-modern-chinese {
+    font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "SimHei", sans-serif;
+  }
+
+  /* 新增古典字体类 */
+  .font-calligraphy {
+    font-family: var(--font-family-calligraphy);
+  }
+
+  .font-decorative {
+    font-family: var(--font-family-decorative);
+  }
+
+  .font-poetry {
+    font-family: "Ma Shan Zheng", "Noto Serif SC", "STKaiti", "KaiTi", serif;
+    letter-spacing: 0.1em;
+    line-height: 1.8;
+  }
+
+  .font-cursive {
+    font-family: "Liu Jian Mao Cao", "Ma Shan Zheng", "STKaiti", cursive;
+    letter-spacing: 0.02em;
+  }
+
+  /* 独立字体类 - 与FontConfig.ts中的配置对应 */
+  .font-kangxi {
+    font-family: 'Noto Serif SC', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+    font-feature-settings: 'liga' 1, 'kern' 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  .font-songti {
+    font-family: 'Noto Serif SC', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    line-height: 1.7;
+    font-feature-settings: 'liga' 1, 'kern' 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  .font-kaiti {
+    font-family: 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    line-height: 1.9;
+    font-feature-settings: 'liga' 1, 'kern' 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  .font-fangsong {
+    font-family: 'ZCOOL XiaoWei', 'STFangsong', 'FangSong', 'SimSun', serif;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    line-height: 1.8;
+    font-feature-settings: 'liga' 1, 'kern' 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  .font-lishu {
+    font-family: 'Liu Jian Mao Cao', 'STLiti', 'LiSu', 'SimLi', serif;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    line-height: 2.0;
+    font-feature-settings: 'liga' 1, 'kern' 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  .font-decorative {
+    font-family: 'ZCOOL KuaiLe', 'ZCOOL XiaoWei', 'Noto Sans SC', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+    font-feature-settings: 'liga' 1, 'kern' 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  .font-hanyi-shangwei {
+    font-family: 'HYShangWeiShouShuW', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    line-height: 1.8;
+    font-feature-settings: 'liga' 1, 'kern' 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  .font-english {
+    font-family: var(--font-family-english);
+  }
+
+  .font-mixed {
+    font-family: var(--font-family-primary);
+  }
+
+  /* 字体大小和行高优化 */
+  .font-size-small {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .font-size-normal {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .font-size-large {
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+
+  .font-size-xlarge {
+    font-size: 1.25rem;
+    line-height: 1.8;
+  }
+
+  /* 中文字体优化 */
+  .chinese-text {
+    font-family: var(--font-family-chinese);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 英文字体优化 */
+  .english-text {
+    font-family: var(--font-family-english);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* 全局重置和移动端优化 */
@@ -86,12 +211,12 @@ const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
     padding: 0;
-    font-family: 'Arial', sans-serif;
+    font-family: var(--font-family-primary);
     color: var(--color-text-primary);
     background-color: var(--color-surface);
     letter-spacing: 0.02em;
     word-break: break-word; /* 改为break-word，避免强制断行 */
-    transition: color 0.3s ease, background-color 0.3s ease, filter 0.3s ease;
+    transition: color 0.3s ease, background-color 0.3s ease, filter 0.3s ease, font-family 0.3s ease;
 
     /* 修复移动端横向溢出问题 */
     overflow-x: hidden; /* 隐藏横向滚动条 */
@@ -106,6 +231,28 @@ const GlobalStyle = createGlobalStyle`
     /* 背景图平铺 */
     background-repeat: repeat;
     background-size: 180px;
+
+    /* 浅色主题下的背景滤镜 - 使其更亮 */
+    &::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('${replaceCDNBaseURL('images/flexi-resume.jpg')}');
+      background-repeat: repeat;
+      background-size: 180px;
+      /* 浅色主题滤镜 - 增加亮度和对比度 filter: brightness(var(--bg-filter-brightness, 1.2)) contrast(var(--bg-filter-contrast, 1.1)); */
+     
+      filter: sepia(0.4) hue-rotate(20deg);
+      pointer-events: none;
+      z-index: -1;
+      transition: filter 0.3s ease;
+    }
+
+    /* 隐藏原始背景图，使用伪元素的滤镜版本 */
+    background-image: none;
   }
 
   /* 深色模式下的背景图优化 - 仅对背景图使用滤镜反转 */
@@ -124,10 +271,11 @@ const GlobalStyle = createGlobalStyle`
       background-image: url('${replaceCDNBaseURL('images/flexi-resume.jpg')}');
       background-repeat: repeat;
       background-size: 180px;
-      /* 反转背景图颜色，让其适配深色主题 */
-      filter: invert(1) hue-rotate(180deg) brightness(0.8) contrast(1.2);
+      /* 反转背景图颜色，让其适配深色主题 - 使用CSS变量控制滤镜强度 */
+      filter: invert(1) brightness(var(--bg-filter-brightness, 1));
       pointer-events: none;
       z-index: -1;
+      transition: filter 0.3s ease;
     }
 
     /* 隐藏原始背景图，使用伪元素的反转版本 */
@@ -195,7 +343,6 @@ const GlobalStyle = createGlobalStyle`
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 8px 16px;
-    // background: rgba(0,0,0,0.7);
     color: var(--color-text-primary);
     border-radius: 4px;
     transition: color 0.3s ease;
@@ -306,38 +453,38 @@ const GlobalStyle = createGlobalStyle`
     }
 
     &:link {
-      color: #74b9ff !important; /* 深色模式下更亮的蓝色 - 提高对比度 */
+      color: var(--color-link-primary, #74b9ff) !important;
     }
 
     &:visited {
-      color: #b2bec3 !important; /* 深色模式下更明显的灰色 - 提高对比度 */
+      color: var(--color-link-visited, #b2bec3) !important;
     }
 
     &:hover {
-      color: #fd79a8 !important; /* 深色模式下更亮的粉红色 - 提高对比度 */
+      color: var(--color-link-hover, #fd79a8) !important;
     }
 
     &:active {
-      color: #74b9ff !important;
+      color: var(--color-link-active, #74b9ff) !important;
     }
   }
 
   /* 深色模式下的普通链接颜色优化 */
   [data-theme="dark"] a.no-link-icon {
     &:link {
-      color: #74b9ff !important; /* 深色模式下更亮的蓝色 */
+      color: var(--color-link-primary, #74b9ff) !important;
     }
 
     &:visited {
-      color: #b2bec3 !important; /* 深色模式下更明显的灰色 */
+      color: var(--color-link-visited, #b2bec3) !important;
     }
 
     &:hover {
-      color: #fd79a8 !important; /* 深色模式下更亮的粉红色 */
+      color: var(--color-link-hover, #fd79a8) !important;
     }
 
     &:active {
-      color: #74b9ff !important;
+      color: var(--color-link-active, #74b9ff) !important;
     }
   }
   @media (max-width: ${maxWidth}) {
@@ -349,192 +496,21 @@ const GlobalStyle = createGlobalStyle`
     } 
   }
 
-  /* 加载状态样式 - 修复位置问题 */
-  // .splash-loader {
-  //   position: fixed;
-  //   top: 0;
-  //   left: 0;
-  //   right: 0;
-  //   bottom: 0;
-  //   width: 100vw;
-  //   height: 100vh;
-  //   background: rgba(255, 255, 255, 0.95);
-  //   backdrop-filter: blur(5px);
-  //   display: flex;
-  //   flex-direction: column;
-  //   justify-content: center;
-  //   align-items: center;
-  //   z-index: 9999;
-  //   transition: opacity 0.3s ease;
-  //   /* 确保在所有设备上都能正确居中 */
-  //   box-sizing: border-box;
-  //   margin: 0;
-  //   padding: 0;
-  // }
-
-  .spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
-  }
-
-  .splash-loader p {
-    color: #666;
-    font-size: 16px;
-    margin: 0;
-    animation: pulse 1.5s ease-in-out infinite;
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 1; }
-  }
-
-  /* 骨架屏样式 */
-  .skeleton {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: loading 1.5s infinite;
-  }
-
-  @keyframes loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-
-  .skeleton-text {
-    height: 16px;
-    margin: 8px 0;
-    border-radius: 4px;
-  }
-
-  .skeleton-title {
-    height: 24px;
-    margin: 16px 0;
-    border-radius: 6px;
-  }
-
-  /* 打印样式优化 - 只在激活时生效 */
-  @media print {
-    /* 只有当body有print-mode-active类时才应用打印样式 */
-    body.print-mode-active {
-      /* 页面设置 */
-      @page {
-        size: A4;
-        margin: 1cm;
-      }
-
-      /* 重置根元素和body */
-      html, body {
-        width: 100% !important;
-        height: auto !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: white !important;
-        background-image: none !important;
-        overflow: visible !important;
-        font-size: 12pt !important;
-        line-height: 1.4 !important;
-        color: black !important;
-      }
-
-      /* 隐藏深色模式背景伪元素 */
-      [data-theme="dark"] body::before {
-        display: none !important;
-      }
-
-      /* 根元素打印优化 */
-      #root {
-        display: block !important;
-        width: 100% !important;
-        max-width: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: white !important;
-        overflow: visible !important;
-      }
-
-      /* 隐藏不需要打印的元素 */
-      .no-print,
-      .print-hide,
-      button,
-      .control-panel,
-      .floating-controls,
-      nav,
-      .navigation,
-      .tabs,
-      .tab-container,
-      [data-testid="control-panel"],
-      [data-testid="development-notice"],
-      [data-pdf-downloader],
-      .pdf-downloader,
-      .control-button,
-      .floating-button,
-      [class*="control"]:not(.skill-item),
-      [class*="floating"]:not(.skill-item),
-      [class*="button"]:not(.skill-item),
-      [class*="Panel"],
-      [class*="Switcher"],
-      [class*="Downloader"],
-      .fixed,
-      .absolute {
-        display: none !important;
-      }
-
-      /* 打印背景设置 */
-      .print-background {
-        position: relative;
-        background: white !important;
-      }
-
-      .print-background::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: white;
-        z-index: -1;
-      }
-
-      /* 确保所有文本颜色为黑色 */
-      * {
-        color: black !important;
-        background: transparent !important;
-        box-shadow: none !important;
-        text-shadow: none !important;
-      }
-
-      /* 链接样式 */
-      a {
-        color: black !important;
-        text-decoration: underline !important;
-      }
-
-      /* 分页控制 */
-      .page-break-before {
-        page-break-before: always;
-      }
-
-      .page-break-after {
-        page-break-after: always;
-      }
-
-      .page-break-inside-avoid {
-        page-break-inside: avoid;
-      }
-    }
+  .development-notice {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 20px;
+    z-index: 10000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY( '-100%'});
+    transition: transform 0.3s ease-in-out;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
   }
 `;
 

@@ -8,8 +8,8 @@
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useSafeTheme } from '../skill/SkillRenderer';
-import { getLogger } from '../../utils/Tools';
 import { libraryPreloader } from '../../utils/LibraryPreloader';
+import { getLogger } from '../../utils/Logger';
 
 const logMermaid = getLogger(`Mermaid`);
 
@@ -35,7 +35,7 @@ interface MermaidLazyChartProps {
 const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
     chart,
     id,
-    placeholderHeight = '300px',
+    placeholderHeight = 'auto',
     enableZoom = true
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -80,6 +80,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
         document.body.style.overflow = 'auto';
     }, []);
 
+
     // 缩放控制函数
     const handleZoomIn = useCallback(() => {
         if (enlargedSvgPanZoomInstance.current) {
@@ -97,29 +98,63 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
         if (enlargedSvgPanZoomInstance.current) {
             enlargedSvgPanZoomInstance.current.fit();
             enlargedSvgPanZoomInstance.current.center();
+            // 调试日志已移除: console.log('🎯 [DEBUG] 缩放重置完成');
         }
     }, []);
 
-    // 修改SVG字符串，设置透明背景和100%宽度
-    const modifySvgForDisplay = useCallback((svgString: string): string => {
+    const handleFitToScreen = useCallback(() => {
+        if (enlargedSvgPanZoomInstance.current) {
+            enlargedSvgPanZoomInstance.current.fit();
+            // 调试日志已移除: console.log('🎯 [DEBUG] 适应屏幕完成');
+        }
+    }, []);
+
+    const handleCenter = useCallback(() => {
+        if (enlargedSvgPanZoomInstance.current) {
+            enlargedSvgPanZoomInstance.current.center();
+            // 调试日志已移除: console.log('🎯 [DEBUG] 居中显示完成');
+        }
+    }, []);
+
+    // 修改SVG字符串用于放大视图，确保正确的尺寸和显示
+    const modifySvgForEnlargedView = useCallback((svgString: string): string => {return svgString;
         if (!svgString) return svgString;
 
         let modifiedSvg = svgString.replace(
             /<svg([^>]*?)>/i,
             (match, attributes) => {
+                // 保留原始的viewBox属性
+                const viewBoxMatch = attributes.match(/viewBox\s*=\s*["']([^"']*)["']/i);
+                const originalViewBox = viewBoxMatch ? viewBoxMatch[0] : '';
+
                 // 移除现有的height和width属性
                 let newAttributes = attributes.replace(/\s*height\s*=\s*["'][^"']*["']/gi, '');
                 newAttributes = newAttributes.replace(/\s*width\s*=\s*["'][^"']*["']/gi, '');
 
-                // 添加响应式属性，确保图表完全铺满容器
-                newAttributes += ' width="100%" height="100%" preserveAspectRatio="none"';
+                // 为放大视图设置固定尺寸，确保svg-pan-zoom正常工作
+                newAttributes += ' width="100%" height="100%" preserveAspectRatio="xMidYMid meet"';
 
-                // 添加样式确保图表铺满，背景透明
-                newAttributes += ' style="width: 100% !important; height: 100% !important; display: block; margin: 0; padding: 0; background: transparent !important; min-width: 100%; min-height: 100%;"';
+                // 确保viewBox存在
+                if (!originalViewBox && !newAttributes.includes('viewBox')) {
+                    newAttributes += ' viewBox="0 0 800 600"';
+                }
+
+                // 添加样式确保图表在放大视图中正确显示，避免堆叠
+                newAttributes += ' style="width: 100%; height: 100%; display: block; background: transparent !important; position: relative; z-index: 1;"';
 
                 return `<svg${newAttributes}>`;
             }
         );
+
+        // 应用主题相关的修改
+        return applyThemeToSvg(modifiedSvg);
+    }, [isDark]);
+
+    // 应用主题到SVG的通用函数
+    const applyThemeToSvg = useCallback((svgString: string): string => {return modifiedSvg;
+        if (!svgString) return svgString;
+
+        let modifiedSvg = svgString;
 
         // 移除SVG内部可能的transform属性
         modifiedSvg = modifiedSvg.replace(/transform\s*=\s*["'][^"']*["']/gi, '');
@@ -135,8 +170,58 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
         modifiedSvg = modifiedSvg.replace(/<rect([^>]*?)fill\s*=\s*["']#[fF]{6}["']([^>]*?)>/gi, '<rect$1fill="transparent"$2>');
         modifiedSvg = modifiedSvg.replace(/<rect([^>]*?)fill\s*=\s*["']white["']([^>]*?)>/gi, '<rect$1fill="transparent"$2>');
 
+        // 确保文本颜色跟随主题 - 获取实际的CSS变量值
+        const getComputedCSSVariable = (varName: string) => {
+            if (typeof window !== 'undefined') {
+                return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+            }
+            return '';
+        };
+
+        const textColor = getComputedCSSVariable('--color-text-primary') || (isDark ? '#F5DEB3' : '#2F4F4F');
+        modifiedSvg = modifiedSvg.replace(/<text([^>]*?)>/gi, (match, attrs) => {
+            if (!attrs.includes('fill=')) {
+                return `<text${attrs} fill="${textColor}">`;
+            }
+            return match;
+        });
+
         return modifiedSvg;
-    }, []);
+    }, [isDark]);
+
+    // 修改SVG字符串，设置透明背景和自适应尺寸，支持主题跟随
+    const modifySvgForDisplay = useCallback((svgString: string): string => {
+        if (!svgString) return svgString;
+
+        let modifiedSvg = svgString.replace(
+            /<svg([^>]*?)>/i,
+            (match, attributes) => {
+                // 保留原始的viewBox属性，这对于正确显示很重要
+                const viewBoxMatch = attributes.match(/viewBox\s*=\s*["']([^"']*)["']/i);
+                const originalViewBox = viewBoxMatch ? viewBoxMatch[0] : '';
+
+                // 移除现有的height和width属性
+                let newAttributes = attributes.replace(/\s*height\s*=\s*["'][^"']*["']/gi, '');
+                newAttributes = newAttributes.replace(/\s*width\s*=\s*["'][^"']*["']/gi, '');
+
+                // 添加响应式属性，保持宽高比
+                newAttributes += ' width="100%" height="auto" preserveAspectRatio="xMidYMid meet"';
+
+                // 确保viewBox存在
+                if (!originalViewBox && !newAttributes.includes('viewBox')) {
+                    newAttributes += ' viewBox="0 0 800 600"';
+                }
+
+                // 添加样式确保图表自适应，背景透明，避免堆叠
+                newAttributes += ' style="width: 100%; height: auto; display: block; margin: 0; padding: 0; background: transparent !important; max-width: 100%; position: relative; z-index: 1;"';
+
+                return `<svg${newAttributes}>`;
+            }
+        );
+
+        // 应用主题相关的修改
+        return applyThemeToSvg(modifiedSvg);
+    }, [isDark]);
 
     /**
      * 渲染Mermaid图表
@@ -144,23 +229,43 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
     const renderMermaid = useCallback(async () => {
         if (!chart || !chart.trim() || isLoading) return;
 
-        setIsLoading(true);
-        setError('');
+        setIsLoading(true); 
 
         try {
             // 动态导入mermaid
             const mermaid = (await import('mermaid')).default;
-            
+
+            // 获取CSS变量的实际值
+            const getComputedCSSVariable = (varName: string) => {
+                if (typeof window !== 'undefined') {
+                    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+                }
+                return '';
+            };
+
             // 配置主题
             const theme = isDark ? 'dark' : 'default';
             mermaid.initialize({
                 startOnLoad: false,
                 theme,
-                securityLevel: 'loose',
+                securityLevel: 'strict', // 使用严格安全级别
                 fontFamily: 'Arial, sans-serif, "Microsoft YaHei", "微软雅黑"',
                 fontSize: 14,
+                // 主题变量配置 - 获取实际的CSS变量值
+                themeVariables: {
+                    primaryColor: getComputedCSSVariable('--color-primary') || (isDark ? '#FFD700' : '#D4AF37'),
+                    primaryTextColor: getComputedCSSVariable('--color-text-primary') || (isDark ? '#F5DEB3' : '#2F4F4F'),
+                    primaryBorderColor: getComputedCSSVariable('--color-border-medium') || (isDark ? '#696969' : '#DAA520'),
+                    lineColor: getComputedCSSVariable('--color-border-dark') || (isDark ? '#8B7D6B' : '#B8860B'),
+                    secondaryColor: getComputedCSSVariable('--color-surface') || (isDark ? '#2F2F2F' : '#F5F5DC'),
+                    tertiaryColor: getComputedCSSVariable('--color-card') || (isDark ? '#3A3A3A' : '#FFFAF0'),
+                    background: 'transparent', // 透明背景
+                    mainBkg: 'transparent',
+                    secondBkg: getComputedCSSVariable('--color-surface') || (isDark ? '#2F2F2F' : '#F5F5DC'),
+                    tertiaryBkg: getComputedCSSVariable('--color-card') || (isDark ? '#3A3A3A' : '#FFFAF0')
+                },
                 mindmap: {
-                    padding: 20,
+                    padding: 10,
                     maxNodeSizeX: 200,
                     maxNodeSizeY: 100,
                     useMaxWidth: true
@@ -188,10 +293,10 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
 
             // 生成唯一ID
             const uniqueId = `mermaid-lazy-${id}-${Date.now()}`;
-            
+
             // 渲染图表
             const { svg: renderedSvg } = await mermaid.render(uniqueId, chart);
-            
+
             setSvg(renderedSvg);
             setIsLoaded(true);
 
@@ -199,12 +304,11 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
 
             // 在下一个tick中初始化svg-pan-zoom和点击事件
             setTimeout(() => {
-                initializeSvgPanZoom();
                 if (enableZoom) {
                     addClickEventToSvg();
                 }
             }, 100);
-            
+
         } catch (err) {
             logMermaid('❌ MermaidLazyChart渲染失败:', err);
             setError(`渲染失败: ${err instanceof Error ? err.message : '未知错误'}`);
@@ -216,7 +320,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
     // 初始化svg-pan-zoom
     const initializeSvgPanZoom = useCallback(async () => {
         if (!containerRef.current || !enableZoom) return;
-
+        await new Promise((resolve) => requestAnimationFrame(resolve)); // 等待下一帧
         const svgElement = containerRef.current.querySelector('svg');
         if (svgElement && !svgPanZoomInstance.current) {
             try {
@@ -234,7 +338,19 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                     zoomScaleSensitivity: 0.2,
                     dblClickZoomEnabled: false,
                     mouseWheelZoomEnabled: true,
-                    preventMouseEventsDefault: true
+                    preventMouseEventsDefault: true,
+                    onZoom: function() {
+                        // 阻止事件冒泡，避免背景页面滚动
+                        event?.preventDefault();
+                        event?.stopPropagation();
+                        return true;
+                    },
+                    onPan: function() {
+                        // 阻止事件冒泡，避免背景页面滚动
+                        event?.preventDefault();
+                        event?.stopPropagation();
+                        return true;
+                    }
                 });
                 logMermaid('✅ svg-pan-zoom 初始化成功');
             } catch (error) {
@@ -267,9 +383,33 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
     const initializeEnlargedSvgPanZoom = useCallback(async () => {
         if (!overlayRef.current) return;
 
+        // 等待DOM更新
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+
         const svgElement = overlayRef.current.querySelector('svg');
         if (svgElement && !enlargedSvgPanZoomInstance.current) {
             try {
+                // 获取容器尺寸
+                const container = overlayRef.current.querySelector('[data-enlarged-container]');
+                const containerRect = container?.getBoundingClientRect();
+
+                // 设置SVG尺寸，确保正确显示
+                svgElement.style.width = '100%';
+                svgElement.style.height = '100%';
+                svgElement.style.maxWidth = '100%';
+                svgElement.style.maxHeight = '100%';
+                svgElement.style.display = 'block';
+
+                // 移除可能的固定尺寸
+                svgElement.removeAttribute('width');
+                svgElement.removeAttribute('height');
+
+                // 设置viewBox以确保正确缩放
+                if (!svgElement.getAttribute('viewBox')) {
+                    const bbox = svgElement.getBBox();
+                    svgElement.setAttribute('viewBox', `${bbox.x} ${bbox.y} ${bbox.width} ${bbox.height}`);
+                }
+
                 const svgPanZoomModule = await libraryPreloader.getLibrary('svgPanZoom');
                 const svgPanZoom = svgPanZoomModule.default || svgPanZoomModule;
 
@@ -284,11 +424,37 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                     zoomScaleSensitivity: 0.2,
                     dblClickZoomEnabled: false,
                     mouseWheelZoomEnabled: true,
-                    preventMouseEventsDefault: true
+                    preventMouseEventsDefault: true,
+                    beforeZoom: function () {
+                        return true;
+                    },
+                    onZoom: function () {
+                        logMermaid('🔍 放大视图缩放中');
+                        // 阻止事件冒泡，避免背景页面滚动
+                        event?.preventDefault();
+                        event?.stopPropagation();
+                        return true;
+                    },
+                    onPan: function () {
+                        // 阻止事件冒泡，避免背景页面滚动
+                        event?.preventDefault();
+                        event?.stopPropagation();
+                        return true;
+                    }
                 });
+
+                // 延迟适配，确保容器尺寸已稳定
+                setTimeout(() => {
+                    if (enlargedSvgPanZoomInstance.current) {
+                        enlargedSvgPanZoomInstance.current.fit();
+                        enlargedSvgPanZoomInstance.current.center();
+                        logMermaid('🎯 放大视图已重新适配和居中');
+                    }
+                }, 300);
+
                 logMermaid('✅ 放大视图svg-pan-zoom初始化成功');
             } catch (error) {
-                logMermaid('放大视图svg-pan-zoom初始化失败:', error);
+                logMermaid('❌ 放大视图svg-pan-zoom初始化失败:', error);
             }
         }
     }, []);
@@ -399,22 +565,69 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
         }
     }, [renderKey, isVisible, isLoaded, svg]);
 
-    // 键盘事件处理
+    // 键盘事件处理 - 增强版
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape' && isZoomed) {
-                handleCloseZoom();
+            if (!isZoomed) return;
+
+            // 调试日志已移除: console.log('🎯 [DEBUG] Mermaid放大视图键盘事件:', event.key, {
+            //     ctrlKey: event.ctrlKey,
+            //     metaKey: event.metaKey
+            // });
+
+            switch (event.key) {
+                case 'Escape':
+                    event.preventDefault();
+                    handleCloseZoom();
+                    break;
+                case '+':
+                case '=':
+                    if (event.ctrlKey || event.metaKey) {
+                        event.preventDefault();
+                        handleZoomIn();
+                    }
+                    break;
+                case '-':
+                    if (event.ctrlKey || event.metaKey) {
+                        event.preventDefault();
+                        handleZoomOut();
+                    }
+                    break;
+                case '0':
+                    if (event.ctrlKey || event.metaKey) {
+                        event.preventDefault();
+                        handleZoomReset();
+                    }
+                    break;
+                case 'f':
+                case 'F':
+                    if (!event.ctrlKey && !event.metaKey) {
+                        event.preventDefault();
+                        handleFitToScreen();
+                    }
+                    break;
+                case 'c':
+                case 'C':
+                    if (!event.ctrlKey && !event.metaKey) {
+                        event.preventDefault();
+                        handleCenter();
+                    }
+                    break;
             }
         };
 
         if (isZoomed) {
             document.addEventListener('keydown', handleKeyDown);
+            // 调试日志已移除: console.log('🎯 [DEBUG] Mermaid放大视图键盘监听器已添加');
         }
 
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
+            if (isZoomed) {
+                // 调试日志已移除: console.log('🎯 [DEBUG] Mermaid放大视图键盘监听器已移除');
+            }
         };
-    }, [isZoomed, handleCloseZoom]);
+    }, [isZoomed, handleCloseZoom, handleZoomIn, handleZoomOut, handleZoomReset, handleFitToScreen, handleCenter]);
 
     // 放大视图初始化
     useEffect(() => {
@@ -497,14 +710,15 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
     const renderPlaceholder = () => (
         <div
             style={{
-                height: placeholderHeight,
-                backgroundColor: isDark ? '#1f2937' : '#f8f9fa',
-                border: `1px solid ${isDark ? '#374151' : '#e1e4e8'}`,
+                height: placeholderHeight === 'auto' ? '200px' : placeholderHeight,
+                minHeight: '200px',
+                backgroundColor: 'var(--color-surface)',
+                border: `1px solid var(--color-border-light)`,
                 borderRadius: '8px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: isDark ? '#9ca3af' : '#6b7280',
+                color: 'var(--color-text-secondary)',
                 fontSize: '14px',
                 margin: '20px 0',
                 position: 'relative'
@@ -514,10 +728,10 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                 <div style={{ marginBottom: '8px' }}>📊</div>
                 <div>脑图加载中...</div>
                 {isLoading && (
-                    <div style={{ 
-                        marginTop: '8px', 
+                    <div style={{
+                        marginTop: '8px',
                         fontSize: '12px',
-                        opacity: 0.7 
+                        opacity: 0.7
                     }}>
                         正在渲染图表...
                     </div>
@@ -533,13 +747,13 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
         <div
             style={{
                 height: placeholderHeight,
-                backgroundColor: isDark ? '#1f2937' : '#fff5f5',
-                border: `1px solid ${isDark ? '#374151' : '#fed7d7'}`,
+                backgroundColor: 'var(--color-status-error)',
+                border: `1px solid var(--color-border-medium)`,
                 borderRadius: '8px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: isDark ? '#f87171' : '#e53e3e',
+                color: 'var(--color-text-inverse)',
                 fontSize: '14px',
                 margin: '20px 0',
                 padding: '20px',
@@ -557,10 +771,10 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                     style={{
                         marginTop: '12px',
                         padding: '6px 12px',
-                        backgroundColor: isDark ? '#374151' : '#e2e8f0',
-                        border: 'none',
+                        backgroundColor: 'var(--color-surface)',
+                        border: '1px solid var(--color-border-medium)',
                         borderRadius: '4px',
-                        color: isDark ? '#f3f4f6' : '#2d3748',
+                        color: 'var(--color-text-primary)',
                         cursor: 'pointer',
                         fontSize: '12px'
                     }}
@@ -580,20 +794,19 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                 textAlign: 'center',
                 margin: '20px 0',
                 padding: '16px',
-                backgroundColor: isDark ? '#1f2937' : '#ffffff',
-                border: `1px solid ${isDark ? '#374151' : '#e1e4e8'}`,
+                backgroundColor: 'var(--color-card)',
+                border: `1px solid var(--color-border-light)`,
                 borderRadius: '8px',
                 overflow: 'visible',
-                boxShadow: isDark
-                    ? '0 4px 6px -1px rgba(0, 0, 0, 0.3)'
-                    : '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                boxShadow: 'var(--color-shadow-medium)',
                 cursor: enableZoom ? 'zoom-in' : 'default',
                 position: 'relative',
-                minHeight: '300px',
                 width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
+                // 移除固定高度限制，让内容自适应
+                minHeight: 'auto',
+                height: 'auto',
+                // 改为块级布局，让SVG自然展示
+                display: 'block'
             }}
             title={enableZoom ? "点击放大查看" : ""}
             onClick={enableZoom ? handleClick : undefined}
@@ -601,181 +814,313 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
         />
     );
 
+    /**
+     * 渲染放大的脑图视图
+     */
+    const renderEnlargedMindMap = () => {
+        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+        
+        return (
+            <div
+                ref={overlayRef}
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    background: isDarkMode 
+                        ? 'linear-gradient(135deg, rgba(28, 28, 28, 0.98) 0%, rgba(58, 58, 58, 0.95) 100%)'
+                        : 'linear-gradient(135deg, rgba(255, 248, 220, 0.98) 0%, rgba(255, 250, 240, 0.95) 100%)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    zIndex: 9999,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: 'var(--font-family-primary)',
+                    transition: 'all 0.3s var(--easing-ease-out)'
+                }}
+                onClick={handleCloseZoom}
+            >
+                {/* 主容器 */}
+                <div
+                    data-enlarged-container
+                    style={{
+                        width: '92vw',
+                        height: '92vh',
+                        maxWidth: '92vw',
+                        maxHeight: '92vh',
+                        background: isDarkMode ? 'var(--color-card)' : 'var(--color-surface)',
+                        borderRadius: 'var(--border-radius-xl)',
+                        border: `1px solid ${isDarkMode ? 'var(--color-border-medium)' : 'var(--color-border-light)'}`,
+                        boxShadow: isDarkMode 
+                            ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                            : '0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+                        position: 'relative',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        overflow: 'hidden',
+                        transition: 'all 0.3s var(--easing-ease-out)'
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {/* 顶部工具栏 */}
+                    <div style={{
+                        height: '60px',
+                        background: isDarkMode ? 'var(--color-surface)' : 'var(--color-card)',
+                        borderBottom: `1px solid ${isDarkMode ? 'var(--color-border-medium)' : 'var(--color-border-light)'}`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '0 var(--spacing-lg)',
+                        position: 'relative',
+                        zIndex: 10001
+                    }}>
+                        {/* 左侧标题和操作 */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--spacing-md)'
+                        }}>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--spacing-sm)',
+                                fontSize: 'var(--font-size-lg)',
+                                fontWeight: 'var(--font-weight-semibold)',
+                                color: 'var(--color-text-primary)'
+                            }}>
+                                <span style={{ fontSize: '20px' }}>🧠</span>
+                                <span>脑图查看器</span>
+                            </div>
+                            
+                            <div style={{
+                                height: '24px',
+                                width: '1px',
+                                background: isDarkMode ? 'var(--color-border-medium)' : 'var(--color-border-light)'
+                            }} />
+                            
+                        </div>
+                        
+                        {/* 右侧控制按钮 */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--spacing-md)'
+                        }}> 
+                        
+                            {/* 视图控制按钮组 */}
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--spacing-xs)',
+                                background: isDarkMode ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.05)',
+                                padding: '4px',
+                                borderRadius: 'var(--border-radius-md)'
+                            }}>
+                                <button
+                                    style={{
+                                        background: 'transparent',
+                                        border: 'none',
+                                        borderRadius: 'var(--border-radius-sm)',
+                                        width: '32px',
+                                        height: '32px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        color: 'var(--color-text-primary)',
+                                        transition: 'all 0.2s var(--easing-ease-out)'
+                                    }}
+                                    onClick={handleFitToScreen}
+                                    title="适应屏幕 (F)"
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = isDarkMode ? 'rgba(255, 215, 0, 0.2)' : 'rgba(212, 175, 55, 0.1)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'transparent';
+                                    }}
+                                >
+                                    <span style={{ fontSize: '14px' }}>⛶</span>
+                                </button>
+                                
+                                <button
+                                    style={{
+                                        background: 'transparent',
+                                        border: 'none',
+                                        borderRadius: 'var(--border-radius-sm)',
+                                        width: '32px',
+                                        height: '32px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        color: 'var(--color-text-primary)',
+                                        transition: 'all 0.2s var(--easing-ease-out)'
+                                    }}
+                                    onClick={handleCenter}
+                                    title="居中显示 (C)"
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = isDarkMode ? 'rgba(255, 215, 0, 0.2)' : 'rgba(212, 175, 55, 0.1)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'transparent';
+                                    }}
+                                >
+                                    <span style={{ fontSize: '14px' }}>⊙</span>
+                                </button>
+                            </div>
+                            {/* 关闭按钮 */}
+                            <button
+                                style={{
+                                    background: isDarkMode ? 'var(--color-status-error)' : 'var(--color-status-error)',
+                                    border: 'none',
+                                    borderRadius: 'var(--border-radius-md)',
+                                    width: '36px',
+                                    height: '36px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '18px',
+                                    color: 'white',
+                                    transition: 'all 0.2s var(--easing-ease-out)',
+                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                                }}
+                                onClick={handleCloseZoom}
+                                title="关闭 (ESC)"
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1.05)';
+                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1)';
+                                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
+                                }}
+                            >
+                                ×
+                            </button>
+                        </div>
+                    </div>
+                    
+                    {/* 主内容区域 */}
+                    <div style={{
+                        flex: 1,
+                        position: 'relative',
+                        overflow: 'hidden',
+                        background: isDarkMode 
+                            ? 'linear-gradient(135deg, rgba(47, 47, 47, 0.5) 0%, rgba(58, 58, 58, 0.3) 100%)'
+                            : 'linear-gradient(135deg, rgba(245, 245, 220, 0.5) 0%, rgba(255, 250, 240, 0.3) 100%)'
+                    }}>
+                        {/* 图表内容 */}
+                        <div style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: 'var(--spacing-lg)'
+                        }}>
+                            <div
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    position: 'relative'
+                                }}
+                                dangerouslySetInnerHTML={{ __html: modifySvgForEnlargedView(svg) }}
+                            />
+                        </div>
+                        
+                    </div>
+                    
+                    {/* 底部信息栏 */}
+                    <div style={{
+                        height: '48px',
+                        background: isDarkMode ? 'var(--color-surface)' : 'var(--color-card)',
+                        borderTop: `1px solid ${isDarkMode ? 'var(--color-border-medium)' : 'var(--color-border-light)'}`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '0 var(--spacing-lg)',
+                        position: 'relative',
+                        zIndex: 10001
+                    }}>
+                        {/* 左侧操作提示 */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--spacing-md)',
+                            fontSize: 'var(--font-size-sm)',
+                            color: 'var(--color-text-secondary)'
+                        }}>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--spacing-xs)',
+                                padding: '4px 8px',
+                                background: isDarkMode ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.05)',
+                                borderRadius: 'var(--border-radius-md)'
+                            }}>
+                                <span>🖱️</span>
+                                <span>滚轮缩放</span>
+                            </div>
+                            
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--spacing-xs)',
+                                padding: '4px 8px',
+                                background: isDarkMode ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.05)',
+                                borderRadius: 'var(--border-radius-md)'
+                            }}>
+                                <span>✋</span>
+                                <span>拖拽平移</span>
+                            </div>
+                            
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--spacing-xs)',
+                                padding: '4px 8px',
+                                background: isDarkMode ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.05)',
+                                borderRadius: 'var(--border-radius-md)'
+                            }}>
+                                <span>⌨️</span>
+                                <span>ESC关闭</span>
+                            </div>
+                        </div>
+                        
+                        {/* 右侧状态信息 */}
+                        <div style={{
+                            fontSize: 'var(--font-size-sm)',
+                            color: 'var(--color-text-secondary)',
+                            fontStyle: 'italic'
+                        }}>
+                            脑图已展开 • 任意位置点击关闭
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <>
             <div ref={containerRef} data-mermaid-lazy-chart={id}>
                 {error ? renderError() :
-                 isLoaded && svg ? renderChart() :
-                 renderPlaceholder()}
+                    isLoaded && svg ? renderChart() :
+                        renderPlaceholder()}
             </div>
-
-            {/* 放大视图遮罩层 */}
-            {isZoomed && enableZoom && (
-                <div
-                    ref={overlayRef}
-                    style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        width: '100vw',
-                        height: '100vh',
-                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                        zIndex: 9999,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'move'
-                    }}
-                    onClick={handleCloseZoom}
-                >
-                    {/* 放大的图表容器 */}
-                    <div
-                        style={{
-                            width: '95vw',
-                            height: '95vh',
-                            maxWidth: '95vw',
-                            maxHeight: '95vh',
-                            backgroundColor: isDark ? '#1f2937' : '#ffffff',
-                            borderRadius: '12px',
-                            padding: '20px',
-                            overflow: 'hidden',
-                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-                            position: 'relative',
-                            display: 'flex',
-                            flexDirection: 'column'
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        {/* 关闭按钮 */}
-                        <button
-                            style={{
-                                position: 'absolute',
-                                top: '10px',
-                                right: '10px',
-                                background: isDark ? '#374151' : '#f3f4f6',
-                                border: 'none',
-                                borderRadius: '50%',
-                                width: '32px',
-                                height: '32px',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '18px',
-                                color: isDark ? '#d1d5db' : '#374151',
-                                zIndex: 10000
-                            }}
-                            onClick={handleCloseZoom}
-                            title="关闭 (ESC)"
-                        >
-                            ×
-                        </button>
-
-                        {/* 缩放控制按钮 */}
-                        <div style={{
-                            position: 'absolute',
-                            top: '10px',
-                            right: '50px',
-                            display: 'flex',
-                            gap: '5px',
-                            zIndex: 10000
-                        }}>
-                            <button
-                                style={{
-                                    background: isDark ? '#374151' : '#f3f4f6',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    width: '32px',
-                                    height: '32px',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '16px',
-                                    color: isDark ? '#d1d5db' : '#374151'
-                                }}
-                                onClick={handleZoomIn}
-                                title="放大"
-                            >
-                                +
-                            </button>
-                            <button
-                                style={{
-                                    background: isDark ? '#374151' : '#f3f4f6',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    width: '32px',
-                                    height: '32px',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '16px',
-                                    color: isDark ? '#d1d5db' : '#374151'
-                                }}
-                                onClick={handleZoomOut}
-                                title="缩小"
-                            >
-                                −
-                            </button>
-                            <button
-                                style={{
-                                    background: isDark ? '#374151' : '#f3f4f6',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    width: '32px',
-                                    height: '32px',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '12px',
-                                    color: isDark ? '#d1d5db' : '#374151'
-                                }}
-                                onClick={handleZoomReset}
-                                title="重置缩放"
-                            >
-                                ⌂
-                            </button>
-                        </div>
-
-                        {/* 图表内容区域 */}
-                        <div style={{
-                            flex: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            overflow: 'hidden',
-                            position: 'relative'
-                        }}>
-                            <div
-                                style={{
-                                    textAlign: 'center',
-                                    width: '100%',
-                                    height: '100%'
-                                }}
-                                dangerouslySetInnerHTML={{ __html: modifySvgForDisplay(svg) }}
-                            />
-                        </div>
-
-                        {/* 操作提示 */}
-                        <div style={{
-                            position: 'absolute',
-                            bottom: '10px',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            background: 'rgba(0, 0, 0, 0.7)',
-                            color: 'white',
-                            padding: '8px 16px',
-                            borderRadius: '20px',
-                            fontSize: '12px',
-                            whiteSpace: 'nowrap'
-                        }}>
-                            鼠标滚轮缩放 • 拖拽平移 • ESC键或点击背景关闭
-                        </div>
-                    </div>
-                </div>
-            )}
+            
+            {/* 放大的脑图视图 */}
+            {isZoomed && enableZoom && renderEnlargedMindMap()}
         </>
     );
 };
