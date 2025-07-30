@@ -28,10 +28,10 @@ const IconWrapper = styled.div.withConfig({
         return 'brightness(0) saturate(100%) invert(1)';
       }
       
-      // 根据主题自动选择颜色
-      return props.isDark 
-        ? 'brightness(0) saturate(100%) invert(64%) sepia(8%) saturate(1000%) hue-rotate(180deg) brightness(95%) contrast(85%)' // 浅灰色
-        : 'brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(95%) contrast(85%)';   // 深灰色
+      // 根据卡通风格主题自动选择颜色
+      return props.isDark
+        ? 'brightness(0) saturate(100%) invert(89%) sepia(6%) saturate(200%) hue-rotate(200deg) brightness(95%) contrast(85%)' // 浅蓝灰色
+        : 'brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(200deg) brightness(103%) contrast(101%)';   // 蓝色
     }};
     transition: filter 0.3s ease;
   }

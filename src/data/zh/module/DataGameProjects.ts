@@ -10,11 +10,6 @@ export default {
 ${gameProjectsMindmap}
 \`\`\`
 
- 
-\`\`\`mermaid
-${gameTypeExperiencePie}
-\`\`\`
-
     `    ,
     list: [
         {

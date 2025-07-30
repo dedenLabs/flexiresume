@@ -157,6 +157,8 @@ FlexiResume is committed to providing job seekers with a flexible and efficient 
 - **🌍 Multilingual Support**: Chinese/English interface switching, barrier-free international job hunting
 - **📱 Responsive Design**: Perfectly adapts to desktops, tablets, mobile phones, and various devices
 - **⚡ Skeleton Screen Loading**: Elegant loading experience, say goodbye to white screen waiting
+- **🎵 Audio System**: Integrated background music and sound effects, enhanced interactive experience
+- **🔤 Smart Font System**: Multi-CDN font loading with performance monitoring and automatic switching
 
 ### 🛠️ Functional Features
 - **🎯 Multi-Position Customization**: One set of data, multiple resume configurations for different positions
@@ -172,6 +174,9 @@ FlexiResume is committed to providing job seekers with a flexible and efficient 
 - **⚡ Lazy Loading**: Intelligent lazy loading of images and components
 - **🗜️ Resource Compression**: Terser compression + Tree-shaking optimization
 - **💾 Smart Caching**: Efficient caching strategy, improves access speed
+- **🌐 Smart CDN Management**: Multi-CDN health checking and automatic switching
+- **📊 Performance Monitoring**: Real-time performance metrics collection and analysis
+- **🧠 Memory Management**: Smart memory management and garbage collection optimization
 
 ### 🔒 Privacy Protection
 - **🚫 Default Crawling Prohibition**: robots.txt configuration to protect personal information

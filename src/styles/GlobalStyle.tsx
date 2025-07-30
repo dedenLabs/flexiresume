@@ -1,6 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 import { replaceCDNBaseURL } from '../utils/Tools';
-import { useTheme, generateCSSVariables } from '../theme';
+import { useTheme } from '../theme';
 // 导入主题管理器，自动加载主题样式
 import './themes/ThemeManager';
 // 导入模块化样式
@@ -30,15 +30,9 @@ const GlobalStyle = createGlobalStyle<{ theme?: any }>`
     --font-loaded-opacity: 1;
   }
 
-  /* 动态CSS变量生成 - 兼容主题系统 */
-  ${props => props.theme ? `
-    :root {
-      ${generateCSSVariables(props.theme.colors.light)}
-    }
-    [data-theme="dark"] {
-      ${generateCSSVariables(props.theme.colors.dark)}
-    }
-  ` : ''}
+  /* CSS变量已在独立的主题文件中定义，无需动态生成 */
+  /* 浅色主题变量: src/styles/themes/LightTheme.css */
+  /* 深色主题变量: src/styles/themes/DarkTheme.css */
 
   /* 优化字体加载 - 只加载默认字体，其他字体按需加载 */
   @import url('https://fonts.loli.net/css2?family=Ma+Shan+Zheng:wght@400&display=swap'); 
@@ -243,9 +237,9 @@ const GlobalStyle = createGlobalStyle<{ theme?: any }>`
       background-image: url('${replaceCDNBaseURL('images/flexi-resume.jpg')}');
       background-repeat: repeat;
       background-size: 180px;
-      /* 浅色主题滤镜 - 增加亮度和对比度 filter: brightness(var(--bg-filter-brightness, 1.2)) contrast(var(--bg-filter-contrast, 1.1)); */
-     
-      filter: sepia(0.4) hue-rotate(20deg);
+      /* 浅色主题滤镜 - 卡通风格蓝色调 */
+
+      filter: sepia(0.2) hue-rotate(200deg) saturate(1.2) brightness(1.1);
       pointer-events: none;
       z-index: -1;
       transition: filter 0.3s ease;
@@ -271,8 +265,8 @@ const GlobalStyle = createGlobalStyle<{ theme?: any }>`
       background-image: url('${replaceCDNBaseURL('images/flexi-resume.jpg')}');
       background-repeat: repeat;
       background-size: 180px;
-      /* 反转背景图颜色，让其适配深色主题 - 使用CSS变量控制滤镜强度 */
-      filter: invert(1) brightness(var(--bg-filter-brightness, 1));
+      /* 深色主题滤镜 - 卡通风格深蓝色调 */
+      filter: invert(1) hue-rotate(220deg) saturate(0.8) brightness(0.7) contrast(1.1);
       pointer-events: none;
       z-index: -1;
       transition: filter 0.3s ease;
@@ -423,8 +417,8 @@ const GlobalStyle = createGlobalStyle<{ theme?: any }>`
       margin-right: 0.4rem; /* 图标和文本的间距 */
       background: url(${replaceCDNBaseURL("images/url.svg")}) no-repeat center;
       background-size: contain; /* 保证图标自适应 */
-      /* 深色模式下的图标颜色调整 */
-      filter: brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(95%) contrast(85%);
+      /* 链接图标颜色调整 - 适配卡通风格主题 */
+      filter: brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(200deg) brightness(103%) contrast(101%);
       transition: filter 0.3s ease;
     }
 

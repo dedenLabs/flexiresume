@@ -14,6 +14,7 @@ export const getSkillsData = () => {
         name: "技能熟练度",
         list: [
             // === AI/Agent 核心技能 ===
+            ["20年+（核心主程）网页/游戏 开发经验", 3],
             ["AI Agent开发", 2],
             ["LangChain", 2],
             ["OpenAI API", 2],

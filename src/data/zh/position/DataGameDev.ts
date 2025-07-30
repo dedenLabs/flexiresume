@@ -16,7 +16,7 @@ export default {
     },
     game_experience: {
         "type": "timeline",// 游戏开发经验
-        name: "游戏开发经验",
+        name: "技术演进路径与经验分布",
         ...DataGameExperience, 
 //         content: ` 
 // > ## 🕹️游戏开发经验：19年＋（2004年-2023年），中间有2年非全职游戏开发。

@@ -7,43 +7,45 @@
  * @date 2025-07-26
  */
 
-/* 浅色主题CSS变量定义 */
+/* 浅色主题CSS变量定义 - 卡通风格但不失庄重
+⭕✋🏻注意⭕： 修改主题颜色时，`filter: sepia(0.4) hue-rotate(20deg);`filter类型的样式别忘记修改。
+*/
 :root {
-  /* 主色调 */
-  --color-primary: #D4AF37;
-  --color-secondary: #8B4513;
-  --color-accent: #DC143C;
+  /* 主色调 - 现代科技感 */
+  --color-primary: #4A90E2;
+  --color-secondary: #7B68EE;
+  --color-accent: #FF6B6B;
 
-  /* 背景色 */
-  --color-background: #FFF8DC;
-  --color-surface: #F5F5DC;
-  --color-card: #FFFAF0;
+  /* 背景色 - 清新现代 */
+  --color-background: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-card: #FFFFFF;
 
-  /* 文字颜色 */
-  --color-text-primary: #2F4F4F;
-  --color-text-secondary: #696969;
-  --color-text-disabled: #A9A9A9;
-  --color-text-inverse: #FFFAF0;
+  /* 文字颜色 - 专业易读 */
+  --color-text-primary: #2D3748;
+  --color-text-secondary: #4A5568;
+  --color-text-disabled: #A0AEC0;
+  --color-text-inverse: #FFFFFF;
 
-  /* 边框颜色 */
-  --color-border-light: #F0E68C;
-  --color-border-medium: #DAA520;
-  --color-border-dark: #B8860B;
+  /* 边框颜色 - 微妙层次 */
+  --color-border-light: #E2E8F0;
+  --color-border-medium: #CBD5E0;
+  --color-border-dark: #A0AEC0;
 
-  /* 状态颜色 */
-  --color-status-success: #228B22;
-  --color-status-warning: #FF8C00;
-  --color-status-error: #B22222;
-  --color-status-info: #4682B4;
+  /* 状态颜色 - 友好明亮 */
+  --color-status-success: #48BB78;
+  --color-status-warning: #ED8936;
+  --color-status-error: #F56565;
+  --color-status-info: #4299E1;
 
   /* 状态背景色 - 浅色模式 */
   --color-status-worse: #fff0f0;    /* 较差的状态背景色 */
   --color-status-better: #f0fff0;   /* 更好的状态背景色 */
 
-  /* 阴影颜色 */
-  --color-shadow-light: rgba(0, 0, 0, 0.05);
-  --color-shadow-medium: rgba(0, 0, 0, 0.1);
-  --color-shadow-dark: rgba(0, 0, 0, 0.2);
+  /* 阴影颜色 - 蓝色调 */
+  --color-shadow-light: rgba(74, 144, 226, 0.08);
+  --color-shadow-medium: rgba(74, 144, 226, 0.12);
+  --color-shadow-dark: rgba(45, 55, 72, 0.15);
 
   /* 背景滤镜变量 - 浅色主题（更亮） */
   --bg-filter-brightness: 1.2;

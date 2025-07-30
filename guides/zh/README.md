@@ -153,6 +153,8 @@ FlexiResume 致力于为求职者提供一个灵活、高效的简历生成平�
 - **🌍 多语言支持**: 中英文界面切换，国际化求职无障碍
 - **📱 响应式设计**: 完美适配桌面、平板、手机等各种设备
 - **⚡ 骨架屏加载**: 优雅的加载体验，告别白屏等待
+- **🎵 音频系统**: 集成背景音乐和音效，提升交互体验
+- **🔤 智能字体系统**: 多CDN源字体加载，性能监控和自动切换
 
 ### 🛠️ 功能特性
 - **🎯 多职位定制**: 一套数据，多种职位简历配置
@@ -168,6 +170,9 @@ FlexiResume 致力于为求职者提供一个灵活、高效的简历生成平�
 - **⚡ 懒加载**: 图片、组件智能懒加载
 - **🗜️ 资源压缩**: Terser压缩 + Tree-shaking优化
 - **💾 智能缓存**: 高效的缓存策略，提升访问速度
+- **🌐 CDN智能管理**: 多CDN源健康检查和自动切换
+- **📊 性能监控**: 实时性能指标收集和分析
+- **🧠 内存管理**: 智能内存管理和垃圾回收优化
 
 ### 🔒 隐私保护
 - **🚫 默认禁止抓取**: robots.txt 配置保护个人信息
@@ -531,6 +536,8 @@ src/
 │   ├── skill/          # 技能相关组件
 │   ├── timeline/       # 时间线组件
 │   ├── base_card/      # 基础卡片组件
+│   ├── AudioController.tsx      # 音频控制器
+│   ├── FontPerformanceMonitor.tsx  # 字体性能监控
 │   └── ...
 ├── data/               # 数据层
 │   ├── zh/            # 中文数据
@@ -539,9 +546,28 @@ src/
 │   │   └── position/  # 职位配置
 │   ├── en/            # 英文数据
 │   └── DataLoader.ts  # 数据加载器
+├── config/            # 配置层
+│   ├── FontConfig.ts  # 字体配置管理
+│   ├── AudioConfig.ts # 音频配置管理
+│   └── ProjectConfig.ts # 项目配置
+├── hooks/             # 自定义Hook
+│   ├── useFont.tsx    # 字体加载Hook
+│   └── ...
 ├── pages/             # 页面组件
 ├── utils/             # 工具函数
-├── styles/            # 样式文件
+│   ├── Logger.ts      # 统一日志系统
+│   ├── MemoryManager.ts # 内存管理器
+│   ├── ThemeUtils.ts  # 主题工具类
+│   ├── EnhancedAudioPlayer.ts # 增强音频播放器
+│   └── ...
+├── styles/            # 样式系统
+│   ├── themes/        # 主题文件
+│   │   ├── LightTheme.css # 浅色主题
+│   │   ├── DarkTheme.css  # 深色主题
+│   │   └── ThemeManager.ts # 主题管理器
+│   ├── design-system/ # 设计系统
+│   ├── global/        # 全局样式
+│   └── utils/         # 样式工具
 ├── theme/             # 主题配置
 └── i18n/              # 国际化配置
 
@@ -574,10 +600,19 @@ guides/                # 文档
 - **ThemeSwitcher**: 主题切换组件
 - **LanguageSwitcher**: 语言切换组件
 - **ControlPanel**: 控制面板组件
+- **AudioController**: 音频控制器，支持背景音乐和音效
+- **FontPerformanceMonitor**: 字体性能监控组件
 
 #### 5. 页面组件层
 - **FlexiResume**: 主简历页面组件
 - **App**: 应用根组件，路由管理
+
+#### 6. 系统服务层
+- **FontConfig**: 字体配置管理，支持多CDN源和智能切换
+- **AudioConfig**: 音频配置管理，支持背景音乐和音效配置
+- **Logger**: 统一日志系统，支持分级日志和性能监控
+- **MemoryManager**: 内存管理器，智能缓存和垃圾回收
+- **ThemeUtils**: 主题工具类，统一主题管理和切换
 
 ### ⚙️ 核心功能特性
 

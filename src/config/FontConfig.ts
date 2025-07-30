@@ -301,7 +301,7 @@ export const allFonts = {
 // 默认字体配置 - 使用仿市宋体作为默认字体
 export const defaultFontConfig: FontConfig =
 {
-  ...getFontConfigByName('fangsong'), // 使用仿市宋体作为默认字体
+  ...getFontConfigByName('kangxi'), // 使用仿市宋体作为默认字体
   // 加载配置
   loadConfig: {
     priority: 'high',
@@ -606,6 +606,16 @@ export const preloadFonts = async (configs: FontConfig[]): Promise<void> => {
   await Promise.allSettled(loadPromises);
 };
 
+// 获取字体配置
 function getFontConfigByName(name: string): FontConfig | undefined {
-  ancientChineseFonts
+  let defaultFontConfig: FontConfig = {};
+  for (const key in allFonts) {
+    for (const fontConfig of allFonts[key]) {
+      if (fontConfig.name === name) {
+        return fontConfig;
+      }
+      defaultFontConfig = fontConfig;
+    }
+  }
+  return defaultFontConfig;
 }

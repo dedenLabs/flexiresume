@@ -353,6 +353,116 @@ const handleLanguageChange = (newLang: Language) => {
 <button>{t.common.switchLanguage}</button>
 ```
 
+### useFont
+
+字体管理 Hook，支持多CDN源和性能监控。
+
+```typescript
+interface FontContextType {
+  currentFont: string;                    // 当前字体
+  isLoading: boolean;                     // 是否正在加载
+  error: string | null;                   // 错误信息
+  switchFont: (fontFamily: string) => void;  // 切换字体
+  performance: FontPerformanceMetrics;    // 性能指标
+}
+
+interface FontPerformanceMetrics {
+  loadTime: number;                       // 加载时间
+  successRate: number;                    // 成功率
+  cdnResponseTimes: Record<string, number>; // CDN响应时间
+  errorCount: number;                     // 错误次数
+}
+
+const useFont = (): FontContextType;
+```
+
+**使用示例:**
+
+```typescript
+const {
+  currentFont,
+  isLoading,
+  error,
+  switchFont,
+  performance
+} = useFont();
+
+// 切换字体
+const handleFontChange = (fontFamily: string) => {
+  switchFont(fontFamily);
+};
+
+// 显示加载状态
+if (isLoading) {
+  return <div>字体加载中...</div>;
+}
+
+// 显示错误信息
+if (error) {
+  return <div>字体加载失败: {error}</div>;
+}
+
+// 使用字体
+return (
+  <div style={{ fontFamily: currentFont }}>
+    内容文本
+  </div>
+);
+```
+
+### useAudio
+
+音频管理 Hook，支持背景音乐和音效控制。
+
+```typescript
+interface AudioContextType {
+  isPlaying: boolean;                     // 是否正在播放
+  volume: number;                         // 音量 (0-1)
+  isMuted: boolean;                       // 是否静音
+  playBackgroundMusic: () => void;        // 播放背景音乐
+  pauseBackgroundMusic: () => void;       // 暂停背景音乐
+  playSoundEffect: (effect: string) => void; // 播放音效
+  setVolume: (volume: number) => void;    // 设置音量
+  toggleMute: () => void;                 // 切换静音
+}
+
+const useAudio = (): AudioContextType;
+```
+
+**使用示例:**
+
+```typescript
+const {
+  isPlaying,
+  volume,
+  isMuted,
+  playBackgroundMusic,
+  pauseBackgroundMusic,
+  playSoundEffect,
+  setVolume,
+  toggleMute
+} = useAudio();
+
+// 播放/暂停背景音乐
+const handleToggleMusic = () => {
+  if (isPlaying) {
+    pauseBackgroundMusic();
+  } else {
+    playBackgroundMusic();
+  }
+};
+
+// 播放点击音效
+const handleClick = () => {
+  playSoundEffect('click');
+};
+
+// 调整音量
+const handleVolumeChange = (newVolume: number) => {
+  setVolume(newVolume);
+};
+```
+
 ---
 
 ## 🛠️ 工具函数
@@ -371,20 +481,7 @@ function assignDeep<T>(target: T, ...sources: Partial<T>[]): T;
 const merged = assignDeep({}, baseData, positionData, skillsData);
 ```
 
-### generateCSSVariables
 
-生成 CSS 变量的工具函数。
-
-```typescript
-function generateCSSVariables(colors: ThemeColors): string;
-```
-
-**使用示例:**
-
-```typescript
-const cssVars = generateCSSVariables(currentTheme);
-document.documentElement.style.cssText = cssVars;
-```
 
 ### formatDate
 
@@ -399,6 +496,165 @@ function formatDate(date: string, format?: string): string;
 ```typescript
 const formatted = formatDate('2023-12-01', 'YYYY年MM月');
 // 输出: "2023年12月"
+```
+
+### Logger
+
+统一日志系统，支持分级日志和性能监控。
+
+```typescript
+class Logger {
+  static debug(message: string, data?: any): void;
+  static info(message: string, data?: any): void;
+  static warn(message: string, data?: any): void;
+  static error(message: string, error?: Error): void;
+  static performance(label: string, duration: number): void;
+}
+```
+
+**使用示例:**
+
+```typescript
+import { Logger } from '@/utils/Logger';
+
+// 调试信息
+Logger.debug('组件渲染', { componentName: 'FlexiResume' });
+
+// 一般信息
+Logger.info('用户操作', { action: 'theme-switch' });
+
+// 警告信息
+Logger.warn('性能警告', { loadTime: 3000 });
+
+// 错误信息
+Logger.error('加载失败', new Error('Network error'));
+
+// 性能监控
+Logger.performance('字体加载', 1200);
+```
+
+### MemoryManager
+
+内存管理器，智能缓存和垃圾回收。
+
+```typescript
+class MemoryManager {
+  static setCache<T>(key: string, value: T, ttl?: number): void;
+  static getCache<T>(key: string): T | null;
+  static clearCache(key?: string): void;
+  static getMemoryUsage(): MemoryUsage;
+  static cleanup(): void;
+}
+
+interface MemoryUsage {
+  used: number;        // 已使用内存
+  total: number;       // 总内存
+  percentage: number;  // 使用百分比
+}
+```
+
+**使用示例:**
+
+```typescript
+import { MemoryManager } from '@/utils/MemoryManager';
+
+// 设置缓存
+MemoryManager.setCache('user-data', userData, 300000); // 5分钟TTL
+
+// 获取缓存
+const cachedData = MemoryManager.getCache('user-data');
+
+// 清理缓存
+MemoryManager.clearCache('user-data');
+
+// 获取内存使用情况
+const memoryUsage = MemoryManager.getMemoryUsage();
+console.log(`内存使用: ${memoryUsage.percentage}%`);
+
+// 手动清理
+MemoryManager.cleanup();
+```
+
+### ThemeUtils
+
+主题工具类，统一主题管理和切换。
+
+```typescript
+class ThemeUtils {
+  static applyTheme(theme: ThemeColors): void;
+  static validateTheme(theme: ThemeColors): boolean;
+  static mergeThemes(base: ThemeColors, override: Partial<ThemeColors>): ThemeColors;
+  static getContrastRatio(color1: string, color2: string): number;
+}
+```
+
+**使用示例:**
+
+```typescript
+import { ThemeUtils } from '@/utils/ThemeUtils';
+
+// 应用主题
+ThemeUtils.applyTheme(customTheme);
+
+// 验证主题
+const isValid = ThemeUtils.validateTheme(userTheme);
+
+// 合并主题
+const mergedTheme = ThemeUtils.mergeThemes(baseTheme, customizations);
+
+// 检查对比度
+const contrast = ThemeUtils.getContrastRatio('#ffffff', '#000000');
+```
+
+### EnhancedAudioPlayer
+
+增强音频播放器，支持高级音频控制。
+
+```typescript
+class EnhancedAudioPlayer {
+  constructor(config?: AudioConfig);
+
+  playBackgroundMusic(url?: string): Promise<void>;
+  pauseBackgroundMusic(): void;
+  resumeBackgroundMusic(): void;
+  stopBackgroundMusic(): void;
+
+  playSoundEffect(effectName: string): Promise<void>;
+
+  setVolume(volume: number): void;
+  getVolume(): number;
+
+  mute(): void;
+  unmute(): void;
+  isMuted(): boolean;
+
+  fadeIn(duration: number): Promise<void>;
+  fadeOut(duration: number): Promise<void>;
+}
+```
+
+**使用示例:**
+
+```typescript
+import { EnhancedAudioPlayer } from '@/utils/EnhancedAudioPlayer';
+
+const audioPlayer = new EnhancedAudioPlayer({
+  volume: 0.5,
+  loop: true
+});
+
+// 播放背景音乐
+await audioPlayer.playBackgroundMusic('/audio/background.mp3');
+
+// 播放音效
+await audioPlayer.playSoundEffect('click');
+
+// 音量控制
+audioPlayer.setVolume(0.3);
+
+// 淡入淡出
+await audioPlayer.fadeIn(2000);
+await audioPlayer.fadeOut(1000);
 ```
 
 ---

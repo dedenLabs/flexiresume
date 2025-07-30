@@ -6,6 +6,8 @@
 
 - [环境变量配置](#环境变量配置)
 - [统计功能配置](#统计功能配置)
+- [字体系统配置](#字体系统配置)
+- [音频系统配置](#音频系统配置)
 - [主题自定义](#主题自定义)
 - [组件自定义](#组件自定义)
 - [模块自定义](#模块自定义)
@@ -261,6 +263,284 @@ DEBUG=app:* npm run dev
    - 使用动态加载避免影响页面性能
    - 合理设置批量大小和刷新间隔
    - 在生产环境禁用调试日志
+
+---
+
+## 🔤 字体系统配置
+
+FlexiResume 集成了智能字体系统，支持多CDN源、性能监控和自动切换。
+
+### 字体配置文件
+
+字体配置位于 `src/config/FontConfig.ts`：
+
+```typescript
+export const FontConfig = {
+  // CDN源配置
+  cdnSources: [
+    'https://fonts.googleapis.com',
+    'https://fonts.gstatic.com',
+    'https://cdn.jsdelivr.net'
+  ],
+
+  // 字体族配置
+  fontFamilies: {
+    primary: 'Inter, system-ui, sans-serif',
+    secondary: 'JetBrains Mono, monospace',
+    display: 'Poppins, sans-serif'
+  },
+
+  // 性能配置
+  performance: {
+    timeout: 5000,           // 加载超时时间
+    retryAttempts: 3,        // 重试次数
+    healthCheckInterval: 30000 // 健康检查间隔
+  }
+};
+```
+
+### 字体使用方法
+
+#### 1. 使用 useFont Hook
+
+```typescript
+import { useFont } from '@/hooks/useFont';
+
+function MyComponent() {
+  const {
+    currentFont,
+    isLoading,
+    error,
+    switchFont
+  } = useFont();
+
+  return (
+    <div style={{ fontFamily: currentFont }}>
+      {isLoading ? '字体加载中...' : '内容'}
+    </div>
+  );
+}
+```
+
+#### 2. 直接使用CSS变量
+
+```css
+.my-text {
+  font-family: var(--font-primary);
+}
+
+.code-text {
+  font-family: var(--font-secondary);
+}
+
+.heading-text {
+  font-family: var(--font-display);
+}
+```
+
+### 字体性能监控
+
+系统自动监控字体加载性能：
+
+```typescript
+// 查看字体性能指标
+import { FontPerformanceMonitor } from '@/components/FontPerformanceMonitor';
+
+// 性能指标包括：
+// - 加载时间
+// - 成功率
+// - CDN响应时间
+// - 错误统计
+```
+
+### 自定义字体配置
+
+#### 1. 添加新字体
+
+```typescript
+// 在 FontConfig.ts 中添加
+fontFamilies: {
+  primary: 'Inter, system-ui, sans-serif',
+  secondary: 'JetBrains Mono, monospace',
+  display: 'Poppins, sans-serif',
+  custom: 'YourCustomFont, fallback-font' // 新增自定义字体
+}
+```
+
+#### 2. 配置CDN源
+
+```typescript
+// 添加新的CDN源
+cdnSources: [
+  'https://fonts.googleapis.com',
+  'https://fonts.gstatic.com',
+  'https://cdn.jsdelivr.net',
+  'https://your-custom-cdn.com' // 新增CDN源
+]
+```
+
+#### 3. 性能调优
+
+```typescript
+// 调整性能参数
+performance: {
+  timeout: 3000,           // 减少超时时间
+  retryAttempts: 2,        // 减少重试次数
+  healthCheckInterval: 60000 // 增加检查间隔
+}
+```
+
+---
+
+## 🎵 音频系统配置
+
+FlexiResume 集成了音频系统，支持背景音乐和音效。
+
+### 音频配置文件
+
+音频配置位于 `src/config/AudioConfig.ts`：
+
+```typescript
+export const AudioConfig = {
+  // 背景音乐配置
+  backgroundMusic: {
+    enabled: false,          // 默认禁用
+    volume: 0.3,            // 音量 (0-1)
+    loop: true,             // 循环播放
+    autoplay: false,        // 自动播放
+    fadeInDuration: 2000,   // 淡入时间
+    fadeOutDuration: 1000   // 淡出时间
+  },
+
+  // 音效配置
+  soundEffects: {
+    enabled: true,          // 启用音效
+    volume: 0.5,           // 音效音量
+    clickSound: true,      // 点击音效
+    hoverSound: false,     // 悬停音效
+    transitionSound: true  // 过渡音效
+  },
+
+  // 音频文件路径
+  audioFiles: {
+    backgroundMusic: '/audio/background.mp3',
+    clickSound: '/audio/click.wav',
+    hoverSound: '/audio/hover.wav',
+    transitionSound: '/audio/transition.wav'
+  }
+};
+```
+
+### 音频控制器使用
+
+#### 1. 基础使用
+
+```typescript
+import { AudioController } from '@/components/AudioController';
+
+function App() {
+  return (
+    <div>
+      <AudioController />
+      {/* 其他组件 */}
+    </div>
+  );
+}
+```
+
+#### 2. 程序化控制
+
+```typescript
+import { EnhancedAudioPlayer } from '@/utils/EnhancedAudioPlayer';
+
+// 播放背景音乐
+const audioPlayer = new EnhancedAudioPlayer();
+audioPlayer.playBackgroundMusic();
+
+// 播放音效
+audioPlayer.playSoundEffect('click');
+
+// 控制音量
+audioPlayer.setVolume(0.5);
+
+// 暂停/恢复
+audioPlayer.pause();
+audioPlayer.resume();
+```
+
+### 音频文件管理
+
+#### 1. 添加音频文件
+
+```bash
+# 将音频文件放置在 public/audio/ 目录
+public/
+├── audio/
+│   ├── background.mp3    # 背景音乐
+│   ├── click.wav        # 点击音效
+│   ├── hover.wav        # 悬停音效
+│   └── transition.wav   # 过渡音效
+```
+
+#### 2. 支持的音频格式
+
+- **MP3**: 背景音乐推荐格式
+- **WAV**: 音效推荐格式
+- **OGG**: 备用格式
+- **M4A**: iOS优化格式
+
+#### 3. 音频优化建议
+
+```typescript
+// 音频文件优化建议
+const audioOptimization = {
+  backgroundMusic: {
+    format: 'MP3',
+    bitrate: '128kbps',
+    duration: '2-5分钟',
+    size: '<2MB'
+  },
+  soundEffects: {
+    format: 'WAV',
+    duration: '<1秒',
+    size: '<100KB'
+  }
+};
+```
+
+### 用户体验配置
+
+#### 1. 自动播放策略
+
+```typescript
+// 遵循浏览器自动播放策略
+const autoplayStrategy = {
+  // 用户交互后才播放
+  requireUserInteraction: true,
+
+  // 显示播放提示
+  showPlayPrompt: true,
+
+  // 记住用户偏好
+  rememberUserChoice: true
+};
+```
+
+#### 2. 无障碍访问
+
+```typescript
+// 无障碍配置
+const accessibilityConfig = {
+  // 提供静音选项
+  muteOption: true,
+
+  // 键盘控制
+  keyboardControls: true,
+
+  // 屏幕阅读器支持
+  screenReaderSupport: true
+};
+```
 
 ---
 

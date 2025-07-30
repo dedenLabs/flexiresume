@@ -371,20 +371,7 @@ function assignDeep<T>(target: T, ...sources: Partial<T>[]): T;
 const merged = assignDeep({}, baseData, positionData, skillsData);
 ```
 
-### generateCSSVariables
 
-Utility function for generating CSS variables.
-
-```typescript
-function generateCSSVariables(colors: ThemeColors): string;
-```
-
-**Usage Example:**
-
-```typescript
-const cssVars = generateCSSVariables(currentTheme);
-document.documentElement.style.cssText = cssVars;
-```
 
 ### formatDate
 

@@ -1,5 +1,6 @@
 import { IFlexiResume, IHeaderInfo } from "../../types/IFlexiResume";
 import { assignDeep } from "../../utils/Tools";
+import gameTypeExperiencePie from "./charts/GameTypeExperiencePie.mmd";
 /**
  * 懒加载职位数据
  *
@@ -126,7 +127,12 @@ export default {
                 expected_salary: "期望薪资 面议",
             },
             personal_strengths: {//输入是空内容,这里的顺序是有排序的作用
-                content: `### 🎮 游戏主程专家｜🛠️ 19年＋游戏架构与实战主程经验（Unity/Cocos Creator/H5游戏/Flash页游）
+                content: `### 🎮 游戏主程专家｜🛠️ 19年＋（核心主程）游戏架构与实战主程经验（Unity/Cocos Creator/H5游戏/Flash页游）
+
+\`\`\`mermaid
+${gameTypeExperiencePie}
+\`\`\`
+
 - #### 🚀 <span style="font-size: 1.8em;">全栈技术攻坚</span>：精通TS/JS/Node.js技术生态，主导构建⚙️企业级脚手架、📦模块化架构及🤖CI/CD自动化体系（含AI体系n8n），擅长通过🚀Wasm加速、动态调节算法、脏数据追踪、寻路优化、​​ECS/DOTS、SoA 方案等性能优化技巧突破瓶颈。
 
 ### 🌐 全平台开发专家：
@@ -139,14 +145,17 @@ export default {
 - #### 🌌 <span style="font-size: 1.5em;">元宇宙技术体系</span>：自研🏰Web超大型社区框架，实现👓AR/VR虚拟社区的🔧增量编译、🤖自动化发布及📊资源优化方案，支撑亿级用户场景。
 
 ### 🔭 技术领导力认证：
-- #### 🛠️ <span style="font-size: 1.5em;">T4级技术专家</span>（淘米网络认证）：15年+主导🏗️系统架构设计、🔍技术选型攻关及⚡性能调优经验，沉淀📜AS3/H5/Hybrid开发规范与📈工程化监控体系。",
+- #### 🛠️ <span style="font-size: 1.5em;">T4级技术专家</span>（淘米网络认证）：15年+主导🏗️系统架构设计、🔍技术选型攻关及⚡性能调优经验，沉淀📜AS3/H5/Hybrid开发规范与📈工程化监控体系。
+
             `},
             skills:
             {
                 collapsedNodes: [//折叠不展示的内容
                     "技术栈.前端开发", 
-                    "游戏开发经验.AI开发学习与实践.Agent工程师方向研学",
-                    "游戏开发经验.AI开发学习与实践.学习规划与目标",   
+                    "技术演进路径与经验分布.AI开发学习与实践.Agent工程师方向研学",
+                    "技术演进路径与经验分布.AI开发学习与实践.AI辅助开发实践",
+                    "技术演进路径与经验分布.AI开发学习与实践.学习规划与目标",   
+                    "技术演进路径与经验分布.网站开发经验",   
                     ["技术栈.前端开发.游戏开发", false],
                     ["技术栈.前端开发.性能与体验", false], 
                     "技术栈.后端开发",
