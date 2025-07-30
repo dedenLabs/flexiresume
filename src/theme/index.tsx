@@ -54,6 +54,14 @@ export interface ThemeColors {
     medium: string;
     dark: string;
   };
+
+  // 滤镜效果
+  filters: {
+    backgroundLight: string;
+    backgroundDark: string;
+    linkIconLight: string;
+    linkIconDark: string;
+  };
 }
 
 // 从CSS变量中读取当前主题颜色的工具函数
@@ -93,6 +101,13 @@ const getCurrentThemeColors = (): ThemeColors => {
       light: computedStyle.getPropertyValue('--color-shadow-light').trim(),
       medium: computedStyle.getPropertyValue('--color-shadow-medium').trim(),
       dark: computedStyle.getPropertyValue('--color-shadow-dark').trim(),
+    },
+
+    filters: {
+      backgroundLight: computedStyle.getPropertyValue('--filter-background-light').trim(),
+      backgroundDark: computedStyle.getPropertyValue('--filter-background-dark').trim(),
+      linkIconLight: computedStyle.getPropertyValue('--filter-link-icon-light').trim(),
+      linkIconDark: computedStyle.getPropertyValue('--filter-link-icon-dark').trim(),
     }
   };
 };

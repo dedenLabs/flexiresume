@@ -57,6 +57,12 @@
   --color-link-hover: #0052a3;
   --color-link-active: #0066cc;
 
+  /* 滤镜效果变量 - 浅色主题 */
+  --filter-background-light: sepia(0.2) hue-rotate(200deg) saturate(1.2) brightness(1.1);
+  --filter-background-dark: invert(1) hue-rotate(220deg) saturate(0.8) brightness(0.7) contrast(1.1);
+  --filter-link-icon-light: brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(200deg) brightness(103%) contrast(101%);
+  --filter-link-icon-dark: brightness(0) saturate(100%) invert(65%) sepia(11%) saturate(297%) hue-rotate(181deg) brightness(93%) contrast(87%);
+
   /* 扩展的设计系统变量 */
   /* 字体系统 */
   --font-family-primary: "Noto Serif SC", "STKaiti", "KaiTi", "Times New Roman", serif;

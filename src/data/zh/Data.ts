@@ -101,7 +101,7 @@ export default {
             hidden: true, 
             // "is_home_page": true, // 标记为首页显示
             header_info: {
-                position: "AI Agent工程师",
+                position: "🤖AI Agent工程师",
                 expected_salary: "期望薪资 面议",                
             }
         },
@@ -109,7 +109,7 @@ export default {
         "fullstack": {
             "is_home_page": true, // 标记为首页显示
             header_info: {
-                position: "全栈开发工程师",
+                position: "🧩全栈开发工程师",
                 expected_salary: "期望薪资 面议",                
             },
             skills: {
@@ -123,8 +123,8 @@ export default {
         // 游戏开发岗位
         "game": {
             header_info: {
-                position: "游戏主程专家",
-                expected_salary: "期望薪资 面议",
+                position: "🕹️游戏主程专家",
+                expected_salary: "期望薪资 面议",                
             },
             personal_strengths: {//输入是空内容,这里的顺序是有排序的作用
                 content: `### 🎮 游戏主程专家｜🛠️ 19年＋（核心主程）游戏架构与实战主程经验（Unity/Cocos Creator/H5游戏/Flash页游）
@@ -199,9 +199,9 @@ ${gameTypeExperiencePie}
             },
             target: { hidden: true, },// 隐藏 职业规划 
             personal_influence: { hidden: true, },// 隐藏 个人影响力与行业认可
-            header_info: {// 这里的会覆盖上面默认的数据,根据不同期望的职位设定不同的期望薪资等参数 
-                position: "前端开发工程师",
-                expected_salary: "期望薪资 面议",
+            header_info: {// 这里的会覆盖上面默认的数据,根据不同期望的职位设定不同的期望薪资等参数
+                position: "🌐前端开发工程师",
+                expected_salary: "期望薪资 面议",                
             },
             skills:
             {
@@ -241,8 +241,8 @@ ${gameTypeExperiencePie}
             target: { hidden: true, },// 隐藏 职业规划 
             personal_influence: { hidden: true, },// 隐藏 个人影响力与行业认可 
             header_info: {
-                position: "NodeJs开发",
-                expected_salary: "期望薪资 面议",
+                position: "🧱NodeJs开发",
+                expected_salary: "期望薪资 面议",                
             },
             skills:
             {
@@ -277,21 +277,21 @@ ${gameTypeExperiencePie}
             },
             target: { hidden: true, },// 隐藏 职业规划 
             header_info: {
-                position: "技术管理",
-                expected_salary: "期望薪资 面议",
+                position: "👥技术管理",
+                expected_salary: "期望薪资 面议",                
             },
         },
 
         // 外包/技术顾问岗位
         "contracttask": {
             header_info: {
-                position: "技术顾问/游戏资源优化/外包",
+                position: "🧰技术顾问/游戏资源优化/外包",
                 expected_salary: "价格面议", 
 
                 // 是否显示个人主页的URL地址
                 home_page: "",
                 // 生成二维码的URL地址
-                // qrcode: true,
+                // qrcode: true,                
             },
             personal_projects: {
                 collapsedNodes: ["虚拟社区/游戏 作品",

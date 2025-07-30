@@ -239,7 +239,7 @@ const GlobalStyle = createGlobalStyle<{ theme?: any }>`
       background-size: 180px;
       /* 浅色主题滤镜 - 卡通风格蓝色调 */
 
-      filter: sepia(0.2) hue-rotate(200deg) saturate(1.2) brightness(1.1);
+      filter: var(--filter-background-light);
       pointer-events: none;
       z-index: -1;
       transition: filter 0.3s ease;
@@ -266,7 +266,7 @@ const GlobalStyle = createGlobalStyle<{ theme?: any }>`
       background-repeat: repeat;
       background-size: 180px;
       /* 深色主题滤镜 - 卡通风格深蓝色调 */
-      filter: invert(1) hue-rotate(220deg) saturate(0.8) brightness(0.7) contrast(1.1);
+      filter: var(--filter-background-dark);
       pointer-events: none;
       z-index: -1;
       transition: filter 0.3s ease;
@@ -418,7 +418,7 @@ const GlobalStyle = createGlobalStyle<{ theme?: any }>`
       background: url(${replaceCDNBaseURL("images/url.svg")}) no-repeat center;
       background-size: contain; /* 保证图标自适应 */
       /* 链接图标颜色调整 - 适配卡通风格主题 */
-      filter: brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(200deg) brightness(103%) contrast(101%);
+      filter: var(--filter-link-icon-light);
       transition: filter 0.3s ease;
     }
 
@@ -443,7 +443,7 @@ const GlobalStyle = createGlobalStyle<{ theme?: any }>`
   /* 深色模式下的链接图标和颜色优化 */
   [data-theme="dark"] a:not(.no-link-icon) {
     &::before {
-      filter: brightness(0) saturate(100%) invert(65%) sepia(11%) saturate(297%) hue-rotate(181deg) brightness(93%) contrast(87%);
+      filter: var(--filter-link-icon-dark);
     }
 
     &:link {

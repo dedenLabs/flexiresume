@@ -18,6 +18,7 @@ import {
   LANGUAGE_NAMES,
   SupportedLanguage
 } from '../data/DataLoader';
+import { globalCache } from '../utils/MemoryManager';
 
 const SwitcherContainer = styled.div`
   position: relative;
@@ -26,7 +27,7 @@ const SwitcherContainer = styled.div`
 
 const SwitcherButton = styled.button.withConfig({
   shouldForwardProp: (prop) => prop !== 'isDark',
-})<{ isDark: boolean }>`
+}) <{ isDark: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -62,7 +63,7 @@ const LanguageText = styled.span`
 
 const DropdownMenu = styled.div.withConfig({
   shouldForwardProp: (prop) => prop !== 'isOpen' && prop !== 'isDark',
-})<{ isOpen: boolean; isDark: boolean }>`
+}) <{ isOpen: boolean; isDark: boolean }>`
   position: absolute;
   bottom: 100%;
   right: 0;
@@ -82,7 +83,7 @@ const DropdownMenu = styled.div.withConfig({
 
 const DropdownItem = styled.button.withConfig({
   shouldForwardProp: (prop) => prop !== 'isActive' && prop !== 'isDark',
-})<{ isActive: boolean; isDark: boolean }>`
+}) <{ isActive: boolean; isDark: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -119,7 +120,7 @@ const DropdownItem = styled.button.withConfig({
 
 const CheckIcon = styled.span.withConfig({
   shouldForwardProp: (prop) => prop !== 'visible' && prop !== 'isDark',
-})<{ visible: boolean; isDark: boolean }>`
+}) <{ visible: boolean; isDark: boolean }>`
   opacity: ${props => props.visible ? 1 : 0};
   color: var(--color-status-success);
   font-weight: bold;
@@ -151,16 +152,23 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className }) => {
     }
   }, [language, setLanguage]);
 
-  const handleLanguageChange = (newLanguage: Language) => {
-    // 更新UI语言
-    setLanguage(newLanguage);
+  const handleLanguageChange = async (newLanguage: Language) => {
+    try {
+      // 先更新数据语言（这会触发数据重新加载）
+      const dataLanguage = newLanguage as SupportedLanguage;
+      setCurrentLanguage(dataLanguage);
+      saveLanguagePreference(dataLanguage);
 
-    // 更新数据语言
-    const dataLanguage = newLanguage as SupportedLanguage;
-    setCurrentLanguage(dataLanguage);
-    saveLanguagePreference(dataLanguage);
+      globalCache.clear(); // 清除缓存
+      // 然后更新UI语言
+      setLanguage(newLanguage);
 
-    setIsOpen(false);
+      setIsOpen(false);
+
+      console.log(`语言切换完成: ${newLanguage}`);
+    } catch (error) {
+      console.error('语言切换失败:', error);
+    }
   };
 
   const handleClickOutside = React.useCallback((event: MouseEvent) => {

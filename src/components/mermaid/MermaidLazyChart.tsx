@@ -13,6 +13,49 @@ import { getLogger } from '../../utils/Logger';
 
 const logMermaid = getLogger(`Mermaid`);
 
+// 全局渲染队列，避免并发渲染冲突
+class MermaidRenderQueue {
+    private queue: Array<() => Promise<void>> = [];
+    private isProcessing = false;
+
+    async add<T>(task: () => Promise<T>): Promise<T> {
+        return new Promise((resolve, reject) => {
+            this.queue.push(async () => {
+                try {
+                    const result = await task();
+                    resolve(result);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+            this.process();
+        });
+    }
+
+    private async process() {
+        if (this.isProcessing || this.queue.length === 0) return;
+
+        this.isProcessing = true;
+
+        while (this.queue.length > 0) {
+            const task = this.queue.shift();
+            if (task) {
+                try {
+                    await task();
+                } catch (error) {
+                    logMermaid('❌ 渲染队列任务失败:', error);
+                }
+                // 添加小延迟，避免渲染冲突
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+        }
+
+        this.isProcessing = false;
+    }
+}
+
+const renderQueue = new MermaidRenderQueue();
+
 interface MermaidLazyChartProps {
     /** Mermaid图表定义 */
     chart: string;
@@ -229,7 +272,9 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
     const renderMermaid = useCallback(async () => {
         if (!chart || !chart.trim() || isLoading) return;
 
-        setIsLoading(true); 
+        // 使用渲染队列避免并发冲突
+        await renderQueue.add(async () => {
+            setIsLoading(true);
 
         try {
             // 动态导入mermaid
@@ -291,8 +336,23 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                 }
             });
 
-            // 生成唯一ID
-            const uniqueId = `mermaid-lazy-${id}-${Date.now()}`;
+            // 生成唯一ID，使用更强的唯一性保证
+            const uniqueId = `mermaid-lazy-${id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+            // 清理mermaid的全局状态，避免图表数据混乱
+            try {
+                // 清理可能存在的旧图表定义
+                if ((mermaid as any).mermaidAPI) {
+                    (mermaid as any).mermaidAPI.reset?.();
+                }
+                // 清理DOM中可能存在的同ID元素
+                const existingElement = document.getElementById(uniqueId);
+                if (existingElement) {
+                    existingElement.remove();
+                }
+            } catch (cleanupError) {
+                logMermaid('⚠️ Mermaid状态清理警告:', cleanupError);
+            }
 
             // 渲染图表
             const { svg: renderedSvg } = await mermaid.render(uniqueId, chart);
@@ -315,6 +375,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
         } finally {
             setIsLoading(false);
         }
+        }); // 结束渲染队列
     }, [chart, id, isDark, modifySvgForDisplay, enableZoom]);
 
     // 初始化svg-pan-zoom
