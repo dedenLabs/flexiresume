@@ -266,6 +266,19 @@ class ImageErrorHandler {
       // 不是完整URL，直接使用
     }
     
+    // 如果resourcePath已经包含CDN URL，需要清理
+    const cdnConfig = getCDNConfig();
+    cdnConfig.baseUrls.forEach(cdnUrl => {
+      if (cleanResourcePath.startsWith(cdnUrl)) {
+        cleanResourcePath = cleanResourcePath.substring(cdnUrl.length);
+      }
+      // 处理带有/结尾的CDN URL
+      const cdnUrlWithSlash = cdnUrl.endsWith('/') ? cdnUrl : cdnUrl + '/';
+      if (cleanResourcePath.startsWith(cdnUrlWithSlash)) {
+        cleanResourcePath = cleanResourcePath.substring(cdnUrlWithSlash.length);
+      }
+    });
+    
     const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
     cleanResourcePath = cleanResourcePath.startsWith('/') ? cleanResourcePath.slice(1) : cleanResourcePath;
     
