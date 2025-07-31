@@ -9,6 +9,7 @@
 import { getCDNConfig, isDebugEnabled } from '../config/ProjectConfig';
 import { cdnHealthChecker, CDNHealthResult } from './CDNHealthChecker';
 import { getLogger } from './Logger';
+import { pulse } from '../styles/global/animations';
 
 const debugCDN = getLogger('cdn');
 
@@ -229,6 +230,7 @@ export class CDNManager {
    * Get resource URL
    */
   public getResourceUrl(resourcePath: string, options: CDNLoadOptions = {}): string {
+    resourcePath = removeBaseURL(resourcePath, cdnManager.getProjectBasePath());
     const {
       enableFallback = true,
       localBasePath = '',
@@ -347,7 +349,7 @@ export class CDNManager {
    * 获取项目基础路径（缓存版）
    * Get project base path (cached version)
    */
-  private getProjectBasePath(): string {
+  public getProjectBasePath(): string {
     if (this.projectBasePathCache !== null) {
       return this.projectBasePathCache;
     }
@@ -503,4 +505,4 @@ export class CDNManager {
  * 导出单例实例
  * Export singleton instance
  */
-export const cdnManager = CDNManager.getInstance();
+export const cdnManager = CDNManager.getInstance(); 
