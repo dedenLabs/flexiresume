@@ -4,21 +4,11 @@ import SkillItem from './SkillItem';
 import MermaidLazyChart from '../mermaid/MermaidLazyChart';
 import { mermaidDataManager } from '../../utils/MermaidDataManager';
 import { getLogger } from '../../utils/Logger';
+import { generateUniqueIdWithCounter } from '../../utils/hash';
+import { I18nProvider } from '../../i18n';
 
 const logger = getLogger('SkillRenderer');
-
-/**
- * 生成唯一ID的辅助函数
- * @param prefix ID前缀
- * @param content 内容标识
- * @returns 唯一ID
- */
-const generateUniqueId = (prefix: string, content: string): string => {
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substr(2, 9);
-    return `${prefix}-${content}-${timestamp}-${random}`;
-};
-
+  
 /**
  * React根节点管理器
  * 负责创建、存储和清理React根节点
@@ -182,7 +172,7 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
 
             try {
                 const container = document.createElement('span');
-                const id = generateUniqueId('skill', `${skillName}-${skillLevel}`);
+                const id = generateUniqueIdWithCounter('skill', `${skillName}-${skillLevel}`);
 
                 container.id = id;
                 container.style.display = 'inline';
@@ -251,7 +241,7 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
 
             try {
                 const container = document.createElement('div');
-                const id = generateUniqueId('mermaid', chartId);
+                const id = generateUniqueIdWithCounter('mermaid', chartId);
 
                 container.id = id;
                 container.style.display = 'block';
@@ -260,11 +250,13 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
 
                 const root = rootManagerRef.current.createRoot(container, id);
                 root.render(
-                    <MermaidLazyChart
-                        chart={chart}
-                        id={chartId}
-                        enableZoom={true}
-                    />
+                    <I18nProvider>
+                        <MermaidLazyChart
+                            chart={chart}
+                            id={chartId}
+                            enableZoom={true}
+                        />
+                    </I18nProvider>
                 );
 
                 processedCount++;
@@ -294,7 +286,7 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
 
             try {
                 const container = document.createElement('div');
-                const id = generateUniqueId('mermaid-lazy', chartId);
+                const id = generateUniqueIdWithCounter('mermaid-lazy', chartId);
 
                 container.id = id;
                 container.style.display = 'block';
@@ -303,11 +295,13 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
 
                 const root = rootManagerRef.current.createRoot(container, id);
                 root.render(
-                    <MermaidLazyChart
-                        chart={chart}
-                        id={chartId}
-                        placeholderHeight="auto"
-                    />
+                    <I18nProvider>
+                        <MermaidLazyChart
+                            chart={chart}
+                            id={chartId}
+                            placeholderHeight="auto"
+                        />
+                    </I18nProvider>
                 );
 
                 processedCount++;
@@ -354,10 +348,10 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
 
                             // 检查新增节点是否包含技能或Mermaid占位符
                             const hasSkillPlaceholders = element.querySelectorAll?.('.skill-placeholder').length > 0 ||
-                                                        element.classList?.contains('skill-placeholder');
+                                element.classList?.contains('skill-placeholder');
                             const hasMermaidPlaceholders = element.querySelectorAll?.('.mermaid-placeholder, .mermaid-lazy-placeholder').length > 0 ||
-                                                         element.classList?.contains('mermaid-placeholder') ||
-                                                         element.classList?.contains('mermaid-lazy-placeholder');
+                                element.classList?.contains('mermaid-placeholder') ||
+                                element.classList?.contains('mermaid-lazy-placeholder');
 
                             if (hasSkillPlaceholders || hasMermaidPlaceholders) {
                                 hasNewContent = true;

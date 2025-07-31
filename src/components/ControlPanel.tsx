@@ -68,7 +68,7 @@ const PanelContainer = styled.div.withConfig({
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px;
+  padding: 12px; 
   background: var(--color-surface);
   border: 1px solid var(--color-border-light);
   border-radius: 12px;
@@ -92,6 +92,7 @@ const PanelContainer = styled.div.withConfig({
     right: 10px;
     padding: 8px;
     gap: 8px;
+    min-width: 240px; /* 小屏幕下的最小宽度 */
   }
 `;
 
@@ -195,7 +196,7 @@ const ExpandedPanel = styled.div.withConfig({
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-width: 200px;
+  min-width: 240px; /* 小屏幕下的最小宽度 */
 `;
 
 const ControlGroup = styled.div`
@@ -289,13 +290,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             <Divider isDark={isDark} />
 
             <ControlGroup>
-              <ControlLabel isDark={isDark}>字体</ControlLabel>
+              <ControlLabel isDark={isDark}>{t.common.font}</ControlLabel>
               <FontSwitcher />
             </ControlGroup>
 
             <Divider isDark={isDark} />
             <ControlGroup>
-              <ControlLabel isDark={isDark}>音乐</ControlLabel>
+              <ControlLabel isDark={isDark}>{t.common.music}</ControlLabel>
               <AudioController />
             </ControlGroup>
 

@@ -66,6 +66,30 @@ export interface I18nTexts {
     resetAlert: string;
     developmentTips: string;
     developmentEnvironment: string;
+    // 新增字段
+    font: string;
+    music: string;
+    renderFailed: string;
+    mindmapLoading: string;
+    mindmapRenderFailed: string;
+    // 图片相关
+    imageLoading: string;
+    imageLoadFailed: string;
+    imageErrorHandlerInitialized: string;
+    imageErrorHandlerDestroyed: string;
+    imageLoadSuccess: string;
+    imageRetryLocal: string;
+    localFallbackFailed: string;
+    imageFinalLoadFailed: string;
+    // 脑图查看器相关
+    mindmapViewer: string;
+    clickToEnlarge: string;
+    renderingChart: string;
+    // 脑图操作提示
+    wheelZoom: string;
+    dragPan: string;
+    escClose: string;
+    mindmapExpanded: string;
   };
 
   // 简历模块标题
@@ -150,7 +174,31 @@ const zhTexts: I18nTexts = {
 💡 建议:
   • 如需完整功能测试，请使用: npm run build
   • 生产环境预览: npm run preview`,
-    developmentEnvironment: '🚀 FlexiResume 开发环境'
+    developmentEnvironment: '🚀 FlexiResume 开发环境',
+    // 新增字段
+    font: '字体',
+    music: '音乐',
+    renderFailed: '渲染失败',
+    mindmapLoading: '脑图加载中...',
+    mindmapRenderFailed: '脑图渲染失败',
+    // 图片相关
+    imageLoading: '📷 加载中...',
+    imageLoadFailed: '🖼️ 图片加载失败',
+    imageErrorHandlerInitialized: '图片错误处理器已初始化',
+    imageErrorHandlerDestroyed: '图片错误处理器已销毁',
+    imageLoadSuccess: '图片加载成功',
+    imageRetryLocal: '尝试本地回退',
+    localFallbackFailed: '本地回退失败',
+    imageFinalLoadFailed: '图片最终加载失败',
+    // 脑图查看器相关
+    mindmapViewer: '脑图查看器',
+    clickToEnlarge: '点击放大查看',
+    renderingChart: '正在渲染图表...',
+    // 脑图操作提示
+    wheelZoom: '滚轮缩放',
+    dragPan: '拖拽平移',
+    escClose: 'ESC关闭',
+    mindmapExpanded: '脑图已展开 • 任意位置点击关闭'
   },
 
   resume: {
@@ -231,7 +279,31 @@ const enTexts: I18nTexts = {
 💡 Recommendations:
   • For complete functionality testing, use: npm run build
   • Production preview: npm run preview`,
-    developmentEnvironment: '🚀 FlexiResume Development Environment'
+    developmentEnvironment: '🚀 FlexiResume Development Environment',
+    // 新增字段
+    font: 'Font',
+    music: 'Music',
+    renderFailed: 'Render Failed',
+    mindmapLoading: 'Loading Mindmap...',
+    mindmapRenderFailed: 'Mindmap Render Failed',
+    // 图片相关
+    imageLoading: '📷 Loading...',
+    imageLoadFailed: '🖼️ Image Load Failed',
+    imageErrorHandlerInitialized: 'Image error handler initialized',
+    imageErrorHandlerDestroyed: 'Image error handler destroyed',
+    imageLoadSuccess: 'Image loaded successfully',
+    imageRetryLocal: 'Trying local fallback',
+    localFallbackFailed: 'Local fallback failed',
+    imageFinalLoadFailed: 'Image final load failed',
+    // 脑图查看器相关
+    mindmapViewer: 'Mindmap Viewer',
+    clickToEnlarge: 'Click to enlarge',
+    renderingChart: 'Rendering chart...',
+    // 脑图操作提示
+    wheelZoom: 'Wheel Zoom',
+    dragPan: 'Drag Pan',
+    escClose: 'ESC Close',
+    mindmapExpanded: 'Mindmap Expanded • Click anywhere to close'
   },
 
   resume: {
@@ -338,6 +410,26 @@ export const useI18n = (): I18nContextType => {
     throw new Error('useI18n must be used within an I18nProvider');
   }
   return context;
+};
+
+/**
+ * 获取当前语言（非React环境使用）
+ */
+export const getCurrentLanguage = (): Language => {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('language');
+    if (stored && (stored === 'zh' || stored === 'en')) {
+      return stored as Language;
+    }
+  }
+  return 'zh'; // 默认中文
+};
+
+/**
+ * 获取翻译文本（非React环境使用）
+ */
+export const getTranslations = (language: Language): I18nTexts => {
+  return texts[language];
 };
 
 // 导出默认语言文本（用于类型检查）

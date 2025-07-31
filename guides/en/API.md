@@ -324,33 +324,114 @@ const StyledComponent = styled.div`
 `;
 ```
 
-### useI18n
+### useAudio
 
-Internationalization management hook.
+Audio management hook, supports background music and sound effects control.
 
 ```typescript
-interface I18nContextType {
-  language: Language;              // Current language
-  setLanguage: (lang: Language) => void;  // Set language
-  t: I18nTexts;                    // Translated text
+interface AudioContextType {
+  isPlaying: boolean;                     // Whether playing
+  volume: number;                         // Volume (0-1)
+  isMuted: boolean;                       // Whether muted
+  playBackgroundMusic: () => void;        // Play background music
+  pauseBackgroundMusic: () => void;       // Pause background music
+  playSoundEffect: (effect: string) => void; // Play sound effect
+  setVolume: (volume: number) => void;    // Set volume
+  toggleMute: () => void;                 // Toggle mute
 }
 
-const useI18n = (): I18nContextType;
+const useAudio = (): AudioContextType;
 ```
 
 **Usage Example:**
 
 ```typescript
-const { language, setLanguage, t } = useI18n();
+const {
+  isPlaying,
+  volume,
+  isMuted,
+  playBackgroundMusic,
+  pauseBackgroundMusic,
+  playSoundEffect,
+  setVolume,
+  toggleMute
+} = useAudio();
 
-// Switch language
-const handleLanguageChange = (newLang: Language) => {
-  setLanguage(newLang);
+// Play/pause background music
+const handleToggleMusic = () => {
+  if (isPlaying) {
+    pauseBackgroundMusic();
+  } else {
+    playBackgroundMusic();
+  }
 };
 
-// Use translated text
-<h1>{t.resume.personalInfo}</h1>
-<button>{t.common.switchLanguage}</button>
+// Play click sound effect
+const handleClick = () => {
+  playSoundEffect('click');
+};
+
+// Adjust volume
+const handleVolumeChange = (newVolume: number) => {
+  setVolume(newVolume);
+};
+```
+
+### useFont
+
+Font management hook, supports multi-CDN sources and performance monitoring.
+
+```typescript
+interface FontContextType {
+  currentFont: string;                    // Current font
+  isLoading: boolean;                     // Whether loading
+  error: string | null;                   // Error message
+  switchFont: (fontFamily: string) => void;  // Switch font
+  performance: FontPerformanceMetrics;    // Performance metrics
+}
+
+interface FontPerformanceMetrics {
+  loadTime: number;                       // Load time
+  successRate: number;                    // Success rate
+  cdnResponseTimes: Record<string, number>; // CDN response times
+  errorCount: number;                     // Error count
+}
+
+const useFont = (): FontContextType;
+```
+
+**Usage Example:**
+
+```typescript
+const {
+  currentFont,
+  isLoading,
+  error,
+  switchFont,
+  performance
+} = useFont();
+
+// Switch font
+const handleFontChange = (fontFamily: string) => {
+  switchFont(fontFamily);
+};
+
+// Show loading status
+if (isLoading) {
+  return <div>Loading font...</div>;
+}
+
+// Show error message
+if (error) {
+  return <div>Font loading failed: {error}</div>;
+}
+
+// Use font
+return (
+  <div style={{ fontFamily: currentFont }}>
+    Content text
+  </div>
+);
 ```
 
 ---
@@ -384,8 +465,167 @@ function formatDate(date: string, format?: string): string;
 **Usage Example:**
 
 ```typescript
-const formatted = formatDate('2023-12-01', 'YYYY年MM月');
-// Output: "2023年12月"
+const formatted = formatDate('2023-12-01', 'YYYY/MM/DD');
+// Output: "2023/12/01"
+```
+
+### Logger
+
+Unified logging system, supports hierarchical logging and performance monitoring.
+
+```typescript
+class Logger {
+  static debug(message: string, data?: any): void;
+  static info(message: string, data?: any): void;
+  static warn(message: string, data?: any): void;
+  static error(message: string, error?: Error): void;
+  static performance(label: string, duration: number): void;
+}
+```
+
+**Usage Example:**
+
+```typescript
+import { Logger } from '@/utils/Logger';
+
+// Debug information
+Logger.debug('Component render', { componentName: 'FlexiResume' });
+
+// General information
+Logger.info('User action', { action: 'theme-switch' });
+
+// Warning information
+Logger.warn('Performance warning', { loadTime: 3000 });
+
+// Error information
+Logger.error('Loading failed', new Error('Network error'));
+
+// Performance monitoring
+Logger.performance('Font loading', 1200);
+```
+
+### MemoryManager
+
+Memory manager, intelligent caching and garbage collection.
+
+```typescript
+class MemoryManager {
+  static setCache<T>(key: string, value: T, ttl?: number): void;
+  static getCache<T>(key: string): T | null;
+  static clearCache(key?: string): void;
+  static getMemoryUsage(): MemoryUsage;
+  static cleanup(): void;
+}
+
+interface MemoryUsage {
+  used: number;        // Used memory
+  total: number;       // Total memory
+  percentage: number;  // Usage percentage
+}
+```
+
+**Usage Example:**
+
+```typescript
+import { MemoryManager } from '@/utils/MemoryManager';
+
+// Set cache
+MemoryManager.setCache('user-data', userData, 300000); // 5 minutes TTL
+
+// Get cache
+const cachedData = MemoryManager.getCache('user-data');
+
+// Clear cache
+MemoryManager.clearCache('user-data');
+
+// Get memory usage
+const memoryUsage = MemoryManager.getMemoryUsage();
+console.log(`Memory usage: ${memoryUsage.percentage}%`);
+
+// Manual cleanup
+MemoryManager.cleanup();
+```
+
+### ThemeUtils
+
+Theme utility class, unified theme management and switching.
+
+```typescript
+class ThemeUtils {
+  static applyTheme(theme: ThemeColors): void;
+  static validateTheme(theme: ThemeColors): boolean;
+  static mergeThemes(base: ThemeColors, override: Partial<ThemeColors>): ThemeColors;
+  static getContrastRatio(color1: string, color2: string): number;
+}
+```
+
+**Usage Example:**
+
+```typescript
+import { ThemeUtils } from '@/utils/ThemeUtils';
+
+// Apply theme
+ThemeUtils.applyTheme(customTheme);
+
+// Validate theme
+const isValid = ThemeUtils.validateTheme(userTheme);
+
+// Merge themes
+const mergedTheme = ThemeUtils.mergeThemes(baseTheme, customizations);
+
+// Check contrast ratio
+const contrast = ThemeUtils.getContrastRatio('#ffffff', '#000000');
+```
+
+### EnhancedAudioPlayer
+
+Enhanced audio player, supports advanced audio control.
+
+```typescript
+class EnhancedAudioPlayer {
+  constructor(config?: AudioConfig);
+
+  playBackgroundMusic(url?: string): Promise<void>;
+  pauseBackgroundMusic(): void;
+  resumeBackgroundMusic(): void;
+  stopBackgroundMusic(): void;
+
+  playSoundEffect(effectName: string): Promise<void>;
+
+  setVolume(volume: number): void;
+  getVolume(): number;
+
+  mute(): void;
+  unmute(): void;
+  isMuted(): boolean;
+
+  fadeIn(duration: number): Promise<void>;
+  fadeOut(duration: number): Promise<void>;
+}
+```
+
+**Usage Example:**
+
+```typescript
+import { EnhancedAudioPlayer } from '@/utils/EnhancedAudioPlayer';
+
+const audioPlayer = new EnhancedAudioPlayer({
+  volume: 0.5,
+  loop: true
+});
+
+// Play background music
+await audioPlayer.playBackgroundMusic('/audio/background.mp3');
+
+// Play sound effect
+await audioPlayer.playSoundEffect('click');
+
+// Volume control
+audioPlayer.setVolume(0.3);
+
+// Fade in/out
+await audioPlayer.fadeIn(2000);
+await audioPlayer.fadeOut(1000);
 ```
 
 ---
@@ -406,6 +646,76 @@ Supported language type.
 
 ```typescript
 type Language = 'zh' | 'en';
+```
+
+### AudioContextType
+
+Audio context type for audio management.
+
+```typescript
+interface AudioContextType {
+  isPlaying: boolean;                     // Whether playing
+  volume: number;                         // Volume (0-1)
+  isMuted: boolean;                       // Whether muted
+  playBackgroundMusic: () => void;        // Play background music
+  pauseBackgroundMusic: () => void;       // Pause background music
+  playSoundEffect: (effect: string) => void; // Play sound effect
+  setVolume: (volume: number) => void;    // Set volume
+  toggleMute: () => void;                 // Toggle mute
+}
+```
+
+### FontContextType
+
+Font context type for font management.
+
+```typescript
+interface FontContextType {
+  currentFont: string;                    // Current font
+  isLoading: boolean;                     // Whether loading
+  error: string | null;                   // Error message
+  switchFont: (fontFamily: string) => void;  // Switch font
+  performance: FontPerformanceMetrics;    // Performance metrics
+}
+```
+
+### FontPerformanceMetrics
+
+Font performance metrics type.
+
+```typescript
+interface FontPerformanceMetrics {
+  loadTime: number;                       // Load time
+  successRate: number;                    // Success rate
+  cdnResponseTimes: Record<string, number>; // CDN response times
+  errorCount: number;                     // Error count
+}
+```
+
+### AudioConfig
+
+Audio configuration type.
+
+```typescript
+interface AudioConfig {
+  volume?: number;           // Initial volume (0-1)
+  loop?: boolean;            // Whether to loop
+  fadeInDuration?: number;   // Fade in duration (ms)
+  fadeOutDuration?: number;  // Fade out duration (ms)
+  preload?: boolean;         // Whether to preload
+}
+```
+
+### MemoryUsage
+
+Memory usage information type.
+
+```typescript
+interface MemoryUsage {
+  used: number;        // Used memory
+  total: number;       // Total memory
+  percentage: number;  // Usage percentage
+}
 ```
 
 ### ThemeColors

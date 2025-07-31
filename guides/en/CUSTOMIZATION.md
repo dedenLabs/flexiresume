@@ -6,6 +6,8 @@ This guide provides detailed instructions on customizing various aspects of Flex
 
 - [Environment Variables Configuration](#environment-variables-configuration)
 - [Analytics Configuration](#analytics-configuration)
+- [Font System Configuration](#font-system-configuration)
+- [Audio System Configuration](#audio-system-configuration)
 - [Theme Customization](#theme-customization)
 - [Component Customization](#component-customization)
 - [Module Customization](#module-customization)
@@ -228,8 +230,8 @@ DEBUG=app:* npm run dev
 ```
 ### View Statistics Data
 
-#### Baidu Statistics
-- Log in to the Baidu Statistics backend to view detailed reports
+#### Baidu Analytics
+- Log in to the Baidu Analytics backend to view detailed reports
 - Supports real-time visitors, source analysis, page analysis, etc.
 
 #### Google Analytics
@@ -257,6 +259,284 @@ DEBUG=app:* npm run dev
    - Use dynamic loading to avoid affecting page performance
    - Set reasonable batch size and flush intervals
    - Disable debug logs in production
+
+---
+
+## 🔤 Font System Configuration
+
+FlexiResume integrates an intelligent font system that supports multi-CDN sources, performance monitoring, and automatic switching.
+
+### Font Configuration File
+
+Font configuration is located in `src/config/FontConfig.ts`:
+
+```typescript
+export const FontConfig = {
+  // CDN source configuration
+  cdnSources: [
+    'https://fonts.googleapis.com',
+    'https://fonts.gstatic.com',
+    'https://cdn.jsdelivr.net'
+  ],
+
+  // Font family configuration
+  fontFamilies: {
+    primary: 'Inter, system-ui, sans-serif',
+    secondary: 'JetBrains Mono, monospace',
+    display: 'Poppins, sans-serif'
+  },
+
+  // Performance configuration
+  performance: {
+    timeout: 5000,           // Load timeout
+    retryAttempts: 3,        // Number of retries
+    healthCheckInterval: 30000 // Health check interval
+  }
+};
+```
+
+### Font Usage Methods
+
+#### 1. Using useFont Hook
+
+```typescript
+import { useFont } from '@/hooks/useFont';
+
+function MyComponent() {
+  const {
+    currentFont,
+    isLoading,
+    error,
+    switchFont
+  } = useFont();
+
+  return (
+    <div style={{ fontFamily: currentFont }}>
+      {isLoading ? 'Font loading...' : 'Content'}
+    </div>
+  );
+}
+```
+
+#### 2. Direct CSS Variables Usage
+
+```css
+.my-text {
+  font-family: var(--font-primary);
+}
+
+.code-text {
+  font-family: var(--font-secondary);
+}
+
+.heading-text {
+  font-family: var(--font-display);
+}
+```
+
+### Font Performance Monitoring
+
+The system automatically monitors font loading performance:
+
+```typescript
+// View font performance metrics
+import { FontPerformanceMonitor } from '@/components/FontPerformanceMonitor';
+
+// Performance metrics include:
+// - Load time
+// - Success rate
+// - CDN response time
+// - Error statistics
+```
+
+### Custom Font Configuration
+
+#### 1. Add New Font
+
+```typescript
+// Add in FontConfig.ts
+fontFamilies: {
+  primary: 'Inter, system-ui, sans-serif',
+  secondary: 'JetBrains Mono, monospace',
+  display: 'Poppins, sans-serif',
+  custom: 'YourCustomFont, fallback-font' // Add custom font
+}
+```
+
+#### 2. Configure CDN Sources
+
+```typescript
+// Add new CDN source
+cdnSources: [
+  'https://fonts.googleapis.com',
+  'https://fonts.gstatic.com',
+  'https://cdn.jsdelivr.net',
+  'https://your-custom-cdn.com' // Add CDN source
+]
+```
+
+#### 3. Performance Tuning
+
+```typescript
+// Adjust performance parameters
+performance: {
+  timeout: 3000,           // Reduce timeout
+  retryAttempts: 2,        // Reduce retry attempts
+  healthCheckInterval: 60000 // Increase check interval
+}
+```
+
+---
+
+## 🎵 Audio System Configuration
+
+FlexiResume integrates an audio system that supports background music and sound effects.
+
+### Audio Configuration File
+
+Audio configuration is located in `src/config/AudioConfig.ts`:
+
+```typescript
+export const AudioConfig = {
+  // Background music configuration
+  backgroundMusic: {
+    enabled: false,          // Default disabled
+    volume: 0.3,            // Volume (0-1)
+    loop: true,             // Loop playback
+    autoplay: false,        // Auto-play
+    fadeInDuration: 2000,   // Fade-in duration
+    fadeOutDuration: 1000   // Fade-out duration
+  },
+
+  // Sound effects configuration
+  soundEffects: {
+    enabled: true,          // Enable sound effects
+    volume: 0.5,           // Sound effect volume
+    clickSound: true,      // Click sound effect
+    hoverSound: false,     // Hover sound effect
+    transitionSound: true  // Transition sound effect
+  },
+
+  // Audio file paths
+  audioFiles: {
+    backgroundMusic: '/audio/background.mp3',
+    clickSound: '/audio/click.wav',
+    hoverSound: '/audio/hover.wav',
+    transitionSound: '/audio/transition.wav'
+  }
+};
+```
+
+### Audio Controller Usage
+
+#### 1. Basic Usage
+
+```typescript
+import { AudioController } from '@/components/AudioController';
+
+function App() {
+  return (
+    <div>
+      <AudioController />
+      {/* Other components */}
+    </div>
+  );
+}
+```
+
+#### 2. Programmatic Control
+
+```typescript
+import { EnhancedAudioPlayer } from '@/utils/EnhancedAudioPlayer';
+
+// Play background music
+const audioPlayer = new EnhancedAudioPlayer();
+audioPlayer.playBackgroundMusic();
+
+// Play sound effect
+audioPlayer.playSoundEffect('click');
+
+// Control volume
+audioPlayer.setVolume(0.5);
+
+// Pause/Resume
+audioPlayer.pause();
+audioPlayer.resume();
+```
+
+### Audio File Management
+
+#### 1. Add Audio Files
+
+```bash
+# Place audio files in public/audio/ directory
+public/
+├── audio/
+│   ├── background.mp3    # Background music
+│   ├── click.wav        # Click sound effect
+│   ├── hover.wav        # Hover sound effect
+│   └── transition.wav   # Transition sound effect
+```
+
+#### 2. Supported Audio Formats
+
+- **MP3**: Recommended format for background music
+- **WAV**: Recommended format for sound effects
+- **OGG**: Alternative format
+- **M4A**: iOS optimized format
+
+#### 3. Audio Optimization Recommendations
+
+```typescript
+// Audio file optimization recommendations
+const audioOptimization = {
+  backgroundMusic: {
+    format: 'MP3',
+    bitrate: '128kbps',
+    duration: '2-5 minutes',
+    size: '<2MB'
+  },
+  soundEffects: {
+    format: 'WAV',
+    duration: '<1 second',
+    size: '<100KB'
+  }
+};
+```
+
+### User Experience Configuration
+
+#### 1. Auto-play Strategy
+
+```typescript
+// Follow browser auto-play policy
+const autoplayStrategy = {
+  // Play only after user interaction
+  requireUserInteraction: true,
+
+  // Show play prompt
+  showPlayPrompt: true,
+
+  // Remember user preference
+  rememberUserChoice: true
+};
+```
+
+#### 2. Accessibility
+
+```typescript
+// Accessibility configuration
+const accessibilityConfig = {
+  // Provide mute option
+  muteOption: true,
+
+  // Keyboard controls
+  keyboardControls: true,
+
+  // Screen reader support
+  screenReaderSupport: true
+};
+```
 
 ---
 
@@ -655,6 +935,7 @@ const languages = [
 ### Custom Build Configuration
 
 ```typescript
+// vite.config.ts
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import { resolve } from 'path';
@@ -688,7 +969,7 @@ VITE_SENTRY_DSN=YOUR_SENTRY_DSN
 ```
 
 ```typescript
-// Use Environment Variables
+// Use environment variables
 const config = {
   appTitle: import.meta.env.VITE_APP_TITLE || 'FlexiResume',
   apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
@@ -785,7 +1066,6 @@ const SEOHead: React.FC<SEOHeadProps> = ({
 With these customization options, you can create a unique resume display effect.
 
 </div>
-
 
 ## 🌐 Language Versions
 

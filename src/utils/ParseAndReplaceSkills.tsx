@@ -12,7 +12,7 @@ import { QRCodeSVG } from 'qrcode.react';
 
 // Debug logger
 import { getLogger } from './Logger';
-import { generateUniqueId } from './hash';
+import { generateUniqueId, generateUniqueIdWithCounter } from './hash';
 import { globalCache } from './MemoryManager';
 const logMarkdown = getLogger(`Markdown`);
 const debugParse = getLogger('parse-skills');
@@ -469,7 +469,7 @@ export const checkConvertMarkdownToHtml = (content: string) => {
                             // 特殊处理 Mermaid 图表
                             if (lang === 'mermaid') {
                                 debugParse('🎯 发现Mermaid代码块:', { lang, code: code.substring(0, 100) + '...' });
-                                const chartId = `chart-${Date.now()}-${i}`;
+                                const chartId = generateUniqueIdWithCounter(`mermaid`);
                                 const tsx = <MermaidPlaceholder chart={code} id={chartId} />;
                                 const markup = ReactDOMServer.renderToStaticMarkup(tsx);
                                 debugParse('🎯 生成Mermaid占位符:', { chartId, markup: markup.substring(0, 200) + '...' });
@@ -515,7 +515,7 @@ export const checkConvertMarkdownToHtml = (content: string) => {
                         (match, lang, code, offset) => {
                             // 特殊处理 Mermaid 图表
                             if (lang === 'mermaid') {
-                                const chartId = `chart-fallback-${Date.now()}-${offset}`;
+                                const chartId = generateUniqueIdWithCounter(`mermaid-fallback`);
                                 const tsx = <MermaidPlaceholder chart={code} id={chartId} />;
                                 return ReactDOMServer.renderToStaticMarkup(tsx);
                             }
@@ -548,38 +548,6 @@ export const checkConvertMarkdownToHtml = (content: string) => {
 };
 
 /**
- * Mermaid懒加载占位符组件
- * 用于.mmd文件的懒加载渲染
- */
-const MermaidLazyPlaceholder: React.FC<{ chart: string; id: string }> = ({ chart, id }) => {
-    return (
-        <div
-            className="mermaid-lazy-placeholder"
-            data-mermaid-chart={chart}
-            data-mermaid-id={id}
-            style={{
-                padding: '20px',
-                backgroundColor: '#f6f8fa',
-                border: '1px solid #e1e4e8',
-                borderRadius: '8px',
-                textAlign: 'center',
-                margin: '20px 0',
-                minHeight: '200px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#6b7280'
-            }}
-        >
-            <div>
-                <div style={{ fontSize: '24px', marginBottom: '8px' }}>📊</div>
-                <div>脑图懒加载中...</div>
-            </div>
-        </div>
-    );
-};
-
-/**
  * 自定义 remark 插件来处理 .mmd 文件导入
  * 将 .mmd 文件内容转换为懒加载的 Mermaid 图表
  * 使用内存存储而不是DOM属性存储图表数据
@@ -591,8 +559,7 @@ export function remarkMermaidLazyLoad() {
             // 检查是否是 mermaid 代码块
             if (node.lang === 'mermaid' || node.value.startsWith('mindmap')) {
                 const chartContent = node.value;
-                const chartId = `lazy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
+                const chartId = generateUniqueIdWithCounter('mermaid-lazy', ``);
                 // 将图表数据存储到内存中
                 mermaidDataManager.setChartData(chartId, chartContent, true);
 

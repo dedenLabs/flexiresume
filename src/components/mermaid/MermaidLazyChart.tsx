@@ -10,51 +10,10 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useSafeTheme } from '../skill/SkillRenderer';
 import { libraryPreloader } from '../../utils/LibraryPreloader';
 import { getLogger } from '../../utils/Logger';
+import { generateUniqueId } from '../../utils/hash';
+import { useI18n } from '../../i18n';
 
 const logMermaid = getLogger(`Mermaid`);
-
-// 全局渲染队列，避免并发渲染冲突
-class MermaidRenderQueue {
-    private queue: Array<() => Promise<void>> = [];
-    private isProcessing = false;
-
-    async add<T>(task: () => Promise<T>): Promise<T> {
-        return new Promise((resolve, reject) => {
-            this.queue.push(async () => {
-                try {
-                    const result = await task();
-                    resolve(result);
-                } catch (error) {
-                    reject(error);
-                }
-            });
-            this.process();
-        });
-    }
-
-    private async process() {
-        if (this.isProcessing || this.queue.length === 0) return;
-
-        this.isProcessing = true;
-
-        while (this.queue.length > 0) {
-            const task = this.queue.shift();
-            if (task) {
-                try {
-                    await task();
-                } catch (error) {
-                    logMermaid('❌ 渲染队列任务失败:', error);
-                }
-                // 添加小延迟，避免渲染冲突
-                await new Promise(resolve => setTimeout(resolve, 50));
-            }
-        }
-
-        this.isProcessing = false;
-    }
-}
-
-const renderQueue = new MermaidRenderQueue();
 
 interface MermaidLazyChartProps {
     /** Mermaid图表定义 */
@@ -97,6 +56,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
     const [renderKey, setRenderKey] = useState(0);
 
     const { isDark } = useSafeTheme();
+    const { t } = useI18n();
 
     // 处理单击放大功能
     const handleClick = useCallback((event: React.MouseEvent) => {
@@ -160,7 +120,8 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
     }, []);
 
     // 修改SVG字符串用于放大视图，确保正确的尺寸和显示
-    const modifySvgForEnlargedView = useCallback((svgString: string): string => {return svgString;
+    const modifySvgForEnlargedView = useCallback((svgString: string): string => {
+        return svgString;
         if (!svgString) return svgString;
 
         let modifiedSvg = svgString.replace(
@@ -194,7 +155,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
     }, [isDark]);
 
     // 应用主题到SVG的通用函数
-    const applyThemeToSvg = useCallback((svgString: string): string => {return modifiedSvg;
+    const applyThemeToSvg = useCallback((svgString: string): string => {
         if (!svgString) return svgString;
 
         let modifiedSvg = svgString;
@@ -272,9 +233,8 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
     const renderMermaid = useCallback(async () => {
         if (!chart || !chart.trim() || isLoading) return;
 
-        // 使用渲染队列避免并发冲突
-        await renderQueue.add(async () => {
-            setIsLoading(true);
+
+        setIsLoading(true);
 
         try {
             // 动态导入mermaid
@@ -337,29 +297,18 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
             });
 
             // 生成唯一ID，使用更强的唯一性保证
-            const uniqueId = `mermaid-lazy-${id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-            // 清理mermaid的全局状态，避免图表数据混乱
-            try {
-                // 清理可能存在的旧图表定义
-                if ((mermaid as any).mermaidAPI) {
-                    (mermaid as any).mermaidAPI.reset?.();
-                }
-                // 清理DOM中可能存在的同ID元素
-                const existingElement = document.getElementById(uniqueId);
-                if (existingElement) {
-                    existingElement.remove();
-                }
-            } catch (cleanupError) {
-                logMermaid('⚠️ Mermaid状态清理警告:', cleanupError);
+            // 使用递增计数器避免同一毫秒内的ID冲突
+            if (!(window as any).__mermaidIdCounter) {
+                (window as any).__mermaidIdCounter = 0;
             }
-
+            const counter = ++(window as any).__mermaidIdCounter;
+            const uniqueId = `mermaid-lazy-${counter}`;
             // 渲染图表
             const { svg: renderedSvg } = await mermaid.render(uniqueId, chart);
 
             setSvg(renderedSvg);
             setIsLoaded(true);
-
+            // logMermaid('🎯 MermaidLazyChart渲染成功:', JSON.stringify({ id, uniqueId, chart: chart.slice(0, 50), chartUID: generateUniqueId(chart), renderedSvgUID: generateUniqueId(renderedSvg) }));
             logMermaid('🎯 MermaidLazyChart渲染成功:', { id, uniqueId });
 
             // 在下一个tick中初始化svg-pan-zoom和点击事件
@@ -371,11 +320,10 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
 
         } catch (err) {
             logMermaid('❌ MermaidLazyChart渲染失败:', err);
-            setError(`渲染失败: ${err instanceof Error ? err.message : '未知错误'}`);
+            setError(`${t.common.renderFailed}: ${err instanceof Error ? err.message : t.common.unknownError}`);
         } finally {
             setIsLoading(false);
         }
-        }); // 结束渲染队列
     }, [chart, id, isDark, modifySvgForDisplay, enableZoom]);
 
     // 初始化svg-pan-zoom
@@ -400,13 +348,13 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                     dblClickZoomEnabled: false,
                     mouseWheelZoomEnabled: true,
                     preventMouseEventsDefault: true,
-                    onZoom: function() {
+                    onZoom: function () {
                         // 阻止事件冒泡，避免背景页面滚动
                         event?.preventDefault();
                         event?.stopPropagation();
                         return true;
                     },
-                    onPan: function() {
+                    onPan: function () {
                         // 阻止事件冒泡，避免背景页面滚动
                         event?.preventDefault();
                         event?.stopPropagation();
@@ -787,14 +735,14 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
         >
             <div style={{ textAlign: 'center' }}>
                 <div style={{ marginBottom: '8px' }}>📊</div>
-                <div>脑图加载中...</div>
+                <div>{t.common.mindmapLoading}</div>
                 {isLoading && (
                     <div style={{
                         marginTop: '8px',
                         fontSize: '12px',
                         opacity: 0.7
                     }}>
-                        正在渲染图表...
+                        {t.common.renderingChart}
                     </div>
                 )}
             </div>
@@ -823,7 +771,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
         >
             <div>
                 <div style={{ marginBottom: '8px' }}>❌</div>
-                <div>脑图渲染失败</div>
+                <div>{t.common.mindmapRenderFailed}</div>
                 <div style={{ fontSize: '12px', marginTop: '8px', opacity: 0.8 }}>
                     {error}
                 </div>
@@ -840,7 +788,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                         fontSize: '12px'
                     }}
                 >
-                    重试
+                    {t.common.retry}
                 </button>
             </div>
         </div>
@@ -869,7 +817,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                 // 改为块级布局，让SVG自然展示
                 display: 'block'
             }}
-            title={enableZoom ? "点击放大查看" : ""}
+            title={enableZoom ? t.common.clickToEnlarge : ""}
             onClick={enableZoom ? handleClick : undefined}
             dangerouslySetInnerHTML={{ __html: svg }}
         />
@@ -880,7 +828,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
      */
     const renderEnlargedMindMap = () => {
         const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-        
+
         return (
             <div
                 ref={overlayRef}
@@ -890,7 +838,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                     left: 0,
                     width: '100vw',
                     height: '100vh',
-                    background: isDarkMode 
+                    background: isDarkMode
                         ? 'linear-gradient(135deg, rgba(28, 28, 28, 0.98) 0%, rgba(58, 58, 58, 0.95) 100%)'
                         : 'linear-gradient(135deg, rgba(255, 248, 220, 0.98) 0%, rgba(255, 250, 240, 0.95) 100%)',
                     backdropFilter: 'blur(20px)',
@@ -915,7 +863,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                         background: isDarkMode ? 'var(--color-card)' : 'var(--color-surface)',
                         borderRadius: 'var(--border-radius-xl)',
                         border: `1px solid ${isDarkMode ? 'var(--color-border-medium)' : 'var(--color-border-light)'}`,
-                        boxShadow: isDarkMode 
+                        boxShadow: isDarkMode
                             ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
                             : '0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
                         position: 'relative',
@@ -953,24 +901,24 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                                 color: 'var(--color-text-primary)'
                             }}>
                                 <span style={{ fontSize: '20px' }}>🧠</span>
-                                <span>脑图查看器</span>
+                                <span>{t.common.mindmapViewer}</span>
                             </div>
-                            
+
                             <div style={{
                                 height: '24px',
                                 width: '1px',
                                 background: isDarkMode ? 'var(--color-border-medium)' : 'var(--color-border-light)'
                             }} />
-                            
+
                         </div>
-                        
+
                         {/* 右侧控制按钮 */}
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: 'var(--spacing-md)'
-                        }}> 
-                        
+                        }}>
+
                             {/* 视图控制按钮组 */}
                             <div style={{
                                 display: 'flex',
@@ -1005,7 +953,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                                 >
                                     <span style={{ fontSize: '14px' }}>⛶</span>
                                 </button>
-                                
+
                                 <button
                                     style={{
                                         background: 'transparent',
@@ -1064,13 +1012,13 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                             </button>
                         </div>
                     </div>
-                    
+
                     {/* 主内容区域 */}
                     <div style={{
                         flex: 1,
                         position: 'relative',
                         overflow: 'hidden',
-                        background: isDarkMode 
+                        background: isDarkMode
                             ? 'linear-gradient(135deg, rgba(47, 47, 47, 0.5) 0%, rgba(58, 58, 58, 0.3) 100%)'
                             : 'linear-gradient(135deg, rgba(245, 245, 220, 0.5) 0%, rgba(255, 250, 240, 0.3) 100%)'
                     }}>
@@ -1098,9 +1046,9 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                                 dangerouslySetInnerHTML={{ __html: modifySvgForEnlargedView(svg) }}
                             />
                         </div>
-                        
+
                     </div>
-                    
+
                     {/* 底部信息栏 */}
                     <div style={{
                         height: '48px',
@@ -1130,9 +1078,9 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                                 borderRadius: 'var(--border-radius-md)'
                             }}>
                                 <span>🖱️</span>
-                                <span>滚轮缩放</span>
+                                <span>{t.common.wheelZoom}</span>
                             </div>
-                            
+
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
@@ -1142,9 +1090,9 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                                 borderRadius: 'var(--border-radius-md)'
                             }}>
                                 <span>✋</span>
-                                <span>拖拽平移</span>
+                                <span>{t.common.dragPan}</span>
                             </div>
-                            
+
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
@@ -1154,17 +1102,17 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                                 borderRadius: 'var(--border-radius-md)'
                             }}>
                                 <span>⌨️</span>
-                                <span>ESC关闭</span>
+                                <span>{t.common.escClose}</span>
                             </div>
                         </div>
-                        
+
                         {/* 右侧状态信息 */}
                         <div style={{
                             fontSize: 'var(--font-size-sm)',
                             color: 'var(--color-text-secondary)',
                             fontStyle: 'italic'
                         }}>
-                            脑图已展开 • 任意位置点击关闭
+                            {t.common.mindmapExpanded}
                         </div>
                     </div>
                 </div>
@@ -1179,7 +1127,7 @@ const MermaidLazyChart: React.FC<MermaidLazyChartProps> = ({
                     isLoaded && svg ? renderChart() :
                         renderPlaceholder()}
             </div>
-            
+
             {/* 放大的脑图视图 */}
             {isZoomed && enableZoom && renderEnlargedMindMap()}
         </>

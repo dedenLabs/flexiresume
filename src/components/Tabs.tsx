@@ -261,7 +261,8 @@ const Tabs: React.FC = () => {
     setTimeout(async () => {
       try {
         enhancedAudioPlayer.settings.requireUserInteraction = false;
-        enhancedAudioPlayer.stopAllSFX();
+        enhancedAudioPlayer.stopAll();
+        // enhancedAudioPlayer.stopAllSFX();
         await enhancedAudioPlayer.switchToTabRandomly(url);
         // 调试日志已移除: console.log(`🎵 [DEBUG] 页签音频播放请求发送成功: ${url}`);
       } catch (error) {

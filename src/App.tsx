@@ -30,7 +30,8 @@ import { elkAnalytics } from './utils/ELKAnalytics';
 import { analyticsConfig } from './config/AnalyticsConfig';
 import { formatTabLabelWithConfig } from './utils/TabFormatter';
 import { getLogger } from './utils/Logger';
-// import { FontPerformanceMonitor } from './components/FontPerformanceMonitor';
+import { FontPerformanceMonitor } from './components/FontPerformanceMonitor';
+import { imageErrorHandler } from './utils/ImageErrorHandler';
 
 // Debug logger
 const debugApp = getLogger('main');
@@ -149,6 +150,10 @@ const App: React.FC = () => {
           debugApp('Resource preloading failed: %O', error);
         });
       }
+
+      // 初始化图片错误处理器
+      imageErrorHandler.initialize();
+      debugApp('Image error handler initialized');
 
       setCdnStatus('ready');
     } catch (error) {
@@ -328,7 +333,7 @@ const App: React.FC = () => {
                 </Routes>
               </Router>
               <DevelopmentNoticeLoader />
-              {/* <FontPerformanceMonitor /> */}
+              <FontPerformanceMonitor position="bottom-left" />
             </ImageViewerProvider >
           </EnhancedErrorBoundary>
         </I18nProvider>
