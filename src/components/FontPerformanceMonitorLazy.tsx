@@ -99,7 +99,11 @@ export const FontPerformanceMonitorLazy: React.FC<FontPerformanceMonitorLazyProp
             fontSize: '12px',
             fontFamily: 'monospace',
             zIndex: 9999,
-            opacity: 0.7
+            opacity: 0.7,
+            // 打印时隐藏
+            '@media print': {
+              display: 'none'
+            }
           }}
         >
           🎨 加载中...

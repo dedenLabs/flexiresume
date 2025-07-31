@@ -544,195 +544,219 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
         // 标准模式（彩色/黑白）：激活全局打印样式并添加特定设置
         `
           @media print {
-            /* 确保激活全局打印样式 */
-            body.print-mode-active {
-              /* 页面设置 */
-              @page {
-                size: A4;
-                margin: 1cm;  
-                /* 隐藏页眉页脚 */
-                @top-left { content: none; }
-                @top-center { content: none; }
-                @top-right { content: none; }
-                @bottom-left { content: none; }
-                @bottom-center { content: none; }
-                @bottom-right { content: none; }
-              }
+            /* 页面设置 */
+            @page {
+              size: A4;
+              margin: 1cm;  
+              /* 隐藏页眉页脚 */
+              @top-left { content: none; }
+              @top-center { content: none; }
+              @top-right { content: none; }
+              @bottom-left { content: none; }
+              @bottom-center { content: none; }
+              @bottom-right { content: none; }
+            }
 
-              /* 强制重置深色模式下的所有滤镜效果 */
-              [data-theme="dark"] body::before { 
-                filter: none !important;
-                -webkit-filter: none !important;
-              }
+            /* 强制启用颜色调整，确保背景色和图像正确打印 */
+            * {
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
 
-              /* 重置根元素和主要容器的背景 */
-              html, body, #root {
-                background: white !important;
-                background-color: white !important;
-                color: black !important;
-                filter: none !important;
-                -webkit-filter: none !important;    
-              }
+            /* 强制重置所有元素的背景为白色 */
+            html, body, #root {
+              background: white !important;
+              background-color: white !important;
+              background-image: none !important;
+              color: black !important;
+              filter: none !important;
+              -webkit-filter: none !important;
+            }
 
-              /* 确保简历内容区域有白色背景 */
-              [data-testid="resume-content"],
-              .resume-content,
-              .main-content {
-                background: white !important;
-                background-color: white !important;
-                color: black !important;
-                filter: none !important;
-                -webkit-filter: none !important;    
-              }
+            /* 确保页面所有区域都是白色背景，覆盖深色主题的镂空效果 */
+            * {
+              background-color: white !important;
+              background-image: none !important;
+              background: white !important;
+            }
 
+            /* 隐藏深色模式背景伪元素，防止镂空部位显示深色 */
+            [data-theme="dark"] body::before,
+            [data-theme="dark"] body::after,
+            body::before,
+            body::after {
+              display: none !important;
+              content: none !important;
+              background: none !important;
+              background-image: none !important;
+              filter: none !important;
+              -webkit-filter: none !important;
+            }
 
-              /* 重置根元素和body */
-              html, body {
-                width: 100% !important;
-                height: auto !important;
-                margin: 0 !important;
-                padding: 20px !important;
-                background: white !important;
-                background-image: none !important;
-                overflow: visible !important;
-                font-size: 12pt !important;
-                line-height: 1.4 !important;
-                color: black !important;  
-                filter: none !important;
-                -webkit-filter: none !important;                  
-              }
+            /* 确保简历内容区域正确显示 */
+            [data-testid="resume-content"],
+            .resume-content,
+            .main-content {
+              background: white !important;
+              background-color: white !important;
+              color: black !important;
+              border: 1px solid #ccc !important;
+              box-shadow: none !important;
+            }
 
-              /* 隐藏深色模式背景伪元素 */
-              [data-theme="dark"] body::before {
-                display: none !important;
-                filter: none !important;
-                -webkit-filter: none !important;    
-              }
+            /* 重置根元素和body样式 */
+            html, body {
+              width: 100% !important;
+              height: auto !important;
+              margin: 0 !important;
+              padding: 20px !important;
+              overflow: visible !important;
+              font-size: 12pt !important;
+              line-height: 1.4 !important;
+              min-height: auto !important;
+            }
 
-              /* 根元素打印优化 */
-              #root {
-                display: block !important;
-                width: 100% !important;
-                max-width: none !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                background: white !important;
-                overflow: visible !important;
-              }
+            /* 根元素打印优化 */
+            #root {
+              display: block !important;
+              width: 100% !important;
+              max-width: none !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              background: white !important;
+              overflow: visible !important;
+            }
 
-              /* 隐藏不需要打印的元素 - 扩展选择器 */
-              .no-print,
-              .print-hide,
-              button:not(.skill-item):not([class*="skill"]),
-              .control-panel,
-              .floating-controls,
-              .floating-button,
-              .control-button,
-              nav,
-              .navigation,
-              .tabs,
-              .tab-container,
-              [data-testid="control-panel"],
-              [data-testid="development-notice"],
-              [data-pdf-downloader],
-              .pdf-downloader,
-              [class*="control"]:not(.skill-item):not(.category-item),
-              [class*="floating"]:not(.skill-item):not(.category-item),
-              [class*="button"]:not(.skill-item):not(.category-item),
-              [class*="Panel"],
-              [class*="Switcher"],
-              [class*="Downloader"],
-              .fixed,
-              .absolute {
-                display: none !important;
-                visibility: hidden !important;
-              }
+            /* 隐藏不需要打印的元素 */
+            .no-print,
+            .print-hide,
+            button:not(.skill-item):not([class*="skill"]),
+            .control-panel,
+            .floating-controls,
+            .floating-button,
+            .control-button,
+            nav,
+            .navigation,
+            .tabs,
+            .tab-container,
+            [data-testid="control-panel"],
+            [data-testid="development-notice"],
+            [data-testid="font-performance-monitor"],
+            [data-pdf-downloader],
+            .pdf-downloader,
+            [class*="control"]:not(.skill-item):not(.category-item),
+            [class*="floating"]:not(.skill-item):not(.category-item),
+            [class*="button"]:not(.skill-item):not(.category-item),
+            [class*="Panel"],
+            [class*="Switcher"],
+            [class*="Downloader"],
+            .font-performance-monitor,
+            .fixed,
+            .absolute {
+              display: none !important;
+              visibility: hidden !important;
+            }
 
-              /* 确保文本内容为黑色，但保持透明背景 */
-              p, h1, h2, h3, h4, h5, h6, li, td, th, span:not(.skill-item span), div:not(.skill-item) {
-                color: black !important;
-                /* 不强制设置背景色，保持透明 */
-              }
+            /* 确保文本内容为黑色 */
+            p, h1, h2, h3, h4, h5, h6, li, td, th, span:not(.skill-item span), div:not(.skill-item) {
+              color: black !important;
+              background: white !important;
+              background-color: white !important;
+            }
 
-              /* 保留技能标签的样式和颜色 */
-              .skill-item,
-              [class*="skill"],
-              [class*="Skill"],
-              span[title*="了解"],
-              span[title*="熟练"],
-              span[title*="精通"],
-              span[title*="Basic"],
-              span[title*="Proficient"],
-              span[title*="Expert"],
-              span[title*="Familiar"],
-              span[title*="Experienced"],
-              span[title*="Advanced"] {
+            /* 技能标签保持原有样式，但在黑白模式下转为灰色 */
+            .skill-item,
+            [class*="skill"],
+            [class*="Skill"],
+            span[title*="了解"],
+            span[title*="熟练"],
+            span[title*="精通"],
+            span[title*="Basic"],
+            span[title*="Proficient"],
+            span[title*="Expert"],
+            span[title*="Familiar"],
+            span[title*="Experienced"],
+            span[title*="Advanced"] {
+              ${colorMode === 'grayscale' ? `
+                background: #f0f0f0 !important;
+                color: #333 !important;
+                border: 1px solid #ccc !important;
+              ` : `
                 background: initial !important;
                 color: initial !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-              }
+              `}
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
 
-              /* 技能标签内的文字保持渐变色 */
-              .skill-item span,
-              [class*="skill"] span,
-              [class*="Skill"] span {
+            /* 技能标签内的文字处理 */
+            .skill-item span,
+            [class*="skill"] span,
+            [class*="Skill"] span {
+              ${colorMode === 'grayscale' ? `
+                background-clip: border-box !important;
+                -webkit-background-clip: border-box !important;
+                color: #333 !important;
+                background-image: none !important;
+              ` : `
                 background-clip: text !important;
                 -webkit-background-clip: text !important;
                 color: transparent !important;
                 background-image: inherit !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-              }
+              `}
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
 
-              /* 链接样式 */
-              a {
-                color: black !important;
-                text-decoration: underline !important;
-              }
+            /* 链接样式 */
+            a {
+              color: black !important;
+              text-decoration: underline !important;
+            }
 
-              /* 分页控制 */
-              .page-break-before {
-                page-break-before: always;
-              }
-
-              .page-break-after {
-                page-break-after: always;
-              }
-
-              .page-break-inside-avoid {
-                page-break-inside: avoid;
-              }
-
-              /* 黑白模式特殊处理 */
+            /* 图片处理 */
+            img {
               ${colorMode === 'grayscale' ? `
-                * {
-                  filter: grayscale(100%) !important;
-                  -webkit-filter: grayscale(100%) !important;
-                }
-              ` : ``}
-              /* 强制重置深色模式下的所有滤镜效果 */
-                [data-theme="dark"] * {
-                  filter: none !important;
-                  -webkit-filter: none !important;
-                }
+                filter: grayscale(100%) !important;
+                -webkit-filter: grayscale(100%) !important;
+              ` : `
+                filter: none !important;
+                -webkit-filter: none !important;
+              `}
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+              print-color-adjust: exact !important;
             }
 
-            /* 调试信息 */
-            .pdf-debug-info {
-              position: fixed;
-              top: 10px;
-              right: 10px;
-              background: rgba(255,255,255,0.9) !important;
-              color: blue !important;
-              padding: 5px !important;
-              border: 2px solid blue !important;
-              z-index: 9999 !important;
-              font-size: 14px !important;
-              font-weight: bold !important;
+            /* 分页控制 */
+            .page-break-before {
+              page-break-before: always;
             }
+
+            .page-break-after {
+              page-break-after: always;
+            }
+
+            .page-break-inside-avoid {
+              page-break-inside: avoid;
+            }
+
+            /* 强制重置所有滤镜效果 */
+            * {
+              filter: none !important;
+              -webkit-filter: none !important;
+            }
+
+            /* 黑白模式全局滤镜 */
+            ${colorMode === 'grayscale' ? `
+              * {
+                filter: grayscale(100%) !important;
+                -webkit-filter: grayscale(100%) !important;
+              }
+            ` : ``}
           }
         `;
 
@@ -741,260 +765,6 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
       // return;
       // 等待样式应用
       await new Promise(resolve => setTimeout(resolve, 300));
-
-      // // 浏览器兼容性检测和处理
-      // const userAgent = navigator.userAgent;
-      // const isChrome = userAgent.includes('Chrome');
-      // const isFirefox = userAgent.includes('Firefox');
-      // const isEdge = userAgent.includes('Edge') || userAgent.includes('Edg/');
-      // const isSafari = userAgent.includes('Safari') && !isChrome && !isEdge;
-      // const isProduction = window.location.hostname !== 'localhost' &&
-      //                     window.location.hostname !== '127.0.0.1' &&
-      //                     !window.location.hostname.includes('dev');
-
-      // debugPDF(`浏览器检测: Chrome=${isChrome}, Firefox=${isFirefox}, Edge=${isEdge}, Safari=${isSafari}, Production=${isProduction}`);
-
-      // // 原版PDF的兼容性处理
-      // if (colorMode === 'original') {
-      //   debugPDF('原版PDF模式：应用兼容性处理');
-
-      //   // 通用兼容性处理：确保控制面板隐藏
-      //   if (isProduction || isChrome || isEdge) {
-      //     debugPDF('生产环境或Chrome/Edge浏览器：强制隐藏控制面板');
-        
-      //   // 方法1：直接隐藏控制面板元素
-      //   const controlPanelSelectors = [
-      //     '[data-testid="control-panel"]',
-      //     '.control-panel',
-      //     '.floating-panel',
-      //     '[data-pdf-downloader]',
-      //     '.pdf-downloader',
-      //     '[data-testid="font-performance-monitor"]',
-      //     '.font-performance-monitor',
-      //     '.fixed',
-      //     '.absolute'
-      //   ];
-        
-      //   controlPanelSelectors.forEach(selector => {
-      //     const elements = document.querySelectorAll(selector);
-      //     elements.forEach(el => {
-      //       const element = el as HTMLElement;
-      //       element.style.cssText += `
-      //         display: none !important;
-      //         visibility: hidden !important;
-      //         opacity: 0 !important;
-      //         position: absolute !important;
-      //         left: -9999px !important;
-      //         top: -9999px !important;
-      //         width: 0 !important;
-      //         height: 0 !important;
-      //         overflow: hidden !important;
-      //         z-index: -9999 !important;
-      //       `;
-      //     });
-      //   });
-
-      //   // 浏览器特定的兼容性处理
-      //   if (isChrome) {
-      //     debugPDF('Chrome浏览器：应用Chrome特定兼容性处理');
-      //     // Chrome特定的样式修复
-      //     const chromeFixStyle = document.createElement('style');
-      //     chromeFixStyle.id = 'chrome-original-pdf-fix';
-      //     chromeFixStyle.textContent = `
-      //       @media print {
-      //         /* Chrome原版PDF特定修复 */
-      //         body {
-      //           -webkit-print-color-adjust: exact !important;
-      //           print-color-adjust: exact !important;
-      //         }
-
-      //         /* 确保主题变量在Chrome中正确应用 */
-      //         :root {
-      //           color-scheme: ${isDark ? 'dark' : 'light'} !important;
-      //         }
-
-      //         /* Chrome中的背景图片处理 */
-      //         [data-theme="dark"] body::before {
-      //           -webkit-print-color-adjust: exact !important;
-      //           print-color-adjust: exact !important;
-      //         }
-      //       }
-      //     `;
-      //     document.head.appendChild(chromeFixStyle);
-      //   }
-
-      //   if (isFirefox) {
-      //     debugPDF('Firefox浏览器：应用Firefox特定兼容性处理');
-      //     // Firefox特定的样式修复
-      //     const firefoxFixStyle = document.createElement('style');
-      //     firefoxFixStyle.id = 'firefox-original-pdf-fix';
-      //     firefoxFixStyle.textContent = `
-      //       @media print {
-      //         /* Firefox原版PDF特定修复 */
-      //         body {
-      //           color-adjust: exact !important;
-      //         }
-
-      //         /* Firefox中的CSS变量处理 */
-      //         * {
-      //           color-adjust: exact !important;
-      //         }
-      //       }
-      //     `;
-      //     document.head.appendChild(firefoxFixStyle);
-      //   }
-
-      //   if (isEdge) {
-      //     debugPDF('Edge浏览器：应用Edge特定兼容性处理');
-      //     // Edge特定的样式修复
-      //     const edgeFixStyle = document.createElement('style');
-      //     edgeFixStyle.id = 'edge-original-pdf-fix';
-      //     edgeFixStyle.textContent = `
-      //       @media print {
-      //         /* Edge原版PDF特定修复 */
-      //         body {
-      //           -webkit-print-color-adjust: exact !important;
-      //           print-color-adjust: exact !important;
-      //           color-adjust: exact !important;
-      //         }
-      //       }
-      //     `;
-      //     document.head.appendChild(edgeFixStyle);
-      //   }
-
-      //   if (isSafari) {
-      //     debugPDF('Safari浏览器：应用Safari特定兼容性处理');
-      //     // Safari特定的样式修复
-      //     const safariFixStyle = document.createElement('style');
-      //     safariFixStyle.id = 'safari-original-pdf-fix';
-      //     safariFixStyle.textContent = `
-      //       @media print {
-      //         /* Safari原版PDF特定修复 */
-      //         body {
-      //           -webkit-print-color-adjust: exact !important;
-      //         }
-
-      //         /* Safari中的背景处理 */
-      //         [data-theme="dark"] body::before {
-      //           -webkit-print-color-adjust: exact !important;
-      //         }
-      //       }
-      //     `;
-      //     document.head.appendChild(safariFixStyle);
-      //   }
-
-      //   // 等待兼容性样式应用
-      //   await new Promise(resolve => setTimeout(resolve, 200));
-      //   debugPDF('兼容性处理完成');
-      // } else {
-      //   debugPDF('本地环境或其他浏览器：跳过特殊兼容性处理');
-      // }
-
-      // // 通用兼容性处理：添加打印样式
-      // const universalPrintStyle = document.createElement('style');
-      // universalPrintStyle.id = 'universal-print-fix-style';
-      // universalPrintStyle.type = 'text/css';
-      // universalPrintStyle.textContent = `
-      //     @media print {
-      //       /* 强制隐藏所有控制面板相关元素 */
-      //       [data-testid="control-panel"],
-      //       .control-panel,
-      //       .floating-panel,
-      //       [data-pdf-downloader],
-      //       .pdf-downloader,
-      //       .fixed,
-      //       .absolute,
-      //       button:not(.skill-item):not([class*="skill"]),
-      //       .control-button,
-      //       .floating-button,
-      //       [class*="control"]:not(.skill-item):not(.category-item),
-      //       [class*="floating"]:not(.skill-item):not(.category-item),
-      //       [class*="button"]:not(.skill-item):not(.category-item),
-      //       [class*="Panel"],
-      //       [class*="Switcher"],
-      //       [class*="Downloader"] {
-      //         display: none !important;
-      //         visibility: hidden !important;
-      //         opacity: 0 !important;
-      //         position: absolute !important;
-      //         left: -9999px !important;
-      //         top: -9999px !important;
-      //         width: 0 !important;
-      //         height: 0 !important;
-      //         overflow: hidden !important;
-      //         z-index: -9999 !important;
-      //         pointer-events: none !important;
-      //       }
-            
-      //       /* 确保body和html正常显示 */
-      //       body, html {
-      //         display: block !important;
-      //         visibility: visible !important;
-      //         opacity: 1 !important;
-      //         position: relative !important;
-      //         left: auto !important;
-      //         top: auto !important;
-      //         width: auto !important;
-      //         height: auto !important;
-      //         overflow: visible !important;
-      //         z-index: auto !important;
-      //       }
-
-      //       /* 跨浏览器兼容性：颜色打印支持 */
-      //       * {
-      //         -webkit-print-color-adjust: exact !important;
-      //         print-color-adjust: exact !important;
-      //         color-adjust: exact !important;
-      //       }
-
-      //       /* 确保主题样式在所有浏览器中正确应用 */
-      //       body {
-      //         background: var(--color-background) !important;
-      //         color: var(--color-text-primary) !important;
-      //       }
-
-      //       /* 确保卡片样式在所有浏览器中正确应用 */
-      //       [data-testid="resume-content"] {
-      //         background: var(--color-card) !important;
-      //         color: var(--color-text-primary) !important;
-      //         border: var(--border-card) !important;
-      //       }
-
-      //       /* 字体性能监控面板隐藏 */
-      //       [data-testid="font-performance-monitor"],
-      //       .font-performance-monitor {
-      //         display: none !important;
-      //         visibility: hidden !important;
-      //         opacity: 0 !important;
-      //       }
-            
-      //       /* 确保简历内容正常显示 */
-      //       [data-testid="resume-content"],
-      //       .resume-content,
-      //       .main-content {
-      //         display: block !important;
-      //         visibility: visible !important;
-      //         opacity: 1 !important;
-      //         position: relative !important;
-      //         left: auto !important;
-      //         top: auto !important;
-      //         width: auto !important;
-      //         height: auto !important;
-      //         overflow: visible !important;
-      //         z-index: auto !important;
-      //       }
-      //     }
-      //   `;
-      //   document.head.appendChild(universalPrintStyle);
-        
-      //   // 等待兼容性样式应用
-      //   await new Promise(resolve => setTimeout(resolve, 300));
-        
-      //   // 方法3：强制重绘，确保样式生效
-      //   document.body.style.display = 'none';
-      //   document.body.offsetHeight; // 触发重排
-      //   document.body.style.display = '';
-      // }
 
       const modeText = colorMode === 'color' ? '彩色版' : colorMode === 'grayscale' ? '黑白版' : '原版';
       debugPDF(`开始打印${modeText}`);

@@ -85,14 +85,6 @@ const PanelContainer = styled.div.withConfig({
   /* 在打印时隐藏控制面板 */
   @media print {
     display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    position: absolute !important;
-    left: -9999px !important;
-    top: -9999px !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
   }
 
   @media (max-width: 768px) {
@@ -157,14 +149,6 @@ const CollapsiblePanel = styled.div.withConfig({
   /* 在打印时隐藏控制面板 */
   @media print {
     display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    position: absolute !important;
-    left: -9999px !important;
-    top: -9999px !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
   }
 
   @media (max-width: 768px) {
@@ -203,14 +187,6 @@ const ToggleButton = styled.button.withConfig({
   /* 在打印时隐藏控制面板 */
   @media print {
     display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    position: absolute !important;
-    left: -9999px !important;
-    top: -9999px !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
   }
 `;
 
@@ -235,14 +211,6 @@ const ExpandedPanel = styled.div.withConfig({
   /* 在打印时隐藏控制面板 */
   @media print {
     display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    position: absolute !important;
-    left: -9999px !important;
-    top: -9999px !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
   }
 `;
 

@@ -330,6 +330,8 @@ const App: React.FC = () => {
                     })
                   }
                   <Route path="/" element={<Navigate to={defaultPath} />} />
+                  {/* 添加捕获所有未知路径的路由 - 重定向到默认路径 */}
+                  <Route path="*" element={<Navigate to={defaultPath} />} />
                 </Routes>
               </Router>
               <DevelopmentNoticeLoader />
