@@ -1,5 +1,6 @@
 import { IFlexiResume, IHeaderInfo } from "../../types/IFlexiResume";
 import { assignDeep } from "../../utils/Tools";
+import gameTypeExperiencePie from "./charts/GameTypeExperiencePie.mmd";
 /**
  * Lazy loading position data
  *
@@ -47,11 +48,11 @@ export default {
         name: "Jack Chen",
         email: "jk@deden.cn",
         gender: "Male",
-        avatar: "/images/avatar.webp",//https://photocartoon.net/ This is a website that converts photos into cartoon images
+        avatar: "/images/avatar-ai.png",//https://photocartoon.net/ This is a website that converts photos into cartoon images
         location: "Shanghai",
         is_male: "1",// 1 male 0 female display icon
-        status: "⚡Available immediately",//⚡Resigned - available immediately 🕐Employed - available within a month 🔒Employed - not looking for a job
-        
+        status: "⚡Available now",//⚡Resigned - available immediately 🕐Employed - available within a month 🔒Employed - not looking for a job
+
         phone: "+86-138****8888",
         wechat: "taomeejack",
         // Mainstream communication methods - International support (uncomment to display)
@@ -63,11 +64,12 @@ export default {
         // slack: "@yourslack",             // Slack
         // line: "your_line_id",            // Line (Popular in Japan/Korea)
         // kakao: "your_kakao_id",          // KakaoTalk (Popular in Korea)
-        age: "38 years old",
-        education: "Undergraduate",
-        work_experience_num: "18+ years of work experience",
-        position: "Frontend Development",
-        expected_salary: "Expected salary to be discussed",
+        age: "38",
+        education: "Bachelor",
+        work_experience_num: "18+y",
+        position: "Frontend Dev",
+        expected_salary: "Negotiable",
+
         // Used to save the resume name format when saving the resume, and is also the format of the browser title
         resume_name_format: "{position}-{name}-{age}-{location}",
 
@@ -100,7 +102,7 @@ export default {
             // "is_home_page": true, // Mark as home page display
             header_info: {
                 position: "AI Eng",
-                expected_salary: "Expected salary to be discussed",                
+                expected_salary: "Expected salary to be discussed",
             }
         },
         // Full-stack development engineer position (integrated frontend and backend technology implementation + DevOps + AI application)
@@ -108,7 +110,7 @@ export default {
             "is_home_page": true, // Mark as home page display
             header_info: {
                 position: "Full-Stack Eng",
-                expected_salary: "Expected salary to be discussed",                
+                expected_salary: "Expected salary to be discussed",
             },
             skills: {
                 collapsedNodes: [
@@ -126,6 +128,11 @@ export default {
             },
             personal_strengths: {// Input is empty content, the order here has a sorting effect
                 content: `### 🎮 Game Lead Engineer｜🛠️ 19 years+ game architecture and practical lead engineer experience (Unity/Cocos Creator/H5 games/Flash games)
+
+\`\`\`mermaid
+${gameTypeExperiencePie}
+\`\`\`
+
 - #### 🚀 <span style="font-size: 1.8em;">Full-stack technology breakthrough</span>: Proficient in TS/JS/Node.js technology ecosystem, leading the construction of 🚀 enterprise-level scaffolding, 📦 modular architecture and 🤖 CI/CD automation system (including AI system n8n), skilled in using 🚀 Wasm acceleration, dynamic adjustment of algorithms, dirty data tracking, pathfinding optimization, 🧬/DOTS, SoA solutions and other performance optimization techniques to break through bottlenecks.
 
 ### 🌐 Full-platform development expert:
@@ -273,8 +280,8 @@ export default {
         "contracttask": {
             header_info: {
                 position: "Tech Consult",
-                expected_salary: "Price Negotiable",
-                status: "Available for Outsourcing",
+                expected_salary: "Negotiable",
+                status: "⚡Available now",
 
                 // URL Address for Personal Homepage Display
                 home_page: "",

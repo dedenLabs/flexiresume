@@ -123,6 +123,18 @@ export interface I18nTexts {
     years: string;
     months: string;
   };
+
+  // 技能等级相关
+  skillLevel: {
+    familiar: string;
+    proficient: string;
+    expert: string;
+    undefined: string;
+    familiarDescription: string;
+    proficientDescription: string;
+    expertDescription: string;
+    undefinedDescription: string;
+  };
 }
 
 // 中文文本
@@ -228,6 +240,17 @@ const zhTexts: I18nTexts = {
     present: '至今',
     years: '年',
     months: '个月'
+  },
+
+  skillLevel: {
+    familiar: '了解',
+    proficient: '熟练',
+    expert: '精通',
+    undefined: '未定义',
+    familiarDescription: '了解{skill}，正在进行技术预研或学习阶段',
+    proficientDescription: '熟练使用{skill}，有实际项目开发经验',
+    expertDescription: '精通{skill}，有丰富的实战经验，能解决复杂问题',
+    undefinedDescription: '{skill}，技能等级未定义'
   }
 };
 
@@ -333,6 +356,17 @@ const enTexts: I18nTexts = {
     present: 'Present',
     years: ' years',
     months: ' months'
+  },
+
+  skillLevel: {
+    familiar: 'Familiar',
+    proficient: 'Proficient',
+    expert: 'Expert',
+    undefined: 'Undefined',
+    familiarDescription: 'Familiar with {skill}, currently in technical research or learning phase',
+    proficientDescription: 'Proficient in {skill}, with practical project development experience',
+    expertDescription: 'Expert in {skill}, with rich practical experience and ability to solve complex problems',
+    undefinedDescription: '{skill}, skill level undefined'
   }
 };
 

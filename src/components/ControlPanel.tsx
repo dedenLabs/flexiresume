@@ -146,6 +146,11 @@ const CollapsiblePanel = styled.div.withConfig({
     position: relative;
   }
 
+  /* 在打印时隐藏控制面板 */
+  @media print {
+    display: none !important;
+  }
+
   @media (max-width: 768px) {
     bottom: 10px;
     right: 10px;
@@ -178,6 +183,11 @@ const ToggleButton = styled.button.withConfig({
   &:active {
     transform: scale(0.95);
   }
+
+  /* 在打印时隐藏控制面板 */
+  @media print {
+    display: none !important;
+  }
 `;
 
 const ExpandedPanel = styled.div.withConfig({
@@ -197,6 +207,11 @@ const ExpandedPanel = styled.div.withConfig({
   flex-direction: column;
   gap: 12px;
   min-width: 240px; /* 小屏幕下的最小宽度 */
+
+  /* 在打印时隐藏控制面板 */
+  @media print {
+    display: none !important;
+  }
 `;
 
 const ControlGroup = styled.div`
@@ -239,10 +254,28 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     return !isLargeScreen; // 大屏幕展开(false)，小屏幕折叠(true)
   }, [isLargeScreen, defaultCollapsed]);
 
-  const [isCollapsed, setIsCollapsed] = React.useState(responsiveDefaultCollapsed);
+  // 从localStorage读取保存的折叠状态
+  const [isCollapsed, setIsCollapsed] = React.useState(() => {
+    try {
+      const saved = localStorage.getItem('controlPanelCollapsed');
+      if (saved !== null) {
+        return JSON.parse(saved);
+      }
+    } catch {
+      // localStorage读取失败时使用默认值
+    }
+    return responsiveDefaultCollapsed;
+  });
 
   // 当屏幕尺寸变化时，更新折叠状态（仅在用户未手动操作时）
-  const [userHasInteracted, setUserHasInteracted] = React.useState(false);
+  const [userHasInteracted, setUserHasInteracted] = React.useState(() => {
+    try {
+      // 如果localStorage中有保存的状态，说明用户已经交互过
+      return localStorage.getItem('controlPanelCollapsed') !== null;
+    } catch {
+      return false;
+    }
+  });
 
   React.useEffect(() => {
     if (!userHasInteracted) {
@@ -250,10 +283,22 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     }
   }, [responsiveDefaultCollapsed, userHasInteracted]);
 
+  // 保存折叠状态到localStorage
+  React.useEffect(() => {
+    if (userHasInteracted) {
+      try {
+        localStorage.setItem('controlPanelCollapsed', JSON.stringify(isCollapsed));
+      } catch (error) {
+        console.warn('Failed to save control panel collapsed state to localStorage:', error);
+      }
+    }
+  }, [isCollapsed, userHasInteracted]);
+
   // 处理用户点击折叠/展开
   const handleToggle = () => {
     setUserHasInteracted(true);
-    setIsCollapsed(!isCollapsed);
+    const newCollapsedState = !isCollapsed;
+    setIsCollapsed(newCollapsedState);
   };
 
   if (collapsible) {

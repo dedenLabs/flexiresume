@@ -7,9 +7,7 @@
  * @date 2025-07-26
  */
 
-/* 浅色主题CSS变量定义 - 卡通风格但不失庄重
-⭕✋🏻注意⭕： 修改主题颜色时，`filter: sepia(0.4) hue-rotate(20deg);`filter类型的样式别忘记修改。
-*/
+/* 浅色主题CSS变量定义 */
 :root {
   /* 主色调 - 现代科技感 */
   --color-primary: #4A90E2;

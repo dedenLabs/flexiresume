@@ -26,6 +26,15 @@ interface FontStats {
     fontLoadTime: number;
     cacheHitRate: number;
     totalRequests: number;
+    renderTime: number;
+    lastUpdateTime: number;
+  };
+  systemInfo: {
+    userAgent: string;
+    platform: string;
+    language: string;
+    cookieEnabled: boolean;
+    onlineStatus: boolean;
   };
 }
 
@@ -49,7 +58,16 @@ export const FontPerformanceMonitor: React.FC<FontPerformanceMonitorProps> = ({
     performanceMetrics: {
       fontLoadTime: 0,
       cacheHitRate: 0,
-      totalRequests: 0
+      totalRequests: 0,
+      renderTime: 0,
+      lastUpdateTime: Date.now()
+    },
+    systemInfo: {
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+      language: navigator.language,
+      cookieEnabled: navigator.cookieEnabled,
+      onlineStatus: navigator.onLine
     }
   });
 
@@ -60,23 +78,34 @@ export const FontPerformanceMonitor: React.FC<FontPerformanceMonitorProps> = ({
 
     const updateStats = () => {
       try {
+        const renderStartTime = performance.now();
+
         const loadedFonts = fontLoader.getLoadedFonts();
         const cacheStats = fontLoader.getCacheStats();
-        
+
         // 计算字体加载时间
         const fontLoadTime = performance.getEntriesByType('navigation')[0]?.loadEventEnd || 0;
-        
-        setStats({
+
+        // 计算渲染时间
+        const renderTime = performance.now() - renderStartTime;
+
+        setStats(prevStats => ({
           loadedFonts,
           cacheStats,
           performanceMetrics: {
             fontLoadTime,
             cacheHitRate: cacheStats.size > 0 ? (cacheStats.averageAccessCount / cacheStats.size) * 100 : 0,
-            totalRequests: cacheStats.size
+            totalRequests: cacheStats.size,
+            renderTime,
+            lastUpdateTime: Date.now()
+          },
+          systemInfo: {
+            ...prevStats.systemInfo,
+            onlineStatus: navigator.onLine // 更新在线状态
           }
-        });
+        }));
 
-        logFontMonitor(`Font stats updated: ${loadedFonts.length} fonts loaded, ${cacheStats.memoryUsageMB.toFixed(2)}MB cached`);
+        logFontMonitor(`Font stats updated: ${loadedFonts.length} fonts loaded, ${cacheStats.memoryUsageMB.toFixed(2)}MB cached, render: ${renderTime.toFixed(2)}ms`);
       } catch (error) {
         logFontMonitor.extend('error')('Failed to update font stats:', error);
       }
@@ -110,8 +139,53 @@ export const FontPerformanceMonitor: React.FC<FontPerformanceMonitorProps> = ({
     logFontMonitor('Memory cleanup triggered');
   };
 
+  const handleExportData = () => {
+    const exportData = {
+      timestamp: new Date().toISOString(),
+      stats,
+      performance: {
+        navigation: performance.getEntriesByType('navigation')[0],
+        memory: (performance as any).memory,
+        timing: performance.timing
+      }
+    };
+
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `font-performance-${Date.now()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    logFontMonitor('Performance data exported');
+  };
+
+  const handleResetStats = () => {
+    // 重置性能计时器
+    performance.clearMarks();
+    performance.clearMeasures();
+
+    // 强制更新统计
+    setStats(prevStats => ({
+      ...prevStats,
+      performanceMetrics: {
+        ...prevStats.performanceMetrics,
+        lastUpdateTime: Date.now()
+      }
+    }));
+
+    logFontMonitor('Performance stats reset');
+  };
+
   return (
     <div
+      data-testid="font-performance-monitor"
+      className="font-performance-monitor"
       style={{
         position: 'fixed',
         ...positionStyles[position],
@@ -153,8 +227,22 @@ export const FontPerformanceMonitor: React.FC<FontPerformanceMonitorProps> = ({
           <div style={{ marginBottom: '8px' }}>
             <strong>⚡ 性能指标</strong>
             <div>加载时间: {stats.performanceMetrics.fontLoadTime.toFixed(0)}ms</div>
+            <div>渲染时间: {stats.performanceMetrics.renderTime.toFixed(2)}ms</div>
             <div>缓存命中率: {stats.performanceMetrics.cacheHitRate.toFixed(1)}%</div>
             <div>平均访问: {stats.cacheStats.averageAccessCount.toFixed(1)}</div>
+            <div style={{ fontSize: '10px', opacity: 0.7 }}>
+              更新时间: {new Date(stats.performanceMetrics.lastUpdateTime).toLocaleTimeString()}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '8px' }}>
+            <strong>🖥️ 系统信息</strong>
+            <div style={{ fontSize: '10px', opacity: 0.8 }}>
+              <div>平台: {stats.systemInfo.platform}</div>
+              <div>语言: {stats.systemInfo.language}</div>
+              <div>在线: {stats.systemInfo.onlineStatus ? '✅' : '❌'}</div>
+              <div>Cookie: {stats.systemInfo.cookieEnabled ? '✅' : '❌'}</div>
+            </div>
           </div>
 
           <div style={{ marginBottom: '8px' }}>
@@ -172,16 +260,16 @@ export const FontPerformanceMonitor: React.FC<FontPerformanceMonitorProps> = ({
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '5px' }}>
+          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
             <button
               onClick={handleClearCache}
               style={{
                 backgroundColor: '#ff4444',
                 color: 'white',
                 border: 'none',
-                padding: '4px 8px',
-                borderRadius: '4px',
-                fontSize: '10px',
+                padding: '3px 6px',
+                borderRadius: '3px',
+                fontSize: '9px',
                 cursor: 'pointer'
               }}
             >
@@ -193,13 +281,41 @@ export const FontPerformanceMonitor: React.FC<FontPerformanceMonitorProps> = ({
                 backgroundColor: '#4444ff',
                 color: 'white',
                 border: 'none',
-                padding: '4px 8px',
-                borderRadius: '4px',
-                fontSize: '10px',
+                padding: '3px 6px',
+                borderRadius: '3px',
+                fontSize: '9px',
                 cursor: 'pointer'
               }}
             >
               内存检查
+            </button>
+            <button
+              onClick={handleExportData}
+              style={{
+                backgroundColor: '#44aa44',
+                color: 'white',
+                border: 'none',
+                padding: '3px 6px',
+                borderRadius: '3px',
+                fontSize: '9px',
+                cursor: 'pointer'
+              }}
+            >
+              导出数据
+            </button>
+            <button
+              onClick={handleResetStats}
+              style={{
+                backgroundColor: '#aa8844',
+                color: 'white',
+                border: 'none',
+                padding: '3px 6px',
+                borderRadius: '3px',
+                fontSize: '9px',
+                cursor: 'pointer'
+              }}
+            >
+              重置统计
             </button>
           </div>
         </div>
