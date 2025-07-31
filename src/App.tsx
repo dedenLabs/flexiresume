@@ -30,7 +30,7 @@ import { elkAnalytics } from './utils/ELKAnalytics';
 import { analyticsConfig } from './config/AnalyticsConfig';
 import { formatTabLabelWithConfig } from './utils/TabFormatter';
 import { getLogger } from './utils/Logger';
-import { FontPerformanceMonitor } from './components/FontPerformanceMonitor';
+import { FontPerformanceMonitorLazy } from './components/FontPerformanceMonitorLazy';
 import { imageErrorHandler } from './utils/ImageErrorHandler';
 
 // Debug logger
@@ -333,7 +333,7 @@ const App: React.FC = () => {
                 </Routes>
               </Router>
               <DevelopmentNoticeLoader />
-              <FontPerformanceMonitor position="bottom-left" />
+              <FontPerformanceMonitorLazy position="bottom-left" enableHotkey={true} />
             </ImageViewerProvider >
           </EnhancedErrorBoundary>
         </I18nProvider>

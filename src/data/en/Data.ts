@@ -4,321 +4,233 @@ import { assignDeep } from "../../utils/Tools";
  * Lazy loading position data
  *
  * Dynamically load corresponding data files based on different position types,
- * which can reduce the initial package size and improve the first screen loading speed
+ * this reduces initial package size and improves first-screen loading speed
  *
  * @param position Position identifier
  * @returns Promise<Position data object>
  */
 const loadPositionData = async (position: string) => {
-    switch (position) {
-        case 'game':
-            // Game development position data
-            return (await import("./position/DataGameDev")).default;
-        case 'frontend':
-        case 'backend':
-        case 'cto':
-            // Frontend/backend/CTO position shared data
-            return (await import("./position/DataFrontendBackendCTO")).default;
-        case 'contracttask':
-            // Outsourcing/technical consultant position data
-            return (await import("./position/DataContractTask")).default;
-        case 'fullstack':
-            // Full-stack development engineer position data (integrated frontend and backend technology implementation + DevOps + AI application)
-            return (await import("./position/DataFullstackDev")).default;
-        case 'agent':
-            // AI Agent engineer position data
-            return (await import("./position/DataAgentEngineer")).default;
+    switch (position) {        
+        // Journey to the West team role position data
+        case 'xuanzang':
+            // Tang Monk - Project Manager/Team Leader
+            return (await import("./position/DataXuanzang")).default;
+        case 'wukong':
+            // Sun Wukong - Chief Technical Expert/Problem Solving Expert
+            return (await import("./position/DataWukong")).default;
+        case 'bajie':
+            // Zhu Bajie - Business Development Manager/Logistics Support Expert
+            return (await import("./position/DataBajie")).default;
+        case 'wujing':
+            // Sha Wujing - Senior Operations Engineer/Quality Assurance Expert
+            return (await import("./position/DataWujing")).default;
         default:
             return {};
     }
 };
 
 /**
- * Lazy loading complete skill data
+ * Lazy loading complete skills data
  */
 const loadSkillsData = async () => {
     const { getSkillsData } = await import("./SkillsData");
     return getSkillsData();
 };
 
+
 export default {
     header_info: {
         "type": "header_info", // Resume header module
-        name: "Jack Chen",
-        email: "jk@deden.cn",
+        name: "FlexiResume",
+        email: "demo@flexiresume.com",
         gender: "Male",
-        avatar: "/images/avatar.webp",//https://photocartoon.net/ This is a website that converts photos into cartoon images
-        location: "Shanghai",
+        avatar: "/images/avatar-ai.png",//https://photocartoon.net/ This is a website that converts photos to cartoon images
+        location: "Global",
         is_male: "1",// 1 male 0 female display icon
-        status: "⚡Available immediately",//⚡Resigned - available immediately 🕐Employed - available within a month 🔒Employed - not looking for a job
-        
-        phone: "+86-138****8888",
+        status: "⚡Feature Demo",//⚡Available-Heavenly Palace 🕐On duty-Arrive within month 🔒On duty-Not changing jobs for now
+
+        // 🌐 Mainstream communication methods - Internationalization support (uncomment to display)
+        // phone: "+86-138-0000-0000",
         wechat: "taomeejack",
-        // Mainstream communication methods - International support (uncomment to display)
-        // telegram: "@your_telegram",      // Telegram
-        // whatsapp: "+86-138****8888",     // WhatsApp
-        // skype: "your.skype.id",          // Skype
-        // linkedin: "linkedin.com/in/yourprofile", // LinkedIn
-        // discord: "YourDiscord#1234",     // Discord
-        // slack: "@yourslack",             // Slack
-        // line: "your_line_id",            // Line (Popular in Japan/Korea)
-        // kakao: "your_kakao_id",          // KakaoTalk (Popular in Korea)
-        age: "38 years old",
-        education: "Undergraduate",
-        work_experience_num: "18+ years of work experience",
-        position: "Frontend Development",
-        expected_salary: "Expected salary to be discussed",
-        // Used to save the resume name format when saving the resume, and is also the format of the browser title
-        resume_name_format: "{position}-{name}-{age}-{location}",
+        // telegram: "@flexiresume",      // Telegram
+        // whatsapp: "+86-138-0000-0000", // WhatsApp
+        // skype: "flexiresume.demo",     // Skype
+        // linkedin: "linkedin.com/in/flexiresume", // LinkedIn
+        // discord: "FlexiResume#0000",   // Discord
+        // slack: "@flexiresume",         // Slack
+        // line: "flexiresume_demo",      // Line (popular in Japan/Korea)
+        // kakao: "flexiresume_demo",     // KakaoTalk (popular in South Korea)
+        age: "Feature Demo",
+        education: "Complete Feature Showcase",
+        work_experience_num: "All Feature Features",
+        position: "Smart Resume Generator",
+        expected_salary: "Open Source Free",
 
-        // Whether to display the URL address of the personal homepage
-        // home_page: "https://dedenlabs.github.io/flexiresume",
-        home_page: "https://deden.web.app",
+        // Resume name format when saving resume, also browser title format
+        resume_name_format: "{position}-{name}-{location}",
 
-        // Static resource directory whitelist
-        cdn_static_assets_dirs: ["images"],
+        // 🏠 Personal homepage configuration - supports multiple display methods
+        home_page: "https://dedenlabs.github.io/flexiresume",
+        // home_page: "https://deden.web.app", // Alternative homepage
 
-        // Basic name of the static resource directory
-        route_base_name: new URL(location.href).pathname.split("/").slice(0, -1).join("/") + "/",// Dynamically obtained
-        // route_base_name: "flexiresume/",
+        // 📁 Static resource directory whitelist - CDN optimization support
+        cdn_static_assets_dirs: ["images", "docs", "assets"],
 
-        // URL address for generating QR code
-        qrcode: true,// If a specific URL is not specified, a QR code will be dynamically generated based on the current URL address, or a fixed QR code can be generated by directly filling in the URL address
-        // qrcode: "https://deden.web.app/game",// Generate a fixed URL address QR code
-        qrcode_msg: "",// QR code prompt message
+        // 🌐 Base name for static resource directories - supports dynamic and static configuration
+        route_base_name: new URL(location.href).pathname.split("/").slice(0, -1).join("/") + "/",// Dynamic acquisition
+        // route_base_name: "flexiresume/", // Static configuration example
+
+        // 📱 QR code functionality - supports dynamic generation and fixed URLs
+        qrcode: true,// If no specific URL is specified, QR code will be dynamically generated based on current URL, or fill in URL directly to generate fixed QR code
+        // qrcode: "https://dedenlabs.github.io/flexiresume",// Generate fixed URL QR code
+        qrcode_msg: "Scan to view online resume",// QR code prompt message
     } as IHeaderInfo,
     /**
-     * Expected position configuration
+     * 🎯 Expected Position Configuration - FlexiResume Feature Showcase
      *
-     * Only basic position information is saved here, and detailed data is obtained through lazy loading
-     * Each position includes basic header_info configuration
+     * This showcases all features of FlexiResume, including:
+     * - 📱 Multiple communication methods support (WeChat, phone, email, Telegram, WhatsApp, etc.)
+     * - 🎨 Personalized avatar and QR code
+     * - 🌐 Multi-language and internationalization support
+     * - 📊 Different position type data structures
+     * - 🔧 Lazy loading and performance optimization
+     * - 🛡️ Security protection and data validation
+     * - 📋 Flexible modular configuration
      */
     expected_positions: {
-        // AI Agent engineer position - set as home page
-        "agent": {
-            hidden: true,  // 修复：显示 agent 页面
-            // "is_home_page": true, // Mark as home page display
-            header_info: {
-                position: "AI Eng",
-                expected_salary: "Expected salary to be discussed",                
+         
+        // === 🎭 Journey to the West Team Role Position Configuration - Showcasing Creative Theme Features ===
+        // Tang Monk - Project Manager/Team Leader
+        "xuanzang": {
+            is_home_page: true, // Whether to display as homepage
+            header_info: { 
+                name: "Tang Monk·Chen Xuanzang",
+                gender: "Male",
+                position: "Team Leader",
+                expected_salary: "",
+                avatar: "/images/xiyouji/xuanzhan-icon.png",
+                location: "East Tang Dynasty·Chang'an",
+                email: "xuanzang@datang.gov",
+                phone: "+86-138-0000-0001",
+                website: "https://xuanzang.datang.gov",
+                age: "Adult",
+                education: "Master of Buddhist Studies",
+                work_experience_num: "14 years of project management experience",
+                status: "⚡Heavenly Palace Duty",
+                qrcode_msg: "Westward Journey Project Manager",
             }
         },
-        // Full-stack development engineer position (integrated frontend and backend technology implementation + DevOps + AI application)
-        "fullstack": {
-            "is_home_page": true, // Mark as home page display
+
+        // Sun Wukong - Chief Technical Expert/Problem Solving Expert
+        "wukong": {
             header_info: {
-                position: "Full-Stack Eng",
-                expected_salary: "Expected salary to be discussed",                
-            },
-            skills: {
-                collapsedNodes: [
-                    // Display core full-stack Tech Stack
-                    "Full Stack Development Experience.AI Development Learning and Practice.Agent Engineer Direction Research",
-                    "Full Stack Development Experience.AI Development Learning and Practice.Learning Plan and Goals",
-                ]
-            },
+                name: "Great Sage Equal to Heaven·Sun Wukong",
+                gender: "🐵Male Monkey",
+                position: "Problem Solving Expert",
+                expected_salary: "",
+                avatar: "/images/xiyouji/wukong-icon.png", // Use existing image as Sun Wukong avatar
+                location: "Flower-Fruit Mountain·Water Curtain Cave",
+                email: "wukong@huaguoshan.com",
+                phone: "+86-138-0000-0002",
+                website: "https://wukong.huaguoshan.com",
+                age: "500+ years old",
+                education: "Bodhi Patriarch Technical College",
+                work_experience_num: "500+ years of technical experience",
+                status: "⚡Heavenly Palace Duty",
+                qrcode_msg: "Seventy-two Transformations Technical Expert",
+            }
         },
-        // Game development position
-        "game": {
+
+        // Zhu Bajie - Business Development Manager/Logistics Support Expert
+        "bajie": {
             header_info: {
-                position: "Game Lead",
-                expected_salary: "Expected salary to be discussed",
-            },
-            personal_strengths: {// Input is empty content, the order here has a sorting effect
-                content: `### 🎮 Game Lead Engineer｜🛠️ 19 years+ game architecture and practical lead engineer experience (Unity/Cocos Creator/H5 games/Flash games)
-- #### 🚀 <span style="font-size: 1.8em;">Full-stack technology breakthrough</span>: Proficient in TS/JS/Node.js technology ecosystem, leading the construction of 🚀 enterprise-level scaffolding, 📦 modular architecture and 🤖 CI/CD automation system (including AI system n8n), skilled in using 🚀 Wasm acceleration, dynamic adjustment of algorithms, dirty data tracking, pathfinding optimization, 🧬/DOTS, SoA solutions and other performance optimization techniques to break through bottlenecks.
-
-### 🌐 Full-platform development expert:
-- #### 📱 <span style="font-size: 1.5em;">Multi-end deployment capabilities</span>: Successfully released 🎮 WeChat/TikTok mini-games, 📲 Hybrid applications and 📦 Web-packaged native applications, mastered 🛡️ micro front-end sandbox and 🌐 cross-end rendering core technology.
-
-### 🏆 High complexity system architecture:
-- #### 💻 <span style="font-size: 1.8em;">Engine deep customization</span>: Based on 🕹️ Unity/Cocos Creator/LayaAir/Egret/Pixi.js/Three.js to create million DAU projects, self-developed 🖥️ Node.js game service clusters and 📡 CDN intelligent preheating system, breaking through high concurrency technical bottlenecks.
-
-### 🏰 Virtual community architecture pioneer:
-- #### 🌌 <span style="font-size: 1.5em;">Metaverse technology system</span>: Self-developed 🏰 Web super-large community framework, realized 🤓 AR/VR virtual community 🧩 incremental compilation, 🤖 automated release and 📊 resource optimization scheme, supporting billion-level user scenarios.
-
-### 🔭 Technical leadership certification:
-- #### 🛠️ <span style="font-size: 1.5em;">T4-level technical expert</span> (TaoMi Network certification): 15 years+ leading 🏗️ system architecture design, 🔍 technology selection breakthrough and ⚡ performance optimization experience, accumulating 📜 AS3/H5/Hybrid development specifications and 📈 engineering monitoring system.",
-            `},
-            skills:
-            {
-                collapsedNodes: [// Folded content not displayed
-                    "Game Development Experience.AI Development Learning and Practice.Agent Engineer Direction Research",
-                    "Game Development Experience.AI Development Learning and Practice.Learning Plan and Goals",
-                    "Tech Stack.Front-end development",
-                    ["Tech Stack.Front-end development.Game development", false],
-                    ["Tech Stack.Front-end development.Performance and experience", false],
-                    "Tech Stack.Client-side development",
-                    "Tech Stack.DevOps",
-                    ["Tech Stack.DevOps.Automation Deployment and Management", false],
-                    ["Tech Stack.DevOps.CICD and Containerization", false],
-                    // "Tech Stack.Team management",
-                ]
-            },
-            open_source_projects:
-            {
-                collapsedNodes: [
-                    "Open source project.XCast configuration generation collaboration tool",
-                ]
-            },
+                name: "Marshal Tianpeng·Zhu Bajie",
+                gender: "🐷Male Pig",
+                position: "Logistics Support Expert",
+                expected_salary: "",
+                avatar: "/images/xiyouji/zhubajie-icon.png", // Use existing image as Zhu Bajie avatar
+                location: "Gao Lao Zhuang",
+                email: "bajie@gaolaozhuang.com",
+                phone: "+86-138-0000-0003",
+                website: "https://bajie.gaolaozhuang.com",
+                age: "Adult",
+                education: "Heavenly Palace Management College",
+                work_experience_num: "14 years of business development experience",
+                status: "⚡Heavenly Palace Duty",
+                qrcode_msg: "Business Development Expert",
+            }
         },
 
-        // Frontend development position
-        "frontend": {
-            hidden: true, // Hide frontend development position
-            personal_strengths: {
-                "type": "personal_strengths",// Personal advantage module
-                name: "Personal Advantages",
-                content: `### 🔧 Full-stack technology expert｜🕹️ 19 years+ game architecture and practical lead engineer experience (Unity/Cocos Creator/H5 games/Flash games)
-- #### 🌐 Full-stack development: 20 years+ web development experience (including 2 years full-time Web full-stack), covering 🖥️ front-end (React/Vue), ⚙️ back-end (Node.js/Python), 🗃️ database (MySQL/MongoDB), 🔄 DevOps full-link
-- #### <span style="font-size: 1.8em;">🚀 Technology cross-border integration:</span> Injecting Web engineering thinking into game development, skilled in 🎮 game server stability optimization (TCP/UDP protocol stack optimization), 🌉 hybrid development ecology (WebGL game and front-end framework integration), 🏆 representative achievements:
-> - 🚀 Leading the development of H5 game architecture with an average daily DAU of 1 million, optimizing the first screen loading time to within 1.2 seconds  
-> - 📊 Designing a distributed game log analysis system, improving fault location efficiency by 70%  
-> - ⚡ Implementing an automated hot update solution for the project, reducing the time for version iteration by 90%  
-> - 🤖 Developing internal toolchain, improving team development efficiency by 50% 
-
-- #### <span style="font-size: 1.8em;">🌐 Deep cultivation of TypeScript/JavaScript technology ecosystem</span>, proficient in <span style="font-size: 1.5em;">⚛️ React/Vue</span> 🖋️ framework system and <span style="font-size: 1.5em;">Node.js</span> full-stack development, leading the design of <span style="font-size: 1.5em;">enterprise-level scaffolding toolchain and CI/CD ⚙️ automated deployment solutions</span>, skilled in achieving millisecond-level performance breakthroughs ⚡ through Wasm acceleration 🚀, SSR/SSG rendering optimization.
-- #### 📱 Multi-platform development experience: experience in developing 🎮 mini-games and mini-programs on platforms such as WeChat, TikTok, Alipay, H5 packaging 📦 iOS/Android and successfully passing the review and going online.
-### 🌟 Unique advantages in high complexity Web graphics field:
-- #### Cross-engine development experience: based on <span style="font-size: 1.5em;">Canvas/WebGL</span> deeply customized <span style="font-size: 1.5em;">🕹️ CocosCreator/Laya/Egret/PixiJS/Three.js/Unity</span> and other game engines, building million DAU-level 🎯 game projects;
-- #### Leading the research and development of 🖥️ Node.js game service clusters and 📡 CDN intelligent preheating system, breaking through high concurrency technical bottlenecks 🚀.
-- #### 📊 Systematic solution precipitation: continuously output front-end engineering 🔧, Hybrid development optimization 📱 and Web security protection 🛡️ solutions, accumulating rich practical experience 💼 in modular architecture design 📦, micro front-end implementation 🔄, cross-end rendering engine development 🌐 and other fields.`
-            },
-            target: { hidden: true, },// Hide career planning
-            personal_influence: { hidden: true, },// Hide personal influence and industry recognition
-            header_info: {// This will override the default data above, setting different expected salary and other parameters according to different expected positions
-                position: "Front-End Eng",
-                expected_salary: "Expected salary to be discussed",
-            },
-            skills:
-            {
-                collapsedNodes: [// Folded content not displayed
-                    // "Tech Stack.Front-end development", // Display front-end development so not commented
-                    // "Tech Stack.Back-end development",
-                    "Tech Stack.Game development",
-                    "Tech Stack.Client-side development",
-                    // "Tech Stack.DevOps",
-                    // "Tech Stack.Team management",
-                ]
-            },
-        },
-        // Backend development position
-        "backend": {
-            hidden: true, // Hide backend development positions
-            personal_strengths: {
-                "type": "personal_strengths",// Personal Strengths Module
-                name: "Personal Strengths",
-                content: `### 🚀 Node.js Backend Expert｜🛠️ High-Availability Architecture Designer
-- #### <span style="font-size: 1.8em;">⚙️ Full-Stack Service Development</span>：Build 🏗️ Enterprise-Level BFF Middle Layer based on Koa/Express/Next.js, Master 🔗 GraphQL/RESTful API Design, Skilled in Achieving 🚀 Server-Side Performance Boost through ⚡ SSR/SSG.
-
-### ☁️ Cloud-Native Technology Practice:
-- #### 🚢 <span style="font-size: 1.5em;">Containerized Development Experience</span>：Complete 📦 Docker/Kubernetes Containerization Transformation for Local Environment, Verify 🛠️ Microservice Decomposition and Build 🚦 CI/CD Automation Testing Pipeline, Achieve 🔄 Resource Elastic Scaling and 🔒 Basic Operations Monitoring via Cloud Services ECS.
-- #### ⚡ <span style="font-size: 1.5em;">Serverless Application Exploration</span>：Implement 🔄 Scheduled Task Serverless Transformation based on Alibaba Cloud Function Compute, Complete 📊 Log Collection System and 🔍 Exception Request Tracking & Alerting Solution Design.
-
-### 🏗️ High-Concurrency Solutions:
-- #### ⚡ <span style="font-size: 1.8em;">Million-Level Traffic Architecture</span>：Decouple Business via 🔗 RabbitMQ Message Queue, Deploy 📡 Nginx Load Balancing Strategy to Support 🚦 Million-Daily Requests, Design 📈 Redis Secondary Caching Solution to Reduce API Response Time by 50%+.
-
-### 🗃️ Data Storage Practice:
-- #### 🔍 <span style="font-size: 1.5em;">Multi-Database Collaborative Development</span>：Ensure 💰 E-commerce Order Data Consistency via MySQL Transaction Mechanism, Complete 📜 MongoDB Sharding Cluster Basic Setup and 🗃️ Document-Type Data Storage Solution Design.
-- #### 🚀 <span style="font-size: 1.5em;">Performance Optimization Practice</span>：Boost MySQL Complex Query Efficiency by 30%+ through Index Optimization, Utilize 📦 MongoDB Aggregation Pipeline to Complete 🔢 Million-Level User Behavior Data Analysis, Construct 🔄 Redis Streaming Hotspot Data Caching Strategy.
-
-### 🔥 Linux Production Environment Practice:
-- #### 🐧 <span style="font-size: 1.5em;">Full-Link Deployment Practice</span>：Master 📦 Pm2 Cluster Deployment Solution, Implement 🔐 Jenkins Automation Release Process, Achieve 🔧 API Performance Monitoring and Exception Alerting via 📡 ELK Log Analysis.`
-            },
-            target: { hidden: true, },// Hide Career Planning 
-            personal_influence: { hidden: true, },// Hide Personal Influence and Industry Recognition 
+        // Sha Wujing - Senior Operations Engineer/Quality Assurance Expert
+        "wujing": {
             header_info: {
-                position: "NodeJS Dev",
-                expected_salary: "Expected Salary Negotiable",
-            },
-            skills:
-            {
-                collapsedNodes: [//Collapsed Content
-                    // "Tech Stack. Frontend Development",
-                    // "Tech Stack. Backend Development",
-                    "Tech Stack. Client Development",
-                    "Tech Stack. DevOps",
-                    // "Tech Stack. Team Management",
-                ]
-            },
-        },
-        // Technical Management Position
-        "cto": {
-            personal_strengths: {
-                "type": "personal_strengths",// Personal Strengths Module                
-                name: "Personal Strengths",
-                content: `### 🎖️ T4-Level Technical Leader｜🚀 15+ Years Full-Stack Expert
-- #### <span style="font-size: 1.8em;">🏆 Technical Leadership Certification</span>：Taomai Network T4-2 Level (2010), Lead 🔧 Game Architecture Design and 🕹️ System Development, Break 80 Million Concurrent Users in Games.
-
-### 🕹️ Game Industrialization Pioneer:
-- #### ⏳ <span style="font-size: 1.5em;">Mobile Game Era Pioneer</span>：Build 🎮 Large Virtual Communities from Nokia Era, Independently Design Bitmap High-Compression Animation Playback Engine to Achieve Thousands of Players on Same Screen.
-- #### 🚦 <span style="font-size: 1.5em;">Complex Scenario Handling Expert</span>：Experience 📈 Complete Lifecycle of Million DAU Projects, Accumulate 🛠️ Modular Development System and ⚙️ Cross-Platform Rendering Solutions.
-
-### 👥 Technology-Driven Management Practice:
-- #### ⚡ <span style="font-size: 1.5em;">Agile Development Practitioner</span>：Implement 🔄 Two-Week Iterative Development via Jira/Trello, Establish 📊 Kanban Task Tracking Mechanism, Shorten Requirement Response Cycle by 30%+, Lead 🔍 Code Review Standard Formulation, Reduce Online Incident Rate by 50%+ through Peer Review Mechanism.
-- #### 🛠️ <span style="font-size: 1.5em;">Technical Decision Leader</span>：Build 📜 Technical Selection Evaluation Model in Startup Phase, Lead Architecture Selection Meeting and Output 🔗 Technical Feasibility Report, Achieve 80%+ Core Interface Coverage via Automation Testing Framework.
-
-### 🌐 Standardized Collaboration Process:
-- #### 📦 <span style="font-size: 1.5em;">SOP Collaboration System Construction</span>：Establish Cross-Departmental Standard Operating Procedure (SOP), Clarify 🔄 Requirement Alignment/🛠️ Technical Integration/🔍 Issue Tracking Three-Stage Responsibility Matrix, Reduce Communication Time by 40%+ via 📈 Process Visualization Dashboard.
-`
-            },
-            target: { hidden: true, },// Hide Career Planning 
-            header_info: {
-                position: "Tech Mgmt",
-                expected_salary: "Expected Salary Negotiable",
-            },
-        },
-
-        // Outsourcing/Technical Consultant Position
-        "contracttask": {
-            header_info: {
-                position: "Tech Consult",
-                expected_salary: "Price Negotiable",
-                status: "Available for Outsourcing",
-
-                // URL Address for Personal Homepage Display
-                home_page: "",
-                // URL Address for QR Code Generation
-                // qrcode: true,
-            },
-            personal_projects: {
-                collapsedNodes: ["Virtual Community/Game Works",
-                    ["Virtual Community/Game Works. Community养成类.摩尔庄园（2007年，儿童社区---中国迪士尼）", false],
-                ]
-            },
-            skills: {
-                collapsedNodes: ["Tech Stack",]
-            },
-            project_experience: {
-                collapsedNodes: ["Project Experience",]
-            },
-            html5_game_bottleneck: {
-                collapsedNodes: [
-                    "HTML5 Game Industry Bottleneck and Solutions",
-                    ["HTML5 Game Industry Bottleneck and Solutions.HTML5 Game Industry Bottleneck. About Animation Resources", false],
-                    ["HTML5 Game Industry Bottleneck and Solutions.Solutions. Frame-by-Frame Animation. Take Tencent's《洛克王国Flash页游版》Pet Materials as an Example 👇", false],
-                    ["HTML5 Game Industry Bottleneck and Solutions.Solutions. Frame-by-Frame Animation. Unoptimized👿 - Volume 76M-Memory 408M-Unsupported Effects", false],
-                    ["HTML5 Game Industry Bottleneck and Solutions.Solutions. Frame-by-Frame Animation. Resource Conversion Service - ⚡ High-Definition, Smooth, No Frame Cuts. Combination of Vector and Bitmap😃", false],
-                    ["HTML5 Game Industry Bottleneck and Solutions.Solutions. Frame-by-Frame Animation. Resource Optimization Solution Comparison📖 - 100x Improvement", false],
-                ]
-            },
-            tech_consulting: {
-                collapsedNodes: [
-                    "Technical Consultant Service + External Resource Conversion Service",
-                    ["Technical Consultant Service + External Resource Conversion Service. Service Highlights. Resource Conversion Service Features", false/*Not Collapsible*/],
-                    ["Technical Consultant Service + External Resource Conversion Service. Service Content. Resource Conversion Service", false/*Not Collapsible*/],
-                ]
-            },
-            resource_conversion_demo: {
-                collapsedNodes: [
-                    "Resource Conversion Demo",
-                    ["Resource Conversion Demo. Example 3 - Interactive Animation", false/*Not Collapsible*/],
-                ]
-            },
-        },
+                name: "Curtain-Lifting General·Sha Wujing",
+                gender: "Male",
+                position: "Quality Assurance Expert",
+                expected_salary: "",
+                avatar: "/images/xiyouji/wujing-icon.png", // Use existing image as Sha Wujing avatar
+                location: "Flowing Sand River",
+                email: "wujing@liushahe.com",
+                phone: "+86-138-0000-0004",
+                website: "https://wujing.liushahe.com",
+                age: "Adult",
+                education: "Heavenly Palace Military College",
+                work_experience_num: "800+ years of operations experience",
+                status: "⚡Heavenly Palace Duty",
+                qrcode_msg: "Operations Quality Expert",
+            }
+        }, 
     },
 
-    // Export Lazy Loading Function for External Use
+    /**
+     * 🚀 FlexiResume Feature Description
+     *
+     * This configuration file demonstrates all core features of FlexiResume:
+     *
+     * 📱 Communication Methods Support:
+     * - phone: Phone number
+     * - wechat: WeChat ID
+     * - telegram: Telegram username
+     * - whatsapp: WhatsApp number
+     * - skype: Skype username
+     * - linkedin: LinkedIn profile
+     * - discord: Discord username
+     * - slack: Slack username
+     * - line: Line username (popular in Japan/Korea)
+     * - kakao: KakaoTalk username (popular in South Korea)
+     *
+     * 🎨 Personalization Configuration:
+     * - avatar: Personal avatar (supports multiple formats)
+     * - qrcode: QR code generation (dynamic/fixed URL)
+     * - qrcode_msg: QR code prompt message
+     * - home_page: Personal homepage link
+     * - status: Work status (⚡Heavenly Palace Duty 🕐Arrive within month 🔒Not changing jobs for now)
+     *
+     * 🌐 Internationalization Features:
+     * - Multi-language interface support
+     * - Global communication methods support
+     * - Support for different regional cultural habits
+     *
+     * 📊 Data Management:
+     * - Lazy loading performance optimization
+     * - Modular data structure
+     * - Flexible configuration system
+     *
+     * 🛡️ Security Features:
+     * - XSS protection
+     * - Content Security Policy (CSP)
+     * - Data validation and filtering
+     *
+     * 🎯 Position Types:
+     * - Technical: Frontend, Backend, Full Stack, AI, Game Development
+     * - Management: Project Manager, Technical Lead
+     * - Consulting: Technical Consultant, Outsourcing Services
+     * - Creative: Journey to the West themed roles
+     * - Design: UI/UX Designer
+     * - Internationalization: Multi-language support expert
+     */
+
+    // Export lazy loading functions for external use
     loadPositionData,
     loadSkillsData
-}// as IFlexiResume; // This is more friendly without linking to editing, allowing direct jump to configuration location
+}// as IFlexiResume; // 这里不关联编辑是更友好,能直接跳转到配置位置

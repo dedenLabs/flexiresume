@@ -183,10 +183,12 @@ const SkillRenderer: React.FC<SkillRendererProps> = ({ children }) => {
                 const level = parseInt(skillLevel, 10) || 1;
 
                 root.render(
-                    <SkillItem
-                        skill={skillName}
-                        level={level}
-                    />
+                    <I18nProvider>
+                        <SkillItem
+                            skill={skillName}
+                            level={level}
+                        />
+                    </I18nProvider>
                 );
 
                 processedCount++;

@@ -7,20 +7,35 @@
  * @date 2025-07-26
  */
 
-let JACKCHEN_BUTTON_AUDIOS = [
-  // 页签音效
-  // "agent-01",
-  // "game-01",
+let XIYOUJI_CHARACTER_AUDIOS = [
+  // 唐僧
+  // "tangseng-01",
+  // "tangseng-02",
   // ...
-  // ...Array(1).fill().map((v, i) => `btn-${String(i + 1).padStart(2, '0')}`),
+  ...Array(4).fill().map((v, i) => `tangseng-${String(i + 1).padStart(2, '0')}`),
+  // 悟空
+  // "wukong-01",
+  // "wukong-02",
+  // ...
+  ...Array(10).fill().map((v, i) => `wukong-${String(i + 1).padStart(2, '0')}`),
+  // 八戒
+  // "bajie-01",
+  // "bajie-02",
+  // ...
+  ...Array(9).fill().map((v, i) => `bajie-${String(i + 1).padStart(2, '0')}`),
+  // 悟净
+  // "wujing-01",
+  // "wujing-02",
+  // ...
+  ...Array(1).fill().map((v, i) => `wujing-${String(i + 1).padStart(2, '0')}`),
 ]
 
 
-let JACKCHEN_BGM_AUDIOS = [
-  // "bgm-01",
-  // "bgm-02",
-  // "bgm-03",
-  ...Array(3).fill().map((v, i) => `bgm-${String(i + 1).padStart(2, '0')}`),
+let XIYOUJI_BGM_AUDIOS = [
+  // "01",
+  // "02",
+  // "03",
+  ...Array(6).fill().map((v, i) => `${String(i + 1).padStart(2, '0')}`),
 ]
 
 
@@ -65,12 +80,12 @@ export interface GlobalAudioSettings {
 }
 
 // 西游记角色音频配置
-export const JACKCHEN_BUTTON_AUDIO: AudioConfig[] = JACKCHEN_BUTTON_AUDIOS.map((audio) => {
+export const XIYOUJI_CHARACTER_AUDIO: AudioConfig[] = XIYOUJI_CHARACTER_AUDIOS.map((audio) => {
   return {
     id: audio,
     name: audio.split('-')[0],
     type: AudioType.SFX,
-    file: `./audio/jackchen/sfx/${audio}.wav`,
+    file: `./audio/xiyouji/${audio}.mp3`,
     volume: 0.8,
     loop: false,
     preload: true,
@@ -81,12 +96,12 @@ export const JACKCHEN_BUTTON_AUDIO: AudioConfig[] = JACKCHEN_BUTTON_AUDIOS.map((
 });
 
 // 背景音乐配置
-export const BGM_AUDIO: AudioConfig[] = JACKCHEN_BGM_AUDIOS.map((audio) => {
+export const BGM_AUDIO: AudioConfig[] = XIYOUJI_BGM_AUDIOS.map((audio) => {
   return {
     id: audio,
     name: audio.split('-')[0],
     type: AudioType.BGM,
-    file: `./audio/jackchen/bgm/${audio}.mp3`,
+    file: `./audio/xiyouji/bgm/${audio}.mp3`,
     volume: 0.8,
     loop: false,
     preload: false,
@@ -99,39 +114,32 @@ export const BGM_AUDIO: AudioConfig[] = JACKCHEN_BGM_AUDIOS.map((audio) => {
 // 页签音频映射配置
 export const TAB_AUDIO_MAPPING: TabAudioMapping[] = [
   {
-    tabPath: '/agent',
-    tabName: 'AI工程师',
-    bgmList: JACKCHEN_BGM_AUDIOS,
-    sfxList: JACKCHEN_BUTTON_AUDIOS,
-    characterId: 'agent'
+    tabPath: '/xuanzang',
+    tabName: '唐僧·陈玄奘',
+    bgmList: XIYOUJI_BGM_AUDIOS,
+    sfxList: XIYOUJI_CHARACTER_AUDIOS.filter(audio => audio.startsWith('tangseng')),
+    characterId: 'xuanzang'
   },
   {
-    tabPath: '/fullstack',
-    tabName: '全栈开发工程师',
-    bgmList: JACKCHEN_BGM_AUDIOS,
-    sfxList: JACKCHEN_BUTTON_AUDIOS,
-    characterId: 'fullstack'
+    tabPath: '/wukong',
+    tabName: '齐天大圣·孙悟空',
+    bgmList: XIYOUJI_BGM_AUDIOS,
+    sfxList: XIYOUJI_CHARACTER_AUDIOS.filter(audio => audio.startsWith('wukong')),
+    characterId: 'wukong'
   },
   {
-    tabPath: '/game',
-    tabName: '游戏主程专家',
-    bgmList: JACKCHEN_BGM_AUDIOS,
-    sfxList: JACKCHEN_BUTTON_AUDIOS,
-    characterId: 'game'
+    tabPath: '/bajie',
+    tabName: '天蓬元帅·猪八戒',
+    bgmList: XIYOUJI_BGM_AUDIOS,
+    sfxList: XIYOUJI_CHARACTER_AUDIOS.filter(audio => audio.startsWith('bajie')),
+    characterId: 'bajie'
   },
   {
-    tabPath: '/cto',
-    tabName: '技术管理',
-    bgmList: JACKCHEN_BGM_AUDIOS,
-    sfxList: JACKCHEN_BUTTON_AUDIOS,
-    characterId: 'cto'
-  },
-  {
-    tabPath: '/contracttask',
-    tabName: '外包任务',
-    bgmList: JACKCHEN_BGM_AUDIOS,
-    sfxList: JACKCHEN_BUTTON_AUDIOS,
-    characterId: 'contracttask'
+    tabPath: '/wujing',
+    tabName: '卷帘大将·沙悟净',
+    bgmList: XIYOUJI_BGM_AUDIOS,
+    sfxList: XIYOUJI_CHARACTER_AUDIOS.filter(audio => audio.startsWith('wujing')),
+    characterId: 'wujing'
   }
 ];
 
@@ -148,7 +156,7 @@ export const GLOBAL_AUDIO_SETTINGS: GlobalAudioSettings = {
 
 // 获取所有音频配置
 export function getAllAudioConfigs(): AudioConfig[] {
-  return [...JACKCHEN_BUTTON_AUDIO, ...BGM_AUDIO];
+  return [...XIYOUJI_CHARACTER_AUDIO, ...BGM_AUDIO];
 }
 
 // 根据ID获取音频配置

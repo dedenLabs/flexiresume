@@ -149,7 +149,7 @@ export class EnhancedAudioPlayer {
   /**
    * 处理音频播放结束
    */
-  private handleAudioEnded(config: AudioConfig): void {
+  private async handleAudioEnded(config: AudioConfig): Promise<void> {
     const state = this.playbackStates.get(config.id);
     if (state) {
       state.isPlaying = false;
@@ -159,11 +159,11 @@ export class EnhancedAudioPlayer {
     if (config.type === AudioType.BGM) {
       if (this.bgmPlaylist.length > 1) {
         // 多首BGM时播放下一首
-        this.playNextBGM();
+        await this.playNextBGM();
       } else if (this.bgmPlaylist.length === 1) {
         // 只有一首BGM时重播
-        setTimeout(() => {
-          this.playBGM(this.bgmPlaylist[0]);
+        setTimeout(async () => {
+          await this.playBGM(this.bgmPlaylist[0]);
         }, 500); // 短暂间隔后重播
       }
     }
@@ -172,15 +172,30 @@ export class EnhancedAudioPlayer {
   /**
    * 播放下一首BGM
    */
-  private playNextBGM(): void {
+  private async playNextBGM(): Promise<void> {
     if (this.bgmPlaylist.length === 0) return;
 
+    // 先停止当前播放的BGM
+    if (this.currentBGM) {
+      const currentAudio = this.audioCache.get(this.currentBGM);
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        const currentState = this.playbackStates.get(this.currentBGM);
+        if (currentState) {
+          currentState.isPlaying = false;
+        }
+      }
+    }
+
+    // 更新索引
     this.bgmCurrentIndex = (this.bgmCurrentIndex + 1) % this.bgmPlaylist.length;
     const nextBGMId = this.bgmPlaylist[this.bgmCurrentIndex];
 
-    setTimeout(() => {
-      this.playBGM(nextBGMId);
-    }, 500); // 短暂间隔
+    // 短暂延迟后播放下一首
+    setTimeout(async () => {
+      await this.playBGM(nextBGMId);
+    }, 500);
   }
 
   /**
@@ -195,7 +210,7 @@ export class EnhancedAudioPlayer {
       return;
     }
 
-    // 如果当前正在播放相同的BGM，则不重新开始播放
+    // 如果当前正在播放相同的BGM且未暂停，则不重新开始播放
     if (this.currentBGM === audioId) {
       const currentAudio = this.audioCache.get(audioId);
       const state = this.playbackStates.get(audioId);
@@ -205,23 +220,43 @@ export class EnhancedAudioPlayer {
       }
     }
 
-    // 停止当前BGM（如果是不同的BGM）
+    // 立即停止当前BGM（如果是不同的BGM）
     if (this.currentBGM && this.currentBGM !== audioId) {
-      await this.fadeOut(this.currentBGM);
+      const previousAudio = this.audioCache.get(this.currentBGM);
+      if (previousAudio) {
+        // 立即暂停并重置，而不是等待淡出完成
+        previousAudio.pause();
+        previousAudio.currentTime = 0;
+        const previousState = this.playbackStates.get(this.currentBGM);
+        if (previousState) {
+          previousState.isPlaying = false;
+        }
+      }
     }
 
     const audio = this.audioCache.get(audioId);
     if (!audio) {
       logEnhancedAudioPlayer.extend('warn')(`⚠️ BGM ${audioId} 音频未加载`);
-      this.loadAudio(config);
+      await this.loadAudio(config);
+      const loadedAudio = this.audioCache.get(audioId);
+      if (!loadedAudio) {
+        logEnhancedAudioPlayer.extend('warn')(`⚠️ BGM ${audioId} 加载失败`);
+        return;
+      }
     }
 
+    const targetAudio = this.audioCache.get(audioId)!;
+    
     try {
+      // 先重置音频状态
+      targetAudio.pause();
+      targetAudio.currentTime = 0;
+      targetAudio.volume = 0; // 从零音量开始
+      
+      // 更新当前BGM引用
       this.currentBGM = audioId;
-      audio.volume = 0;
-      audio.currentTime = 0;
 
-      await audio.play();
+      await targetAudio.play();
       await this.fadeIn(audioId);
 
       const state = this.playbackStates.get(audioId);
@@ -448,12 +483,25 @@ export class EnhancedAudioPlayer {
     const stepDuration = this.settings.fadeOutDuration / steps;
     const volumeStep = currentVolume / steps;
 
+    // 如果音量已经是0，直接停止
+    if (currentVolume === 0) {
+      audio.pause();
+      audio.currentTime = 0;
+      const state = this.playbackStates.get(audioId);
+      if (state) {
+        state.isPlaying = false;
+      }
+      return;
+    }
+
     for (let i = steps; i >= 0; i--) {
       audio.volume = volumeStep * i;
       await new Promise(resolve => setTimeout(resolve, stepDuration));
     }
 
+    // 确保音频完全停止
     audio.pause();
+    audio.currentTime = 0;
     const state = this.playbackStates.get(audioId);
     if (state) {
       state.isPlaying = false;
@@ -521,15 +569,15 @@ export class EnhancedAudioPlayer {
   /**
    * 启用/禁用音频
    */
-  public setEnabled(enabled: boolean): void {
+  public async setEnabled(enabled: boolean): Promise<void> {
     const wasEnabled = this.settings.enabled;
     this.settings.enabled = enabled;
 
     if (!enabled) {
       this.stopAll();
-    } else if (enabled) {
+    } else if (enabled && !wasEnabled) {
       // 从禁用状态重新启用时，重新播放当前页签的音频（随机选择）
-      this.playCurrentTabAudioRandomly();
+      await this.playCurrentTabAudioRandomly();
     }
 
     logEnhancedAudioPlayer(`🎵 音频播放${enabled ? '启用' : '禁用'}`);
@@ -568,6 +616,44 @@ export class EnhancedAudioPlayer {
    */
   public getCurrentBGM(): string | null {
     return this.currentBGM;
+  }
+
+  /**
+   * 清理所有音频实例（防止内存泄漏）
+   */
+  public cleanup(): void {
+    this.stopAll();
+    this.audioCache.forEach((audio, id) => {
+      audio.remove();
+    });
+    this.audioCache.clear();
+    this.playbackStates.clear();
+    this.currentBGM = null;
+    this.bgmPlaylist = [];
+    this.bgmCurrentIndex = 0;
+    logEnhancedAudioPlayer('🧹 音频播放器已清理');
+  }
+
+  /**
+   * 获取当前播放状态（用于调试）
+   */
+  public getDebugInfo(): any {
+    const playingAudios: string[] = [];
+    this.audioCache.forEach((audio, id) => {
+      const state = this.playbackStates.get(id);
+      if (state && state.isPlaying && !audio.paused) {
+        playingAudios.push(id);
+      }
+    });
+
+    return {
+      currentBGM: this.currentBGM,
+      bgmPlaylist: this.bgmPlaylist,
+      bgmCurrentIndex: this.bgmCurrentIndex,
+      playingAudios: playingAudios,
+      totalCachedAudios: this.audioCache.size,
+      enabled: this.settings.enabled
+    };
   }
 }
 

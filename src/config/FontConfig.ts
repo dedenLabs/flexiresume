@@ -301,7 +301,7 @@ export const allFonts = {
 // 默认字体配置 - 使用仿市宋体作为默认字体
 export const defaultFontConfig: FontConfig =
 {
-  ...getFontConfigByName('kangxi'), // 使用仿市宋体作为默认字体
+  ...getFontConfigByName('fangsong'), // 使用仿市宋体作为默认字体
   // 加载配置
   loadConfig: {
     priority: 'high',

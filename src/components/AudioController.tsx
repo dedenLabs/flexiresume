@@ -120,9 +120,25 @@ interface AudioControllerProps {
 const AudioController: React.FC<AudioControllerProps> = ({ className }) => {
   const { isDark } = useTheme();
   const { t } = useI18n();
-  
-  const [isEnabled, setIsEnabled] = useState(true);
-  const [volume, setVolume] = useState(0.7);
+
+  // 从localStorage读取保存的音频设置
+  const [isEnabled, setIsEnabled] = useState(() => {
+    try {
+      const saved = localStorage.getItem('audioEnabled');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const [volume, setVolume] = useState(() => {
+    try {
+      const saved = localStorage.getItem('audioVolume');
+      return saved !== null ? parseFloat(saved) : 0.7;
+    } catch {
+      return 0.7;
+    }
+  });
 
   // 初始化音频设置
   useEffect(() => {
@@ -131,9 +147,29 @@ const AudioController: React.FC<AudioControllerProps> = ({ className }) => {
     enhancedAudioPlayer.setGlobalVolume(volume, volume);
   }, [isEnabled, volume]);
 
+  // 保存音频启用状态到localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('audioEnabled', JSON.stringify(isEnabled));
+    } catch (error) {
+      console.warn('Failed to save audio enabled state to localStorage:', error);
+    }
+  }, [isEnabled]);
+
+  // 保存音量设置到localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('audioVolume', volume.toString());
+    } catch (error) {
+      console.warn('Failed to save audio volume to localStorage:', error);
+    }
+  }, [volume]);
+
   // 切换音频启用状态
-  const toggleAudio = () => {
-    setIsEnabled(!isEnabled);
+  const toggleAudio = async () => {
+    const newState = !isEnabled;
+    setIsEnabled(newState);
+    await enhancedAudioPlayer.setEnabled(newState);
   };
 
   // 调节音量

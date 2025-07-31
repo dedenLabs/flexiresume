@@ -59,6 +59,8 @@
     .tab-container,
     [data-testid="control-panel"],
     [data-testid="development-notice"],
+    [data-testid="font-performance-monitor"],
+    .font-performance-monitor,
     [data-pdf-downloader],
     .pdf-downloader,
     .control-button,

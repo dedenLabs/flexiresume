@@ -306,7 +306,9 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
         '[data-testid="control-panel"]',
         '[data-pdf-downloader]',
         '.control-panel',
-        '.floating-panel'
+        '.floating-panel',
+        '[data-testid="font-performance-monitor"]',
+        '.font-performance-monitor'
       ];
 
       elementsToRemove.forEach(selector => {
@@ -377,14 +379,30 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
               print-color-adjust: exact !important;
             }
 
-            /* 深色模式特殊处理 */
+            /* 主题样式统一处理 */
             [data-theme="dark"] {
               -webkit-print-color-adjust: exact !important;
               color-adjust: exact !important;
               print-color-adjust: exact !important;
             }
 
+            [data-theme="light"] {
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+
+            /* 深色模式body样式 */
             [data-theme="dark"] body {
+              background-color: var(--color-background) !important;
+              color: var(--color-text-primary) !important;
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+
+            /* 浅色模式body样式 */
+            [data-theme="light"] body {
               background-color: var(--color-background) !important;
               color: var(--color-text-primary) !important;
               -webkit-print-color-adjust: exact !important;
@@ -401,6 +419,10 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
               width: 100% !important;
               height: 100% !important;
               background-color: var(--color-background) !important;
+              background-image: var(--background-image) !important;
+              background-repeat: repeat !important;
+              background-size: 180px !important;
+              filter: var(--filter-background-dark) !important;
               z-index: -1 !important;
               -webkit-print-color-adjust: exact !important;
               color-adjust: exact !important;
@@ -414,14 +436,64 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
               print-color-adjust: exact !important;
             }
 
-            /* 确保resume-content保持深色背景 - 最高优先级 */
+            /* 确保resume-content保持主题样式 - 使用CSS变量 */
             [data-theme="dark"] [data-testid="resume-content"] {
               background: var(--color-card) !important;
-              background-color: #2d3748 !important;
+              background-color: var(--color-card) !important;
               color: var(--color-text-primary) !important;
+              border: var(--border-card) !important;
+              box-shadow: var(--shadow-card) !important;
               -webkit-print-color-adjust: exact !important;
               color-adjust: exact !important;
               print-color-adjust: exact !important;
+            }
+
+            /* 确保浅色模式也使用主题样式 */
+            [data-theme="light"] [data-testid="resume-content"] {
+              background: var(--color-card) !important;
+              background-color: var(--color-card) !important;
+              color: var(--color-text-primary) !important;
+              border: var(--border-card) !important;
+              box-shadow: var(--shadow-card) !important;
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+
+            /* 确保所有主题相关元素使用CSS变量 */
+            * {
+              color: var(--color-text-primary) !important;
+              background-color: var(--color-background) !important;
+              border-color: var(--color-border-light) !important;
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+
+            /* 卡片元素使用卡片主题 */
+            .card, .resume-card, [class*="card"], [class*="Card"] {
+              background: var(--color-card) !important;
+              background-color: var(--color-card) !important;
+              color: var(--color-text-primary) !important;
+              border: var(--border-card) !important;
+              box-shadow: var(--shadow-card) !important;
+            }
+
+            /* 表面元素使用表面主题 */
+            .surface, [class*="surface"], [class*="Surface"] {
+              background: var(--color-surface) !important;
+              background-color: var(--color-surface) !important;
+              color: var(--color-text-primary) !important;
+            }
+
+            /* 链接元素使用主题颜色 */
+            a, [class*="link"], [class*="Link"] {
+              color: var(--color-primary) !important;
+            }
+
+            /* 标题元素使用主题颜色 */
+            h1, h2, h3, h4, h5, h6 {
+              color: var(--color-text-primary) !important;
             }
 
             /* 只隐藏不需要的元素，不改变任何颜色和样式 */
@@ -669,6 +741,260 @@ const PDFDownloader: React.FC<PDFDownloaderProps> = ({ className }) => {
       // return;
       // 等待样式应用
       await new Promise(resolve => setTimeout(resolve, 300));
+
+      // // 浏览器兼容性检测和处理
+      // const userAgent = navigator.userAgent;
+      // const isChrome = userAgent.includes('Chrome');
+      // const isFirefox = userAgent.includes('Firefox');
+      // const isEdge = userAgent.includes('Edge') || userAgent.includes('Edg/');
+      // const isSafari = userAgent.includes('Safari') && !isChrome && !isEdge;
+      // const isProduction = window.location.hostname !== 'localhost' &&
+      //                     window.location.hostname !== '127.0.0.1' &&
+      //                     !window.location.hostname.includes('dev');
+
+      // debugPDF(`浏览器检测: Chrome=${isChrome}, Firefox=${isFirefox}, Edge=${isEdge}, Safari=${isSafari}, Production=${isProduction}`);
+
+      // // 原版PDF的兼容性处理
+      // if (colorMode === 'original') {
+      //   debugPDF('原版PDF模式：应用兼容性处理');
+
+      //   // 通用兼容性处理：确保控制面板隐藏
+      //   if (isProduction || isChrome || isEdge) {
+      //     debugPDF('生产环境或Chrome/Edge浏览器：强制隐藏控制面板');
+        
+      //   // 方法1：直接隐藏控制面板元素
+      //   const controlPanelSelectors = [
+      //     '[data-testid="control-panel"]',
+      //     '.control-panel',
+      //     '.floating-panel',
+      //     '[data-pdf-downloader]',
+      //     '.pdf-downloader',
+      //     '[data-testid="font-performance-monitor"]',
+      //     '.font-performance-monitor',
+      //     '.fixed',
+      //     '.absolute'
+      //   ];
+        
+      //   controlPanelSelectors.forEach(selector => {
+      //     const elements = document.querySelectorAll(selector);
+      //     elements.forEach(el => {
+      //       const element = el as HTMLElement;
+      //       element.style.cssText += `
+      //         display: none !important;
+      //         visibility: hidden !important;
+      //         opacity: 0 !important;
+      //         position: absolute !important;
+      //         left: -9999px !important;
+      //         top: -9999px !important;
+      //         width: 0 !important;
+      //         height: 0 !important;
+      //         overflow: hidden !important;
+      //         z-index: -9999 !important;
+      //       `;
+      //     });
+      //   });
+
+      //   // 浏览器特定的兼容性处理
+      //   if (isChrome) {
+      //     debugPDF('Chrome浏览器：应用Chrome特定兼容性处理');
+      //     // Chrome特定的样式修复
+      //     const chromeFixStyle = document.createElement('style');
+      //     chromeFixStyle.id = 'chrome-original-pdf-fix';
+      //     chromeFixStyle.textContent = `
+      //       @media print {
+      //         /* Chrome原版PDF特定修复 */
+      //         body {
+      //           -webkit-print-color-adjust: exact !important;
+      //           print-color-adjust: exact !important;
+      //         }
+
+      //         /* 确保主题变量在Chrome中正确应用 */
+      //         :root {
+      //           color-scheme: ${isDark ? 'dark' : 'light'} !important;
+      //         }
+
+      //         /* Chrome中的背景图片处理 */
+      //         [data-theme="dark"] body::before {
+      //           -webkit-print-color-adjust: exact !important;
+      //           print-color-adjust: exact !important;
+      //         }
+      //       }
+      //     `;
+      //     document.head.appendChild(chromeFixStyle);
+      //   }
+
+      //   if (isFirefox) {
+      //     debugPDF('Firefox浏览器：应用Firefox特定兼容性处理');
+      //     // Firefox特定的样式修复
+      //     const firefoxFixStyle = document.createElement('style');
+      //     firefoxFixStyle.id = 'firefox-original-pdf-fix';
+      //     firefoxFixStyle.textContent = `
+      //       @media print {
+      //         /* Firefox原版PDF特定修复 */
+      //         body {
+      //           color-adjust: exact !important;
+      //         }
+
+      //         /* Firefox中的CSS变量处理 */
+      //         * {
+      //           color-adjust: exact !important;
+      //         }
+      //       }
+      //     `;
+      //     document.head.appendChild(firefoxFixStyle);
+      //   }
+
+      //   if (isEdge) {
+      //     debugPDF('Edge浏览器：应用Edge特定兼容性处理');
+      //     // Edge特定的样式修复
+      //     const edgeFixStyle = document.createElement('style');
+      //     edgeFixStyle.id = 'edge-original-pdf-fix';
+      //     edgeFixStyle.textContent = `
+      //       @media print {
+      //         /* Edge原版PDF特定修复 */
+      //         body {
+      //           -webkit-print-color-adjust: exact !important;
+      //           print-color-adjust: exact !important;
+      //           color-adjust: exact !important;
+      //         }
+      //       }
+      //     `;
+      //     document.head.appendChild(edgeFixStyle);
+      //   }
+
+      //   if (isSafari) {
+      //     debugPDF('Safari浏览器：应用Safari特定兼容性处理');
+      //     // Safari特定的样式修复
+      //     const safariFixStyle = document.createElement('style');
+      //     safariFixStyle.id = 'safari-original-pdf-fix';
+      //     safariFixStyle.textContent = `
+      //       @media print {
+      //         /* Safari原版PDF特定修复 */
+      //         body {
+      //           -webkit-print-color-adjust: exact !important;
+      //         }
+
+      //         /* Safari中的背景处理 */
+      //         [data-theme="dark"] body::before {
+      //           -webkit-print-color-adjust: exact !important;
+      //         }
+      //       }
+      //     `;
+      //     document.head.appendChild(safariFixStyle);
+      //   }
+
+      //   // 等待兼容性样式应用
+      //   await new Promise(resolve => setTimeout(resolve, 200));
+      //   debugPDF('兼容性处理完成');
+      // } else {
+      //   debugPDF('本地环境或其他浏览器：跳过特殊兼容性处理');
+      // }
+
+      // // 通用兼容性处理：添加打印样式
+      // const universalPrintStyle = document.createElement('style');
+      // universalPrintStyle.id = 'universal-print-fix-style';
+      // universalPrintStyle.type = 'text/css';
+      // universalPrintStyle.textContent = `
+      //     @media print {
+      //       /* 强制隐藏所有控制面板相关元素 */
+      //       [data-testid="control-panel"],
+      //       .control-panel,
+      //       .floating-panel,
+      //       [data-pdf-downloader],
+      //       .pdf-downloader,
+      //       .fixed,
+      //       .absolute,
+      //       button:not(.skill-item):not([class*="skill"]),
+      //       .control-button,
+      //       .floating-button,
+      //       [class*="control"]:not(.skill-item):not(.category-item),
+      //       [class*="floating"]:not(.skill-item):not(.category-item),
+      //       [class*="button"]:not(.skill-item):not(.category-item),
+      //       [class*="Panel"],
+      //       [class*="Switcher"],
+      //       [class*="Downloader"] {
+      //         display: none !important;
+      //         visibility: hidden !important;
+      //         opacity: 0 !important;
+      //         position: absolute !important;
+      //         left: -9999px !important;
+      //         top: -9999px !important;
+      //         width: 0 !important;
+      //         height: 0 !important;
+      //         overflow: hidden !important;
+      //         z-index: -9999 !important;
+      //         pointer-events: none !important;
+      //       }
+            
+      //       /* 确保body和html正常显示 */
+      //       body, html {
+      //         display: block !important;
+      //         visibility: visible !important;
+      //         opacity: 1 !important;
+      //         position: relative !important;
+      //         left: auto !important;
+      //         top: auto !important;
+      //         width: auto !important;
+      //         height: auto !important;
+      //         overflow: visible !important;
+      //         z-index: auto !important;
+      //       }
+
+      //       /* 跨浏览器兼容性：颜色打印支持 */
+      //       * {
+      //         -webkit-print-color-adjust: exact !important;
+      //         print-color-adjust: exact !important;
+      //         color-adjust: exact !important;
+      //       }
+
+      //       /* 确保主题样式在所有浏览器中正确应用 */
+      //       body {
+      //         background: var(--color-background) !important;
+      //         color: var(--color-text-primary) !important;
+      //       }
+
+      //       /* 确保卡片样式在所有浏览器中正确应用 */
+      //       [data-testid="resume-content"] {
+      //         background: var(--color-card) !important;
+      //         color: var(--color-text-primary) !important;
+      //         border: var(--border-card) !important;
+      //       }
+
+      //       /* 字体性能监控面板隐藏 */
+      //       [data-testid="font-performance-monitor"],
+      //       .font-performance-monitor {
+      //         display: none !important;
+      //         visibility: hidden !important;
+      //         opacity: 0 !important;
+      //       }
+            
+      //       /* 确保简历内容正常显示 */
+      //       [data-testid="resume-content"],
+      //       .resume-content,
+      //       .main-content {
+      //         display: block !important;
+      //         visibility: visible !important;
+      //         opacity: 1 !important;
+      //         position: relative !important;
+      //         left: auto !important;
+      //         top: auto !important;
+      //         width: auto !important;
+      //         height: auto !important;
+      //         overflow: visible !important;
+      //         z-index: auto !important;
+      //       }
+      //     }
+      //   `;
+      //   document.head.appendChild(universalPrintStyle);
+        
+      //   // 等待兼容性样式应用
+      //   await new Promise(resolve => setTimeout(resolve, 300));
+        
+      //   // 方法3：强制重绘，确保样式生效
+      //   document.body.style.display = 'none';
+      //   document.body.offsetHeight; // 触发重排
+      //   document.body.style.display = '';
+      // }
 
       const modeText = colorMode === 'color' ? '彩色版' : colorMode === 'grayscale' ? '黑白版' : '原版';
       debugPDF(`开始打印${modeText}`);

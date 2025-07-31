@@ -237,7 +237,7 @@ const GlobalStyle = createGlobalStyle<{ theme?: any }>`
       background-image: url('${replaceCDNBaseURL('images/flexi-resume.jpg')}');
       background-repeat: repeat;
       background-size: 180px;
-      /* 浅色主题滤镜 - 卡通风格蓝色调 */
+      /* 浅色主题滤镜*/
 
       filter: var(--filter-background-light);
       pointer-events: none;
@@ -417,7 +417,7 @@ const GlobalStyle = createGlobalStyle<{ theme?: any }>`
       margin-right: 0.4rem; /* 图标和文本的间距 */
       background: url(${replaceCDNBaseURL("images/url.svg")}) no-repeat center;
       background-size: contain; /* 保证图标自适应 */
-      /* 链接图标颜色调整 - 适配卡通风格主题 */
+      /* 链接图标颜色调整 */
       filter: var(--filter-link-icon-light);
       transition: filter 0.3s ease;
     }
