@@ -12,7 +12,7 @@ let XIYOUJI_CHARACTER_AUDIOS = [
   // "tangseng-01",
   // "tangseng-02",
   // ...
-  ...Array(4).fill().map((v, i) => `tangseng-${String(i + 1).padStart(2, '0')}`),
+  ...Array(5).fill().map((v, i) => `tangseng-${String(i + 1).padStart(2, '0')}`),
   // 悟空
   // "wukong-01",
   // "wukong-02",

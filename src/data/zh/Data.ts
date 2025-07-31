@@ -44,7 +44,7 @@ export default {
         name: "FlexiResume",
         email: "demo@flexiresume.com",
         gender: "男",
-        avatar: "/images/avatar-ai.png",//https://photocartoon.net/ 这是一个将照片转换为卡通形象的网站
+        avatar: "images/avatar-ai.png",//https://photocartoon.net/ 这是一个将照片转换为卡通形象的网站
         location: "全球",
         is_male: "1",// 1男 0女 显示图标
         status: "⚡功能展示",//⚡离职-天庭当职 🕐在职-月内到岗 🔒在职-暂不换工作
@@ -108,7 +108,7 @@ export default {
                 gender: "男",
                 position: "团队领导",
                 expected_salary: "",
-                avatar: "/images/xiyouji/xuanzhan-icon.png",
+                avatar: "images/xiyouji/xuanzhan-icon.png",
                 location: "东土大唐·长安",
                 email: "xuanzang@datang.gov",
                 phone: "+86-138-0000-0001",
@@ -128,7 +128,7 @@ export default {
                 gender: "🐵公猴",
                 position: "问题解决专家",
                 expected_salary: "",
-                avatar: "/images/xiyouji/wukong-icon.png", // 使用现有图片作为孙悟空头像
+                avatar: "images/xiyouji/wukong-icon.png", // 使用现有图片作为孙悟空头像
                 location: "花果山·水帘洞",
                 email: "wukong@huaguoshan.com",
                 phone: "+86-138-0000-0002",
@@ -148,7 +148,7 @@ export default {
                 gender: "🐷公猪",
                 position: "后勤保障专家",
                 expected_salary: "",
-                avatar: "/images/xiyouji/zhubajie-icon.png", // 使用现有图片作为猪八戒头像
+                avatar: "images/xiyouji/zhubajie-icon.png", // 使用现有图片作为猪八戒头像
                 location: "高老庄",
                 email: "bajie@gaolaozhuang.com",
                 phone: "+86-138-0000-0003",
@@ -168,7 +168,7 @@ export default {
                 gender: "男",
                 position: "质量保证专家",
                 expected_salary: "",
-                avatar: "/images/xiyouji/wujing-icon.png", // 使用现有图片作为沙悟净头像
+                avatar: "images/xiyouji/wujing-icon.png", // 使用现有图片作为沙悟净头像
                 location: "流沙河",
                 email: "wujing@liushahe.com",
                 phone: "+86-138-0000-0004",

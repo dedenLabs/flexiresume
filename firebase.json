@@ -1,8 +1,8 @@
 {
     "hosting": [
         {
-            "site": "deden",
-            "public": "docs",
+            "site": "xiyouji",
+            "public": "dist",
             "ignore": [
                 "firebase.json",
                 "**/.*",

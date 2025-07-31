@@ -1,5 +1,7 @@
 import { getLogger } from "../utils/Logger";
 import { SmartCache } from "../utils/MemoryManager";
+import { removeBaseURL } from "../utils/URLPathJoiner";
+import { cdnManager } from "../utils/CDNManager";
 
 
 const logFontConfig = getLogger('FontConfig');
@@ -349,7 +351,10 @@ export const generateFontCSS = (config: FontPriorityConfig): string => {
 export const generateWebFontLinks = (configs: FontConfig[]): string[] => {
   return configs
     .filter(config => config.webFontUrl)
-    .map(config => config.webFontUrl!)
+    .map(config => {
+      // 移除基础路径，只保留相对路径
+      return removeBaseURL(config.webFontUrl!, cdnManager.getProjectBasePath());
+    })
     .filter((url, index, array) => array.indexOf(url) === index); // 去重
 };
 
@@ -477,8 +482,10 @@ export class FontLoader {
 
     // 回退到本地字体URL（只有在没有在线CDN或所有CDN都失败时才使用）
     if (fontConfig.webFontUrl) {
-      urls.push(fontConfig.webFontUrl);
-      logFontConfig.extend('debug')(`Added local fallback: ${fontConfig.webFontUrl}`);
+      // 移除基础路径，只保留相对路径
+      const relativePath = removeBaseURL(fontConfig.webFontUrl, cdnManager.getProjectBasePath());
+      urls.push(relativePath);
+      logFontConfig.extend('debug')(`Added local fallback: ${relativePath}`);
     }
 
     logFontConfig.extend('info')(`Font ${fontConfig.name} CDN URLs order: ${urls.join(' -> ')}`);

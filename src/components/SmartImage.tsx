@@ -13,6 +13,7 @@ import { getCDNConfig } from '../config/ProjectConfig';
 import { getLogger } from '../utils/Logger';
 import { useI18n } from '../i18n';
 import { useSafeTheme } from './skill/SkillRenderer';
+import { removeBaseURL } from '../utils/URLPathJoiner';
 
 const logSmartImage = getLogger('SmartImage');
 
@@ -79,9 +80,12 @@ export const SmartImage: React.FC<SmartImageProps> = ({
       });
     }
 
+    // 移除基础路径，只保留相对路径
+    const relativePath = removeBaseURL(resourcePath, cdnManager.getProjectBasePath());
+
     // 使用指定的CDN构建URL
     const cleanBaseUrl = cdnBaseUrl.endsWith('/') ? cdnBaseUrl.slice(0, -1) : cdnBaseUrl;
-    const cleanResourcePath = resourcePath.startsWith('/') ? resourcePath.slice(1) : resourcePath;
+    const cleanResourcePath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
     return `${cleanBaseUrl}/${cleanResourcePath}`;
   }, [enableCDNFallback]);
 

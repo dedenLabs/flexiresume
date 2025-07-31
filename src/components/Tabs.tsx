@@ -332,8 +332,7 @@ const Tabs: React.FC = () => {
                     src={avatar}
                     alt={characterName}
                     onError={(e) => {
-                      logTabs.extend('error')('Avatar load error:', avatar, e);
-                      e.currentTarget.style.display = 'none';
+                      logTabs.extend('error')('Avatar load error:', avatar, e);                      
                     }}
                     onLoad={() => {
                       logTabs('Avatar loaded successfully:', avatar);

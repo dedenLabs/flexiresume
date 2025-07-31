@@ -19,6 +19,9 @@ import {
   getTabSFXList
 } from '../config/AudioConfig';
 import { getLogger } from './Logger';
+import { cdnManager } from './CDNManager';
+import { getCDNConfig } from '../config/ProjectConfig';
+import { removeBaseURL } from './URLPathJoiner';
 
 const logEnhancedAudioPlayer = getLogger('EnhancedAudioPlayer');
 
@@ -31,10 +34,19 @@ interface AudioPlaybackState {
   loop: boolean;
 }
 
+// 音频重试状态
+interface AudioRetryState {
+  retryCount: number;
+  cdnIndex: number;
+  maxRetries: number;
+  enableCDNFallback: boolean;
+}
+
 // 增强版音频播放器类
 export class EnhancedAudioPlayer {
   private audioCache: Map<string, HTMLAudioElement> = new Map();
   private playbackStates: Map<string, AudioPlaybackState> = new Map();
+  private retryStates: Map<string, AudioRetryState> = new Map();
   private currentBGM: string | null = null;
   private bgmPlaylist: string[] = [];
   private bgmCurrentIndex: number = 0;
@@ -96,10 +108,21 @@ export class EnhancedAudioPlayer {
   }
   private async loadAudio(config: AudioConfig): Promise<void> {
     try {
-      const audio = new Audio(config.file);
-      audio.volume = config.volume;
-      audio.loop = config.loop;
-      audio.preload = 'auto';
+      // 创建重试状态
+      const retryState: AudioRetryState = {
+        retryCount: 0,
+        cdnIndex: 0,
+        maxRetries: 3,
+        enableCDNFallback: true
+      };
+      this.retryStates.set(config.id, retryState);
+
+      // 创建带CDN支持的音频元素
+      const audio = this.createAudioWithCDN(config, 0);
+      if (!audio) {
+        logEnhancedAudioPlayer.extend('error')(`❌ ${config.name} 音频创建失败`);
+        return;
+      }
 
       // 监听事件
       this.setupAudioEventListeners(audio, config);
@@ -142,7 +165,7 @@ export class EnhancedAudioPlayer {
     });
 
     audio.addEventListener('error', (e) => {
-      logEnhancedAudioPlayer.extend('warn')(`⚠️ ${config.name} 播放错误:`, e);
+      this.handleAudioError(config, e);
     });
   }
 
@@ -153,6 +176,13 @@ export class EnhancedAudioPlayer {
     const state = this.playbackStates.get(config.id);
     if (state) {
       state.isPlaying = false;
+    }
+
+    // 重置重试状态
+    const retryState = this.retryStates.get(config.id);
+    if (retryState) {
+      retryState.retryCount = 0;
+      retryState.cdnIndex = 0;
     }
 
     // 如果是BGM，智能处理播放列表
@@ -170,8 +200,102 @@ export class EnhancedAudioPlayer {
   }
 
   /**
-   * 播放下一首BGM
+   * 处理音频加载错误
    */
+  private handleAudioError(config: AudioConfig, error: Event): void {
+    const retryState = this.retryStates.get(config.id);
+    if (!retryState) {
+      logEnhancedAudioPlayer.extend('warn')(`⚠️ ${config.name} 加载错误:`, error);
+      return;
+    }
+
+    logEnhancedAudioPlayer.extend('warn')(`⚠️ ${config.name} 加载错误 (重试 ${retryState.retryCount + 1}/${retryState.maxRetries})`);
+    
+    if (this.tryNextSource(config, retryState)) {
+      return;
+    }
+
+    logEnhancedAudioPlayer.extend('error')(`❌ ${config.name} 所有重试失败`);
+  }
+
+  /**
+   * 尝试下一个音频源（简化版）
+   */
+  private tryNextSource(config: AudioConfig, retryState: AudioRetryState): boolean {
+    const cdnConfig = getCDNConfig();
+    
+    // 如果没有CDN配置或禁用降级，直接返回失败
+    if (!retryState.enableCDNFallback || cdnConfig.baseUrls.length === 0) {
+      return false;
+    }
+
+    // 计算当前尝试的源索引
+    const totalSources = cdnConfig.baseUrls.length;
+    const currentSourceIndex = retryState.retryCount * totalSources + retryState.cdnIndex;
+    
+    // 如果还有更多源可以尝试
+    if (currentSourceIndex < totalSources * retryState.maxRetries) {
+      retryState.cdnIndex = (retryState.cdnIndex + 1) % totalSources;
+      if (retryState.cdnIndex === 0) {
+        retryState.retryCount++;
+      }
+      
+      // 延迟重试
+      setTimeout(() => {
+        const newAudio = this.createAudioWithCDN(config, retryState.cdnIndex);
+        if (newAudio) {
+          // 替换音频元素
+          const oldAudio = this.audioCache.get(config.id);
+          if (oldAudio) {
+            oldAudio.remove();
+          }
+          
+          this.audioCache.set(config.id, newAudio);
+          this.setupAudioEventListeners(newAudio, config);
+          
+          logEnhancedAudioPlayer(`🔄 重试 ${retryState.retryCount}/${retryState.maxRetries}, CDN ${retryState.cdnIndex + 1}: ${config.name}`);
+        }
+      }, 1000 * retryState.retryCount);
+      
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * 创建带CDN支持的音频元素（简化版）
+   */
+  private createAudioWithCDN(config: AudioConfig, cdnIndex: number = 0): HTMLAudioElement | null {
+    const cdnConfig = getCDNConfig();
+    let audioUrl: string;
+    
+    if (cdnConfig.enabled && cdnConfig.baseUrls.length > 0 && cdnIndex < cdnConfig.baseUrls.length) {
+      // 使用指定的CDN
+      const baseUrl = cdnConfig.baseUrls[cdnIndex];
+      const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+      const relativePath = removeBaseURL(config.file, cdnManager.getProjectBasePath());
+      const cleanResourcePath = relativePath.startsWith('./') ? relativePath.slice(2) : relativePath;
+      
+      audioUrl = `${cleanBaseUrl}/${cleanResourcePath}`;
+    } else {
+      // 降级到本地文件
+      audioUrl = config.file;
+    }
+
+    logEnhancedAudioPlayer(`🌐 使用音频源: ${audioUrl}`);
+
+    try {
+      const audio = new Audio(audioUrl);
+      audio.volume = config.volume;
+      audio.loop = config.loop;
+      audio.preload = 'auto';
+      return audio;
+    } catch (error) {
+      logEnhancedAudioPlayer.extend('error')(`❌ 创建音频失败: ${audioUrl}`, error);
+      return null;
+    }
+  }
   private async playNextBGM(): Promise<void> {
     if (this.bgmPlaylist.length === 0) return;
 
@@ -628,6 +752,7 @@ export class EnhancedAudioPlayer {
     });
     this.audioCache.clear();
     this.playbackStates.clear();
+    this.retryStates.clear();
     this.currentBGM = null;
     this.bgmPlaylist = [];
     this.bgmCurrentIndex = 0;

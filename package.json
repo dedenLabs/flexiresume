@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --mode production && npm run cdn && echo '构建完成，输出到 docs 目录'",
+    "build": "vite build --mode production && echo '构建完成，输出到 docs 目录，西游记共享CDN，这里就不复制了'",
     "cdn": "node copy-public-to-docs.js",
     "lint": "eslint .",
     "analyze": "source-map-explorer 'docs/**/*.js'",

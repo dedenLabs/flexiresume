@@ -8,6 +8,7 @@ import { cdnManager } from './CDNManager';
 import { getCDNConfig, isDebugEnabled, isDevelopment } from '../config/ProjectConfig';
 import { getLogger } from './Logger';
 import { globalCache } from '../utils/MemoryManager';
+import { removeBaseURL } from './URLPathJoiner';
 
 // Debug loggers
 const debugCache = getLogger('cache');
@@ -486,8 +487,11 @@ export function replaceCDNBaseURL(url: string, sourceIndex = 0) {
     }
 
     try {
+        // 移除基础路径，只保留相对路径
+        const relativePath = removeBaseURL(url, cdnManager.getProjectBasePath());
+        
         // 使用新的CDN管理器获取资源URL
-        return cdnManager.getResourceUrl(url, {
+        return cdnManager.getResourceUrl(relativePath, {
             enableFallback: true,
             localBasePath: '',
             cacheUrls: true,

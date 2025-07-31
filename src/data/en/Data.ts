@@ -44,7 +44,7 @@ export default {
         name: "FlexiResume",
         email: "demo@flexiresume.com",
         gender: "Male",
-        avatar: "/images/avatar-ai.png",//https://photocartoon.net/ This is a website that converts photos to cartoon images
+        avatar: "images/avatar-ai.png",//https://photocartoon.net/ This is a website that converts photos to cartoon images
         location: "Global",
         is_male: "1",// 1 male 0 female display icon
         status: "⚡Feature Demo",//⚡Available-Heavenly Palace 🕐On duty-Arrive within month 🔒On duty-Not changing jobs for now
@@ -108,7 +108,7 @@ export default {
                 gender: "Male",
                 position: "Team Leader",
                 expected_salary: "",
-                avatar: "/images/xiyouji/xuanzhan-icon.png",
+                avatar: "images/xiyouji/xuanzhan-icon.png",
                 location: "East Tang Dynasty·Chang'an",
                 email: "xuanzang@datang.gov",
                 phone: "+86-138-0000-0001",
@@ -128,7 +128,7 @@ export default {
                 gender: "🐵Male Monkey",
                 position: "Problem Solving Expert",
                 expected_salary: "",
-                avatar: "/images/xiyouji/wukong-icon.png", // Use existing image as Sun Wukong avatar
+                avatar: "images/xiyouji/wukong-icon.png", // Use existing image as Sun Wukong avatar
                 location: "Flower-Fruit Mountain·Water Curtain Cave",
                 email: "wukong@huaguoshan.com",
                 phone: "+86-138-0000-0002",
@@ -148,7 +148,7 @@ export default {
                 gender: "🐷Male Pig",
                 position: "Logistics Support Expert",
                 expected_salary: "",
-                avatar: "/images/xiyouji/zhubajie-icon.png", // Use existing image as Zhu Bajie avatar
+                avatar: "images/xiyouji/zhubajie-icon.png", // Use existing image as Zhu Bajie avatar
                 location: "Gao Lao Zhuang",
                 email: "bajie@gaolaozhuang.com",
                 phone: "+86-138-0000-0003",
@@ -168,7 +168,7 @@ export default {
                 gender: "Male",
                 position: "Quality Assurance Expert",
                 expected_salary: "",
-                avatar: "/images/xiyouji/wujing-icon.png", // Use existing image as Sha Wujing avatar
+                avatar: "images/xiyouji/wujing-icon.png", // Use existing image as Sha Wujing avatar
                 location: "Flowing Sand River",
                 email: "wujing@liushahe.com",
                 phone: "+86-138-0000-0004",

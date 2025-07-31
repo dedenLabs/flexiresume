@@ -11,6 +11,7 @@ import { getCDNConfig } from '../config/ProjectConfig';
 import { cdnManager } from './CDNManager';
 import { getLogger } from './Logger';
 import { getCurrentLanguage, getTranslations } from '../i18n';
+import { joinURL, removeBaseURL } from './URLPathJoiner';
 
 const logImageError = getLogger('ImageErrorHandler');
 
@@ -52,7 +53,7 @@ class ImageErrorHandler {
   private setupGlobalErrorHandler(): void {
     // 使用事件委托监听所有图片错误
     document.addEventListener('error', this.handleImageError.bind(this), true);
-    
+
     // 监听已存在的图片
     this.processExistingImages();
   }
@@ -66,12 +67,12 @@ class ImageErrorHandler {
         mutation.addedNodes.forEach((node) => {
           if (node.nodeType === Node.ELEMENT_NODE) {
             const element = node as Element;
-            
+
             // 检查是否是图片元素
             if (element.tagName === 'IMG') {
               this.setupImageErrorHandling(element as HTMLImageElement);
             }
-            
+
             // 检查子元素中的图片
             const images = element.querySelectorAll('img');
             images.forEach((img) => {
@@ -132,7 +133,7 @@ class ImageErrorHandler {
    */
   private handleImageError(event: Event): void {
     const target = event.target as HTMLImageElement;
-    
+
     // 只处理img标签
     if (target.tagName !== 'IMG') {
       return;
@@ -167,17 +168,17 @@ class ImageErrorHandler {
     if (cdnIndex < cdnConfig.baseUrls.length - 1) {
       const nextCdnIndex = cdnIndex + 1;
       const nextCdnUrl = this.buildCDNUrl(cdnConfig.baseUrls[nextCdnIndex], originalSrc);
-      
+
       retryInfo.cdnIndex = nextCdnIndex;
       element.src = nextCdnUrl;
-      
+
       logImageError(`尝试CDN ${nextCdnIndex + 1}/${cdnConfig.baseUrls.length}: ${nextCdnUrl}`);
     } else if (retryCount < retryInfo.maxRetries) {
       // 重试第一个CDN
       const nextRetryCount = retryCount + 1;
       retryInfo.retryCount = nextRetryCount;
       retryInfo.cdnIndex = 0;
-      
+
       setTimeout(() => {
         const firstCdnUrl = this.buildCDNUrl(cdnConfig.baseUrls[0], originalSrc);
         element.src = firstCdnUrl;
@@ -194,14 +195,14 @@ class ImageErrorHandler {
    */
   private tryLocalFallback(retryInfo: ImageRetryInfo): void {
     const { element, originalSrc } = retryInfo;
-    
+
     try {
       // 使用CDN管理器的本地回退逻辑
       const localUrl = cdnManager.getResourceUrl(originalSrc, {
         enableFallback: true,
         cacheUrls: false
       });
-      
+
       if (localUrl !== element.src) {
         element.src = localUrl;
         logImageError(`尝试本地回退: ${localUrl}`);
@@ -210,7 +211,7 @@ class ImageErrorHandler {
     } catch (error) {
       logImageError.extend('error')('本地回退失败:', error);
     }
-    
+
     // 最终失败
     this.handleFinalFailure(retryInfo);
   }
@@ -220,10 +221,10 @@ class ImageErrorHandler {
    */
   private handleFinalFailure(retryInfo: ImageRetryInfo): void {
     const { element, originalSrc } = retryInfo;
-    
+
     const t = getTranslations(getCurrentLanguage());
     logImageError.extend('error')(t.common.imageFinalLoadFailed + `: ${originalSrc}`);
-    
+
     // 创建错误占位符
     const placeholder = document.createElement('div');
     placeholder.className = 'image-error-placeholder';
@@ -240,15 +241,15 @@ class ImageErrorHandler {
       border-radius: 4px;
     `;
     placeholder.textContent = t.common.imageLoadFailed;
-    
+
     // 复制原始图片的样式
     if (element.style.width) placeholder.style.width = element.style.width;
     if (element.style.height) placeholder.style.height = element.style.height;
     if (element.className) placeholder.className += ` ${element.className}`;
-    
+
     // 替换图片元素
     element.parentNode?.replaceChild(placeholder, element);
-    
+
     // 清理重试信息
     this.retryMap.delete(element);
   }
@@ -257,6 +258,7 @@ class ImageErrorHandler {
    * 构建CDN URL
    */
   private buildCDNUrl(baseUrl: string, resourcePath: string): string {
+    resourcePath = removeBaseURL(resourcePath, cdnManager.getProjectBasePath());
     // 如果resourcePath已经是完整URL，提取路径部分
     let cleanResourcePath = resourcePath;
     try {
@@ -265,7 +267,7 @@ class ImageErrorHandler {
     } catch {
       // 不是完整URL，直接使用
     }
-    
+
     // 如果resourcePath已经包含CDN URL，需要清理
     const cdnConfig = getCDNConfig();
     cdnConfig.baseUrls.forEach(cdnUrl => {
@@ -278,10 +280,11 @@ class ImageErrorHandler {
         cleanResourcePath = cleanResourcePath.substring(cdnUrlWithSlash.length);
       }
     });
-    
+
+    // 处理baseUrl，移除末尾的/，如果resourcePath以/开头，则移除
     const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
     cleanResourcePath = cleanResourcePath.startsWith('/') ? cleanResourcePath.slice(1) : cleanResourcePath;
-    
+
     return `${cleanBaseUrl}/${cleanResourcePath}`;
   }
 

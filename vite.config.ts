@@ -26,16 +26,16 @@ const customEntry = () => ({
 
     try {
       // 读取已生成的 index.html
-      const indexContent = fs.readFileSync('docs/index.html', 'utf-8');
+      const indexContent = fs.readFileSync('dist/index.html', 'utf-8');
       staticRoutePageNames.forEach(name => {
-        const outputPath = path.join('docs', `${name}.html`);
+        const outputPath = path.join('dist', `${name}.html`);
 
         // 直接写入文件系统
         fs.writeFileSync(outputPath, indexContent);
       });
 
-      fs.copyFileSync('public/favicon.ico', 'docs/favicon.ico');
-      fs.copyFileSync('public/robots.txt', 'docs/robots.txt');
+      fs.copyFileSync('public/favicon.ico', 'dist/favicon.ico');
+      fs.copyFileSync('public/robots.txt', 'dist/robots.txt');
     } catch (err) {
       this.error(`[customEntry] Error generating route entries: ${err.message}`);
     }
@@ -67,7 +67,7 @@ const customEntry = () => ({
 // })
 
 
-// 自定义 Rollup 插件, 生成serviceWorker文件，用于静态资源替换到CDN上加速，如果静态资源本身就在docs目录下的话无需做这一步，这里主要是解决github pages的静态资源不在相同目录下的问题
+// 自定义 Rollup 插件, 生成serviceWorker文件，用于静态资源替换到CDN上加速，如果静态资源本身就在dist目录下的话无需做这一步，这里主要是解决github pages的静态资源不在相同目录下的问题
 // const generateServiceWorkerJS = (host: string) => ({
 //   name: 'generateServiceWorkerJS',
 //   writeBundle() {
@@ -84,8 +84,8 @@ const customEntry = () => ({
 //   }
 // });
 //       `;
-//       // docs 目录写入sw.js文件
-//       fs.writeFileSync(path.join('docs', `sw.js`), swContent);
+//       // dist 目录写入sw.js文件
+//       fs.writeFileSync(path.join('dist', `sw.js`), swContent);
 //       // public 目录写入sw.js文件
 //       fs.writeFileSync(path.join('public', `sw.js`), swContent);
 //     } catch (err) {
@@ -170,7 +170,7 @@ const messages = {
     configured: '已配置',
     notConfigured: '未配置 (可选)',
     buildNotes: '📝 构建注意事项:',
-    outputDir: '• 构建输出目录: docs/ (适配 GitHub Pages)',
+    outputDir: '• 构建输出目录: dist/ (适配 GitHub Pages)',
     optimization: '• 静态资源将被优化和压缩',
     consoleLogs: '• 生产环境将移除 console 日志',
     htmlGeneration: '• 将为每个职位页面生成独立的 HTML 文件',
@@ -193,7 +193,7 @@ const messages = {
     configured: 'Configured',
     notConfigured: 'Not configured (optional)',
     buildNotes: '📝 Build notes:',
-    outputDir: '• Build output directory: docs/ (GitHub Pages compatible)',
+    outputDir: '• Build output directory: dist/ (GitHub Pages compatible)',
     optimization: '• Static assets will be optimized and compressed',
     consoleLogs: '• Console logs will be removed in production',
     htmlGeneration: '• Independent HTML files will be generated for each position page',
@@ -287,7 +287,7 @@ export default defineConfig(({ command, mode }) => {
     // 构建优化
     build: {
       assetsDir: 'assets',  // 静态资源子目录
-      outDir: 'docs',  // 👈 修改输出目录为 docs
+      outDir: 'dist',  // 👈 修改输出目录为 dist
       emptyOutDir: true,     // 构建前清空目标目录
 
       // 优化的代码分割策略 - 针对大型库进行细分
@@ -316,7 +316,7 @@ export default defineConfig(({ command, mode }) => {
         plugins: [
           visualizer({
             open: false, // 打开分析报告
-            filename: 'docs/stats.html', // 输出文件
+            filename: 'dist/stats.html', // 输出文件
             template: 'sunburst', // 可以选择 sunburst 或 treemap 模板
           }),
           // customPublicFilter(),
