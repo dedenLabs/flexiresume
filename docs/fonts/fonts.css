@@ -1,0 +1,182 @@
+/**
+ * 古典中文字体CSS配置
+ * 
+ * 包含多种古典中文字体，支持古文、书法、传统文本显示
+ * 
+ * @author FlexiResume Team
+ * @date 2025-07-29
+ */
+
+/* 思源宋体 - 专为中文古文设计的现代衬线字体，最适合古典文本 */
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Noto Serif SC'), local('NotoSerifSC'),
+       url('./noto-serif-sc-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local('Noto Serif SC'), local('NotoSerifSC'),
+       url('./noto-serif-sc-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Noto Serif SC'), local('NotoSerifSC'),
+       url('./noto-serif-sc-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Noto Serif SC'), local('NotoSerifSC'),
+       url('./noto-serif-sc-700.woff2') format('woff2');
+}
+
+/* 思源黑体 - 现代中文无衬线字体，适合标题和现代文本 */
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: local('Noto Sans SC'), local('NotoSansSC'),
+       url('./noto-sans-sc-300.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Noto Sans SC'), local('NotoSansSC'),
+       url('./noto-sans-sc-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local('Noto Sans SC'), local('NotoSansSC'),
+       url('./noto-sans-sc-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Noto Sans SC'), local('NotoSansSC'),
+       url('./noto-sans-sc-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Noto Sans SC'), local('NotoSansSC'),
+       url('./noto-sans-sc-700.woff2') format('woff2');
+}
+
+/* 站酷快乐体 - 活泼的中文字体，适合标题和装饰性文本 */
+@font-face {
+  font-family: 'ZCOOL KuaiLe';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('ZCOOL KuaiLe'), local('ZCOOLKuaiLe'),
+       url('./zcool-kuaile-400.woff2') format('woff2');
+}
+
+/* 站酷小薇LOGO体 - 优雅的中文字体，适合LOGO和标题 */
+@font-face {
+  font-family: 'ZCOOL XiaoWei';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('ZCOOL XiaoWei'), local('ZCOOLXiaoWei'),
+       url('./zcool-xiaowei-400.woff2') format('woff2');
+}
+
+/* 马善政毛笔楷体 - 毛笔风格的楷体，具有传统书法韵味 */
+@font-face {
+  font-family: 'Ma Shan Zheng';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Ma Shan Zheng'), local('MaShanZheng'),
+       url('./ma-shan-zheng-400.woff2') format('woff2');
+}
+
+/* 刘建毛草 - 草书风格字体，具有浓厚的书法艺术感 */
+@font-face {
+  font-family: 'Liu Jian Mao Cao';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Liu Jian Mao Cao'), local('LiuJianMaoCao'),
+       url('./liu-jian-mao-cao-400.woff2') format('woff2');
+}
+
+/* 古典中文字体类定义 */
+
+/* 主要古典字体组合 */
+.font-ancient-chinese {
+  font-family: 'Noto Serif SC', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', 'STSong', 'SimSun', serif;
+}
+
+.font-modern-chinese {
+  font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'SimHei', sans-serif;
+}
+
+/* 书法风格字体 */
+.font-calligraphy {
+  font-family: 'Ma Shan Zheng', 'Liu Jian Mao Cao', 'STKaiti', 'KaiTi', serif;
+}
+
+/* 装饰性字体 */
+.font-decorative {
+  font-family: 'ZCOOL KuaiLe', 'ZCOOL XiaoWei', 'Noto Sans SC', sans-serif;
+}
+
+/* 古文专用字体组合 */
+.font-ancient-text {
+  font-family: 'Noto Serif SC', 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-feature-settings: 'liga' 1, 'kern' 1;
+  text-rendering: optimizeLegibility;
+  letter-spacing: 0.05em;
+}
+
+/* 诗词专用字体 */
+.font-poetry {
+  font-family: 'Ma Shan Zheng', 'Noto Serif SC', 'STKaiti', 'KaiTi', serif;
+  font-feature-settings: 'liga' 1, 'kern' 1;
+  text-rendering: optimizeLegibility;
+  letter-spacing: 0.1em;
+  line-height: 1.8;
+}
+
+/* 标题装饰字体 */
+.font-title-decorative {
+  font-family: 'ZCOOL XiaoWei', 'ZCOOL KuaiLe', 'Noto Sans SC', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+
+/* 草书风格 */
+.font-cursive {
+  font-family: 'Liu Jian Mao Cao', 'Ma Shan Zheng', 'STKaiti', cursive;
+  letter-spacing: 0.02em;
+}

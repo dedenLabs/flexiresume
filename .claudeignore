@@ -1,0 +1,16 @@
+# 忽略特定文件夹
+node_modules/
+dist/
+build/
+downloads/
+
+# 忽略所有日志文件
+*.log
+
+# 忽略隐藏文件夹
+.git/
+.env/
+.*/
+# 忽略特定文件
+config/secrets.json
+.env

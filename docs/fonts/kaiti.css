@@ -1,0 +1,43 @@
+/**
+ * 楷体 字体配置
+ * 
+ * 楷体，端正秀丽，适合正式场合
+ * 
+ * @author FlexiResume Team
+ * @date 2025-07-29
+ */
+
+@font-face {
+  font-family: 'Ma Shan Zheng';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Ma Shan Zheng'), local('MaShanZheng'),
+       url('./ma-shan-zheng-400.woff2') format('woff2');
+}
+
+/* 楷体 专用样式类 */
+.font-kaiti {
+  font-family: 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  line-height: 1.9;
+  font-feature-settings: 'liga' 1, 'kern' 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* 标题样式 */
+.font-kaiti-title {
+  font-family: 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  line-height: 1.7999999999999998;
+}
+
+/* 正文样式 */
+.font-kaiti-body {
+  font-family: 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  line-height: 1.9;
+}

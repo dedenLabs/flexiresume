@@ -1,0 +1,43 @@
+/**
+ * 装饰字体 字体配置
+ * 
+ * 活泼的装饰性字体
+ * 
+ * @author FlexiResume Team
+ * @date 2025-07-29
+ */
+
+@font-face {
+  font-family: 'ZCOOL KuaiLe';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('ZCOOL KuaiLe'), local('ZCOOLKuaiLe'),
+       url('./zcool-kuaile-400.woff2') format('woff2');
+}
+
+/* 装饰字体 专用样式类 */
+.font-decorative {
+  font-family: 'ZCOOL KuaiLe', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.7;
+  font-feature-settings: 'liga' 1, 'kern' 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* 标题样式 */
+.font-decorative-title {
+  font-family: 'ZCOOL KuaiLe', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1.5999999999999999;
+}
+
+/* 正文样式 */
+.font-decorative-body {
+  font-family: 'ZCOOL KuaiLe', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.7;
+}

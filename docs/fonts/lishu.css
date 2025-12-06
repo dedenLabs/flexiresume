@@ -1,0 +1,43 @@
+/**
+ * 隶书 字体配置
+ * 
+ * 隶书风格，古朴大气
+ * 
+ * @author FlexiResume Team
+ * @date 2025-07-29
+ */
+
+@font-face {
+  font-family: 'Liu Jian Mao Cao';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Liu Jian Mao Cao'), local('LiuJianMaoCao'),
+       url('./liu-jian-mao-cao-400.woff2') format('woff2');
+}
+
+/* 隶书 专用样式类 */
+.font-lishu {
+  font-family: 'Liu Jian Mao Cao', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  line-height: 2.0;
+  font-feature-settings: 'liga' 1, 'kern' 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* 标题样式 */
+.font-lishu-title {
+  font-family: 'Liu Jian Mao Cao', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 500;
+  letter-spacing: 0.12000000000000001em;
+  line-height: 1.9;
+}
+
+/* 正文样式 */
+.font-lishu-body {
+  font-family: 'Liu Jian Mao Cao', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  line-height: 2.0;
+}

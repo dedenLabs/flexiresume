@@ -1,0 +1,97 @@
+/**
+ * 汉仪尚巍手书W 字体配置 - 国内在线字体版
+ *
+ * 汉仪尚巍手书体，现代手写风格，具有个性化特色
+ * 使用国内字体CDN，确保国内用户的加载速度和可靠性
+ *
+ * @author FlexiResume Team
+ * @date 2025-07-29
+ */
+
+/* 使用可靠的国内字体CDN - fonts.loli.net是Google Fonts的国内镜像 */
+@import url('https://fonts.loli.net/css2?family=Ma+Shan+Zheng:wght@400&display=swap');
+
+/* 汉仪尚巍手书W字体定义 - 优化版，主要依赖系统字体 */
+@font-face {
+  font-family: 'HYShangWeiShouShuW';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  /* 优先使用本地字体，确保快速加载 */
+  src: local('HYShangWeiShouShuW'),
+       local('Ma Shan Zheng'),
+       local('ZCOOL KuaiLe'),
+       /* 系统中文字体回退 - 确保在所有环境下都能正常显示 */
+       local('STKaiti'),
+       local('KaiTi'),
+       local('SimKai'),
+       local('FangSong'),
+       local('Microsoft YaHei'),
+       local('PingFang SC'),
+       local('Hiragino Sans GB'),
+       local('Source Han Sans CN'),
+       local('Noto Sans CJK SC'),
+       local('SimSun'),
+       /* 通用回退 */
+       serif;
+}
+
+/* 汉仪尚巍手书W 专用样式类 */
+.font-hanyi-shangwei {
+  font-family: 'HYShangWeiShouShuW', 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  font-feature-settings: 'liga' 1, 'kern' 1;
+  text-rendering: optimizeLegibility;
+  
+  /* 字体加载优化 */
+  font-display: swap;
+  
+  /* 防止字体闪烁 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 标题样式 */
+.font-hanyi-shangwei-title {
+  font-family: 'HYShangWeiShouShuW', 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.7;
+  font-display: swap;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 正文样式 */
+.font-hanyi-shangwei-body {
+  font-family: 'HYShangWeiShouShuW', 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  font-display: swap;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 字体预加载提示 */
+.font-hanyi-shangwei-preload {
+  font-family: 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  visibility: hidden;
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+}
+
+/* 字体加载状态指示 */
+.font-loading .font-hanyi-shangwei {
+  font-family: 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  opacity: 0.8;
+}
+
+.font-loaded .font-hanyi-shangwei {
+  font-family: 'HYShangWeiShouShuW', 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimKai', 'FangSong', serif;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
